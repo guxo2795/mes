@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wimir.bae.domain.user.mapper.UserMapper">
+
+
+    <!-- 유저 존재 확인 -->
+    <select id="isUserExist" resultType="boolean">
+        SELECT IF(COUNT(*) > 0, true, false)
+        FROM tbl_user
+        WHERE is_deleted = 0
+        AND user_key = #{userKey}
+    </select>
+
+    <!-- 유저 등록 -->
+    <insert id="createUser" useGeneratedKeys="true" keyProperty="userKey">
+        INSERT INTO tbl_user (
+            user_code, password, user_name, department_key, position_key,
+            permission_type_flag, phone_number
+        )
+        VALUES (
+                #{userCode}, #{password}, #{userName}, #{departmentKey}, #{positionKey},
+                #{permissionTypeFlag}, #{phoneNumber}
+               )
+    </insert>
+
+</mapper>
