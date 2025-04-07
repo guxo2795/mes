@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wimir.bae.domain.product.mapper.ProductMapper">
+
+
+    <!-- 품번 중복 검사 -->
+    <select id="isProductExist" resultType="boolean">
+        SELECT IF(COUNT(*) > 0, true, false) AS result
+        FROM tbl_product
+        WHERE
+            is_deleted = 0
+          AND product_code = #{productCode}
+    </select>
+
+    <!-- 품목 등록 -->
+    <insert id="createProduct" useGeneratedKeys="true" keyProperty="productKey">
+            INSERT INTO tbl_product (
+                company_key, product_type_key, unit_key, process_type_key, drawing_key,
+                product_code, product_name, standard_price, asset_type_flag, safety_quantity
+            )
+            VALUES (
+                    #{companyKey}, #{productTypeKey}, #{unitKey}, #{processTypeKey}, #{drawingKey},
+                    #{productCode}, #{productName}, #{standardPrice}, #{assetTypeFlag}, #{safetyQuantity}
+                   )
+    </insert>
+
+    <!-- 품목 목록 조회 -->
+    <select id="getProductList" resultType="com.wimir.bae.domain.product.dto.ProductInfoDTO">
+        SELECT
+            product_key AS productKey,
+            company_key AS companyKey,
+            product_type_key AS productTypeKey,
+            unit_key AS unitKey,
+            process_type_key AS processTypeKey,
+            drawing_key AS drawingKey,
+            product_code AS productCode,
+            product_name AS productName,
+            standard_price AS standardPrice,
+            asset_type_flag AS assetTypeFlag,
+            safety_quantity AS safetyQuantity
+        FROM tbl_product
+        WHERE
+            is_deleted = 0
+    </select>
+
+    <!-- 품목 정보 -->
+    <select id="getProductInfo" resultType="com.wimir.bae.domain.product.dto.ProductInfoDTO">
+        SELECT
+            *
+        FROM tbl_product
+        WHERE
+            is_deleted = 0
+        AND product_key = #{productKey}
+    </select>
+
+    <!-- 품목 수정 -->
+    <update id="updateProduct" >
+        UPDATE tbl_product
+        SET
+            company_key = #{companyKey},
+            product_type_key = #{productTypeKey},
+            unit_key = #{unitKey},
+            process_type_key = #{processTypeKey},
+            drawing_key = #{drawingKey},
+            product_code = #{productCode},
+            product_name = #{productName},
+            standard_price = #{standardPrice},
+            asset_type_flag = #{assetTypeFlag},
+            safety_quantity = #{safetyQuantity}
+        WHERE is_deleted = 0
+          AND product_key = #{productKey}
+    </update>
+
+    <!-- 품목 삭제 -->
+    <delete id="deleteProduct">
+        UPDATE tbl_product
+        SET is_deleted = 1
+        WHERE
+            is_deleted = 0
+        AND product_key = #{productKey}
+    </delete>
+
+</mapper>
