@@ -15,7 +15,7 @@
     </select>
 
     <!-- 유저 등록 -->
-    <insert id="createUser" useGeneratedKeys="true" keyProperty="userKey">
+    <insert id="createUser">
         INSERT INTO tbl_user (
             user_code, password, user_name, department_key, position_key,
             permission_type_flag, phone_number

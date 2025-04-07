@@ -10,10 +10,10 @@ public class ValidationUtil {
         }
 
         // 비밀번호 정규식 = 영문자, 숫자, 특수문자 최소 1개이상 && 글자수 8자 이상
-        String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*?])[A-Za-z\\d~!@#$%^&*?]{8,}$";
 
         if(!password.matches(passwordRegex)) {
-            throw new IllegalArgumentException("비밀번호는 8자리 이상 및 특수문자(@$!%*?&), 대문자, 숫자를 반드시 하나 이상 포함해야합니다.");
+            throw new IllegalArgumentException("비밀번호는 8자리 이상 및 특수문자(~!@#$%^&*?), 대문자, 숫자를 반드시 하나 이상 포함해야합니다.");
         }
     }
 

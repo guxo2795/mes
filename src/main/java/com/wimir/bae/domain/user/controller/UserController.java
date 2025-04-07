@@ -5,6 +5,7 @@ import com.wimir.bae.domain.user.service.UserService;
 import com.wimir.bae.global.dto.ResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ public class UserController {
 //    private final JwtGlobalService jwtGlobalService;
     private final UserService userService;
 
+    @PostMapping("create")
     public ResponseEntity<ResponseDTO<?>> createUser(
             @RequestBody @Valid UserRegDTO regDTO) {
 
