@@ -11,7 +11,7 @@
         SELECT IF(COUNT(*) > 0, true, false)
         FROM tbl_user
         WHERE is_deleted = 0
-        AND user_key = #{userKey}
+        AND user_code = #{userCode}
     </select>
 
     <!-- 유저 등록 -->
