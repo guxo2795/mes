@@ -1,12 +1,15 @@
 package com.wimir.bae.global.config;
 
+import com.wimir.bae.global.jwt.JwtTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -22,7 +25,12 @@ public class SecurityConfig {
                 .httpBasic().disable() // 기본 인증 비활성화 (JWT 등 사용할 경우)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
-                );
+
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .addFilterBefore(getJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -33,5 +41,10 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtTokenFilter getJwtTokenFilter() {
+        return new JwtTokenFilter();
     }
 }
