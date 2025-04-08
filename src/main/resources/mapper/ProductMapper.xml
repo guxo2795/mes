@@ -10,8 +10,7 @@
     <select id="isProductExist" resultType="boolean">
         SELECT IF(COUNT(*) > 0, true, false) AS result
         FROM tbl_product
-        WHERE
-            is_deleted = 0
+        WHERE is_deleted = 0
           AND product_code = #{productCode}
     </select>
 
@@ -42,8 +41,7 @@
             asset_type_flag AS assetTypeFlag,
             safety_quantity AS safetyQuantity
         FROM tbl_product
-        WHERE
-            is_deleted = 0
+        WHERE is_deleted = 0
     </select>
 
     <!-- 품목 정보 -->
@@ -51,9 +49,8 @@
         SELECT
             *
         FROM tbl_product
-        WHERE
-            is_deleted = 0
-        AND product_key = #{productKey}
+        WHERE is_deleted = 0
+          AND product_key = #{productKey}
     </select>
 
     <!-- 품목 수정 -->
@@ -78,9 +75,8 @@
     <delete id="deleteProduct">
         UPDATE tbl_product
         SET is_deleted = 1
-        WHERE
-            is_deleted = 0
-        AND product_key = #{productKey}
+        WHERE is_deleted = 0
+          AND product_key = #{productKey}
     </delete>
 
 </mapper>
