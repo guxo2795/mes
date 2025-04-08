@@ -1,14 +1,14 @@
 package com.wimir.bae.domain.user.controller;
 
+import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.domain.user.dto.UserLoginInfoDTO;
 import com.wimir.bae.domain.user.dto.UserRegDTO;
 import com.wimir.bae.domain.user.service.UserService;
 import com.wimir.bae.global.dto.ResponseDTO;
+import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -17,14 +17,15 @@ import javax.validation.Valid;
 @RequestMapping("user")
 public class UserController {
 
-//    private final JwtGlobalService jwtGlobalService;
+    private final JwtGlobalService jwtGlobalService;
     private final UserService userService;
 
     @PostMapping("create")
     public ResponseEntity<ResponseDTO<?>> createUser(
+            @RequestHeader("Authorization") String accessToken,
             @RequestBody @Valid UserRegDTO regDTO) {
-
-        userService.createUser(regDTO);
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        userService.createUser(userLoginDTO, regDTO);
 
         ResponseDTO<?> responseDTO =
                 ResponseDTO.builder()

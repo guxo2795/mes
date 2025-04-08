@@ -5,6 +5,7 @@ import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.domain.product.dto.ProductModDTO;
 import com.wimir.bae.domain.product.dto.ProductRegDTO;
 import com.wimir.bae.domain.product.mapper.ProductMapper;
+import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ public class ProductService {
     private final  ProductMapper productMapper;
 
     // 품목 생성
-    public void createProduct(ProductRegDTO regDTO) {
+    public void createProduct(UserLoginDTO userLoginDTO, ProductRegDTO regDTO) {
         
         // 품번 중복 확인
         validateProductCode(regDTO.getProductCode());
@@ -34,7 +35,7 @@ public class ProductService {
     }
 
     // 품목 수정
-    public void updateProduct(ProductModDTO modDTO) {
+    public void updateProduct(UserLoginDTO userLoginDTO, ProductModDTO modDTO) {
         
         ProductInfoDTO productInfoDTO = productMapper.getProductInfo(modDTO.getProductKey());
 
@@ -53,7 +54,7 @@ public class ProductService {
     }
 
     // 품목 삭제
-    public void deleteProduct(List<String> productKeyList) {
+    public void deleteProduct(UserLoginDTO userLoginDTO, List<String> productKeyList) {
         for(String productKey : productKeyList) {
             ProductInfoDTO productInfoDTO = productMapper.getProductInfo(productKey);
 

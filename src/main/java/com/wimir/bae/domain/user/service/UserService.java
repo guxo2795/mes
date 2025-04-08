@@ -1,5 +1,6 @@
 package com.wimir.bae.domain.user.service;
 
+import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.domain.user.dto.UserRegDTO;
 import com.wimir.bae.domain.user.mapper.UserMapper;
 import com.wimir.bae.global.utils.CryptUtil;
@@ -18,10 +19,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final CryptUtil cryptUtil;
 
-
-
     // 유저 등록
-    public void createUser(UserRegDTO regDTO) {
+    public void createUser(UserLoginDTO userLoginDTO, UserRegDTO regDTO) {
 
         // 유저 존재 확인
         validateUserExists(regDTO.getUserCode());
