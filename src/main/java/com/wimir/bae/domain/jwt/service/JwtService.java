@@ -166,15 +166,6 @@ public class JwtService {
         return getTokenExpirationDate(token, "세션이 만료되었습니다. 자동 로그아웃 됩니다.");
     }
 
-    // JWT
-    // [Header].[Payload].[Signature]
-    // Payload는 토큰에 담을 데이터(Claims)를 뜻함
-    // 키-값
-    /*  Claims claims = Jwts.claims();
-        claims.setSubject("user123");                // 토큰 주체
-        claims.put("role", "ADMIN");                 // 커스텀 클레임
-        claims.put("userKey", "abcde-12345");  */      // 원하는 데이터 넣기
-
 
     public boolean verifyPassword(String password, String currentPassword) {
         return passwordEncoder.matches(password, currentPassword);
