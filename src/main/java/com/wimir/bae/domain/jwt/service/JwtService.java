@@ -3,6 +3,7 @@ package com.wimir.bae.domain.jwt.service;
 import com.wimir.bae.domain.jwt.dto.JwtLoginDTO;
 import com.wimir.bae.domain.user.dto.UserLoginInfoDTO;
 import com.wimir.bae.domain.user.mapper.UserMapper;
+import com.wimir.bae.global.exception.CustomTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -45,12 +46,12 @@ public class JwtService {
 
         // 유저 아이디 확인
         if (userKey.isBlank())
-            throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
+            throw new CustomTokenException("존재하지 않는 아이디입니다.");
 
         // 비밀번호 확인
         String currentPassword = userMapper.getPasswordByUserKeyAndUserCode(userKey, userCode);
         if (!verifyPassword(password, currentPassword))
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new CustomTokenException("비밀번호가 일치하지 않습니다.");
 
 
         // 로그인 성공시 액세스 토큰이 아닌 리프레시 토큰을 발급
@@ -64,7 +65,7 @@ public class JwtService {
         try {
             userMapper.updateUserTokenDate(userKey, expiredDateString, userCode);
         } catch (Exception e) {
-            throw new IllegalArgumentException("서버 오류입니다. 관리자에게 문의하세요.");
+            throw new CustomTokenException("서버 오류입니다. 관리자에게 문의하세요.");
         }
 
         return refreshToken;
@@ -73,7 +74,7 @@ public class JwtService {
     // 액세스 토큰 발급
     public String silent(String refreshToken) {
 
-        if(refreshToken == null) throw new IllegalArgumentException("토큰이 없습니다.");
+        if(refreshToken == null) throw new CustomTokenException("토큰이 없습니다.");
         if(refreshToken.startsWith("Bearer")) refreshToken = refreshToken.substring(7);
 
         try {
@@ -84,11 +85,11 @@ public class JwtService {
             String expiredDateString = format.format(expiredDate);
 
             UserLoginInfoDTO userLoginInfoDTO = userMapper.getUserTokenDate(userKey, expiredDateString);
-            if(userLoginInfoDTO == null) throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+            if(userLoginInfoDTO == null) throw new CustomTokenException("유효하지 않은 토큰입니다.");
 
             return createAccessToken(userCode);
         } catch (Exception e) {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+            throw new CustomTokenException("유효하지 않은 토큰입니다.");
         }
 
     }
@@ -126,7 +127,7 @@ public class JwtService {
 
     // 토큰에서 아이디 얻기
     public String getUserCodeFromToken(String token) {
-        if(token == null || token.isBlank()) throw new IllegalArgumentException("토큰이 없습니다.");
+        if(token == null || token.isBlank()) throw new CustomTokenException("토큰이 없습니다.");
 
         try {
             return Jwts.parserBuilder()
@@ -136,7 +137,7 @@ public class JwtService {
                     .getBody()
                     .getSubject();
         } catch (Exception e) {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+            throw new CustomTokenException("유효하지 않은 토큰입니다.");
         }
     }
 
@@ -144,7 +145,7 @@ public class JwtService {
     // 토큰 만료날짜 얻기
     private Date getTokenExpirationDate(String token, String errorMessage) {
         if (token == null || token.isBlank())
-            throw new IllegalArgumentException("토큰이 없습니다.");
+            throw new CustomTokenException("토큰이 없습니다.");
 
         try {
             return Jwts.parserBuilder()

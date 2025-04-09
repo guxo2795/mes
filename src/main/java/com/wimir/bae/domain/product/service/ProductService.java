@@ -6,6 +6,7 @@ import com.wimir.bae.domain.product.dto.ProductModDTO;
 import com.wimir.bae.domain.product.dto.ProductRegDTO;
 import com.wimir.bae.domain.product.mapper.ProductMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,13 +70,13 @@ public class ProductService {
 
     private void validateProductExists(ProductInfoDTO productInfoDTO) {
         if(productInfoDTO == null) {
-            throw new IllegalArgumentException("존재하지 않는 품목입니다. 다시 확인해 주세요.");
+            throw new CustomRuntimeException("존재하지 않는 품목입니다. 다시 확인해 주세요.");
         }
     }
 
     private void validateProductCode(String ProductCode) {
         if(productMapper.isProductExist(ProductCode)) {
-            throw new IllegalArgumentException("이미 존재하는 품번입니다.");
+            throw new CustomRuntimeException("이미 존재하는 품번입니다.");
         }
     }
 }
