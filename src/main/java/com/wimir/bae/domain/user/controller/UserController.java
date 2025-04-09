@@ -2,6 +2,7 @@ package com.wimir.bae.domain.user.controller;
 
 import com.wimir.bae.domain.user.dto.UserInfoDTO;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.domain.user.dto.UserModDTO;
 import com.wimir.bae.domain.user.dto.UserRegDTO;
 import com.wimir.bae.domain.user.service.UserService;
 import com.wimir.bae.global.dto.ResponseDTO;
@@ -49,6 +50,21 @@ public class UserController {
                         .data(list)
                         .build();
 
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @PostMapping("update")
+    public ResponseEntity<ResponseDTO<?>> updateUser(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid UserModDTO modDTO) {
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        userService.updateUser(userLoginDTO, modDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다.")
+                        .build();
         return ResponseEntity.ok().body(responseDTO);
     }
 }

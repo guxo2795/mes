@@ -83,4 +83,17 @@
         WHERE is_deleted = 0
     </select>
 
+    <!-- 유저 수정 -->
+    <update id="updateUser">
+        UPDATE tbl_user
+        SET user_code = #{userCode},
+            user_name = #{userName},
+            department_key = #{departmentKey},
+            position_key = #{positionKey},
+            permission_type_flag = #{permissionTypeFlag},
+            phone_number = #{phoneNumber}
+        WHERE is_deleted = 0
+          AND user_key = #{userKey}
+    </update>
+
 </mapper>

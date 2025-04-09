@@ -1,9 +1,8 @@
 package com.wimir.bae.domain.user.service;
 
-import com.wimir.bae.domain.user.dto.UserInfoDTO;
-import com.wimir.bae.domain.user.dto.UserLoginDTO;
-import com.wimir.bae.domain.user.dto.UserRegDTO;
+import com.wimir.bae.domain.user.dto.*;
 import com.wimir.bae.domain.user.mapper.UserMapper;
+import com.wimir.bae.global.exception.CustomAccessDenyException;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import com.wimir.bae.global.utils.CryptUtil;
 import com.wimir.bae.global.utils.ValidationUtil;
@@ -12,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +29,7 @@ public class UserService {
     // 유저 등록
     public void createUser(UserLoginDTO userLoginDTO, UserRegDTO regDTO) {
 
-        // 유저 존재 확인
+        // 유저 중복 확인
         validateUserExists(regDTO.getUserCode());
 
         // 비밀번호 유효성 확인
@@ -61,6 +61,27 @@ public class UserService {
         return list;
     }
 
+    // 유저 수정
+    public void updateUser(UserLoginDTO userLoginDTO,UserModDTO modDTO) {
+
+        // 유저 권한 확인
+        String userPermission = userLoginDTO.getUserClass();
+        String modUserPermission = userMapper.getUserClass(modDTO.getUserKey());
+        if("U".equals(userPermission) && "A".equals(modUserPermission)) {
+            throw new CustomAccessDenyException();
+        }
+
+        // 유저 중복 확인
+        validateUserExists(modDTO.getUserCode());
+        
+        // 전화번호 유효성 확인 및 암호화
+        ValidationUtil.isvalidPhoneNumber(modDTO.getPhoneNumber());
+        String phoneNumber = cryptUtil.encrypt(modDTO.getPhoneNumber());
+        modDTO.setPhoneNumber(phoneNumber);
+
+        userMapper.updateUser(modDTO);
+    }
+    
     private void validateUserExists(String userCode) {
         if(userMapper.isUserExist(userCode)) {
             throw new CustomRuntimeException("이미 존재하는 아이디입니다.");
