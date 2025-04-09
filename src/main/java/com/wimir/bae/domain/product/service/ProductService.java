@@ -31,6 +31,7 @@ public class ProductService {
     }
 
     // 품목 목록 조회
+    @Transactional(readOnly = true)
     public List<ProductInfoDTO> getProductList() {
         return productMapper.getProductList();
     }

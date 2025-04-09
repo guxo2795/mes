@@ -1,6 +1,9 @@
 package com.wimir.bae.domain.user.service;
 
-import com.wimir.bae.domain.user.dto.*;
+import com.wimir.bae.domain.user.dto.UserInfoDTO;
+import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.domain.user.dto.UserModDTO;
+import com.wimir.bae.domain.user.dto.UserRegDTO;
 import com.wimir.bae.domain.user.mapper.UserMapper;
 import com.wimir.bae.global.exception.CustomAccessDenyException;
 import com.wimir.bae.global.exception.CustomRuntimeException;
@@ -11,8 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +48,7 @@ public class UserService {
     }
 
     // 유저 목록 조회
+    @Transactional(readOnly = true)
     public List<UserInfoDTO> getUserList(UserLoginDTO userLoginDTO) {
         
         // getUserList()가 null 이면 예외처리를 하지않고 비어있는 리스트를 반환
