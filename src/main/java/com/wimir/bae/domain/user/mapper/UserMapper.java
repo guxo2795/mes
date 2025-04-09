@@ -12,7 +12,9 @@ import java.util.List;
 public interface UserMapper {
     
     // 유저 존재 확인
-    boolean isUserExist(String userCode);
+    boolean isUserExistByCode(String userCode);
+
+    boolean isUserExistByKey(String userKey);
 
     // 유저 등록
     void createUser(UserRegDTO regDTO);
@@ -32,10 +34,15 @@ public interface UserMapper {
     // 사원 권한
     String getUserClass(String userKey);
 
+    List<String> getUserClasses(List<String> list);
+
     // 유저 목록 조회
     List<UserInfoDTO> getUserList();
 
     // 유저 수정
     void updateUser(UserModDTO modDTO);
+
+    // 유저 삭제
+    void deleteUser(String userKey);
 }
 

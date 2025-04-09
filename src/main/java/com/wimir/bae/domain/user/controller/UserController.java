@@ -5,6 +5,7 @@ import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.domain.user.dto.UserModDTO;
 import com.wimir.bae.domain.user.dto.UserRegDTO;
 import com.wimir.bae.domain.user.service.UserService;
+import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +66,24 @@ public class UserController {
                         .result(1)
                         .message("정상 처리 되었습니다.")
                         .build();
+
         return ResponseEntity.ok().body(responseDTO);
     }
+
+    @PostMapping("delete")
+    public ResponseEntity<ResponseDTO<?>> deleteUser(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> userKeyList) {
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        userService.deleteUser(userLoginDTO, userKeyList.getList());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
 }

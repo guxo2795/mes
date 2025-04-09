@@ -5,6 +5,7 @@ import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.domain.user.dto.UserModDTO;
 import com.wimir.bae.domain.user.dto.UserRegDTO;
 import com.wimir.bae.domain.user.mapper.UserMapper;
+import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.exception.CustomAccessDenyException;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import com.wimir.bae.global.utils.CryptUtil;
@@ -14,8 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -30,8 +33,8 @@ public class UserService {
     // 유저 등록
     public void createUser(UserLoginDTO userLoginDTO, UserRegDTO regDTO) {
 
-        // 유저 중복 확인
-        validateUserExists(regDTO.getUserCode());
+        // 유저 아이디 중복 확인
+        validateDuplicateUserCode(regDTO.getUserCode());
 
         // 비밀번호 유효성 확인
         ValidationUtil.isvalidPassword(regDTO.getPassword());
@@ -73,8 +76,8 @@ public class UserService {
             throw new CustomAccessDenyException();
         }
 
-        // 유저 중복 확인
-        validateUserExists(modDTO.getUserCode());
+        // 유저 아이디 중복 확인
+        validateDuplicateUserCode(modDTO.getUserCode());
         
         // 전화번호 유효성 확인 및 암호화
         ValidationUtil.isvalidPhoneNumber(modDTO.getPhoneNumber());
@@ -83,9 +86,44 @@ public class UserService {
 
         userMapper.updateUser(modDTO);
     }
+
+    // 유저 삭제
+    public void deleteUser(UserLoginDTO userLoginDTO, List<String> userKeyList) {
+
+        // 유저 권한 확인
+        String userPermission = userLoginDTO.getUserClass();
+        if("U".equals(userPermission)) {
+            List<String> userKeys = userMapper.getUserClasses(userKeyList);
+
+            boolean containAdmin = userKeys.stream().anyMatch("A"::equals);
+
+            if(containAdmin) {
+                throw new CustomAccessDenyException();
+            }
+        }
+
+        for (String userKey : userKeyList) {
+            // 유저 존재 확인
+            validateUserKeyExists(userKey);
+
+            // 현재 유저 로그인 여부 확인
+            if(Objects.equals(userMapper.getUserKeyByUserCode(userLoginDTO.getUserCode()), userKey)) {
+                throw new CustomRuntimeException("로그인되어 있는 아이디는 삭제할 수 없습니다.");
+            }
+
+            // 유저 삭제
+            userMapper.deleteUser(userKey);
+        }
+    }
+
+    private void validateUserKeyExists(String userKey) {
+        if(!userMapper.isUserExistByKey(userKey)) {
+            throw new CustomRuntimeException("존재하지 않는 사원입니다.");
+        }
+    }
     
-    private void validateUserExists(String userCode) {
-        if(userMapper.isUserExist(userCode)) {
+    private void validateDuplicateUserCode(String userCode) {
+        if(userMapper.isUserExistByCode(userCode)) {
             throw new CustomRuntimeException("이미 존재하는 아이디입니다.");
         }
     }
