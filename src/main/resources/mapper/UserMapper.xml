@@ -69,4 +69,18 @@
           AND user_Key = #{userKey}
     </select>
 
+    <!-- 유저 목록 조회 -->
+    <select id="getUserList" resultType="com.wimir.bae.domain.user.dto.UserInfoDTO">
+        SELECT
+            user_key,
+            user_code,
+            user_name,
+            department_key,
+            position_key,
+            permission_type_flag,
+            phone_number
+        FROM tbl_user
+        WHERE is_deleted = 0
+    </select>
+
 </mapper>

@@ -1,7 +1,7 @@
 package com.wimir.bae.domain.user.controller;
 
+import com.wimir.bae.domain.user.dto.UserInfoDTO;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
-import com.wimir.bae.domain.user.dto.UserLoginInfoDTO;
 import com.wimir.bae.domain.user.dto.UserRegDTO;
 import com.wimir.bae.domain.user.service.UserService;
 import com.wimir.bae.global.dto.ResponseDTO;
@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,6 +32,21 @@ public class UserController {
                 ResponseDTO.builder()
                         .result(1)
                         .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @GetMapping("list")
+    public ResponseEntity<ResponseDTO<List<UserInfoDTO>>> getUserList(
+            @RequestHeader("Authorization") String accessToken) {
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<UserInfoDTO> list = userService.getUserList(userLoginDTO);
+
+        ResponseDTO<List<UserInfoDTO>> responseDTO =
+                ResponseDTO.<List<UserInfoDTO>>builder()
+                        .result(1)
+                        .data(list)
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);

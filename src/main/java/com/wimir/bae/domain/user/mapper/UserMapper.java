@@ -1,8 +1,11 @@
 package com.wimir.bae.domain.user.mapper;
 
+import com.wimir.bae.domain.user.dto.UserInfoDTO;
 import com.wimir.bae.domain.user.dto.UserLoginInfoDTO;
 import com.wimir.bae.domain.user.dto.UserRegDTO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
@@ -27,5 +30,8 @@ public interface UserMapper {
 
     // 사원 권한
     String getUserClass(String userKey);
+
+    // 유저 목록 조회
+    List<UserInfoDTO> getUserList();
 }
 
