@@ -74,9 +74,6 @@ public class ProductService {
         if(productInfoDTOList.size() != productKeyList.size()) {
             throw new CustomRuntimeException("존재하지 않는 품목이 포함되어 있습니다.");
         }
-        for(ProductInfoDTO productInfoDTO : productInfoDTOList) {
-            validateProductExists(productInfoDTO);
-        }
 
         productMapper.deleteProductList(productKeyList);
         
