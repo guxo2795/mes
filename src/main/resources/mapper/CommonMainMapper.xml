@@ -23,4 +23,11 @@
         )
     </insert>
 
+    <!-- 상위 공통 코드 목록 조회 -->
+    <select id="getCommonMainList" resultType="com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO">
+        SELECT main_common_key, main_common_name, is_immutable
+        FROM tbl_common_code_main
+        WHERE is_deleted = 0
+    </select>
+
 </mapper>

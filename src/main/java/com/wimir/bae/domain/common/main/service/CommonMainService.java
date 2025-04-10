@@ -1,10 +1,15 @@
 package com.wimir.bae.domain.common.main.service;
 
+import com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO;
 import com.wimir.bae.domain.common.main.mapper.CommonMainMapper;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -19,6 +24,13 @@ public class CommonMainService {
         validateCommonMainName(mainCommonName);
 
         commonMainMapper.createCommonMain(mainCommonName);
+    }
+
+
+    public List<CommonMainInfoDTO> getCommonMainList() {
+
+        return Optional.ofNullable(commonMainMapper.getCommonMainList())
+                .orElse(Collections.emptyList());
     }
 
     private void validateCommonMainName(String mainCommonName) {
