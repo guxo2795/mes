@@ -3,6 +3,7 @@ package com.wimir.bae.domain.common.main.mapper;
 import com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO;
 import com.wimir.bae.domain.common.main.dto.CommonMainModDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -28,4 +29,7 @@ public interface CommonMainMapper {
 
     // 상위 공통 코드 삭제
     void deleteCommonMainList(List<String> commonKeyList);
+
+    // 상위 공통 코드 변경가능여부
+    boolean canUpdateCommonMain(@Param("mainCommonKey") String mainCommonKey);
 }

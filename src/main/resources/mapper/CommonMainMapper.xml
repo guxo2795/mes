@@ -66,4 +66,18 @@
         </foreach>
     </delete>
 
+    <!-- 상위 공통 코드 변경가능여부 -->
+    <select id="canUpdateCommonMain" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(*) > 0 , true, false)
+        FROM tbl_common_code_main main
+        WHERE
+        main.is_deleted = 0
+        AND main.is_immutable = 0
+        <choose>
+            <when test="mainCommonKey != null and mainCommonKey != ''">
+                AND main.main_common_key = #{mainCommonKey}
+            </when>
+        </choose>
+    </select>
+
 </mapper>
