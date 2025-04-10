@@ -7,7 +7,7 @@
 
     <!-- 상위 공통 코드 중복 검사 -->
     <select id="isCommonMainExist" resultType="boolean">
-        SELECT IF(COUNT(*) > 0, true, false)
+        SELECT IF(COUNT(*) > 0, 1, 0)
         FROM tbl_common_code_main
         WHERE is_deleted = 0
         AND main_common_name = #{mainCommonName}
@@ -29,5 +29,21 @@
         FROM tbl_common_code_main
         WHERE is_deleted = 0
     </select>
+
+    <!-- 상위 공통 코드 조회 -->
+    <select id="getCommonMainByKey" resultType="com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO">
+        SELECT *
+        FROM tbl_common_code_main
+        WHERE is_deleted = 0
+          AND main_common_key = #{mainCommonKey}
+    </select>
+
+    <!-- 상위 공통 코드 수정 -->
+    <update id="updateCommonMain">
+        UPDATE tbl_common_code_main
+        SET main_common_name = #{mainCommonName}
+        WHERE is_deleted = 0
+          AND main_common_key = #{mainCommonKey}
+    </update>
 
 </mapper>

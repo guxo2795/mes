@@ -1,6 +1,8 @@
 package com.wimir.bae.domain.common.main.controller;
 
 import com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO;
+import com.wimir.bae.domain.common.main.dto.CommonMainModDTO;
+import com.wimir.bae.domain.common.main.dto.CommonMainRegDTO;
 import com.wimir.bae.domain.common.main.service.CommonMainService;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
@@ -8,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -22,9 +25,9 @@ public class CommonMainController {
     @PostMapping("create")
     public ResponseEntity<ResponseDTO<?>> createCommonMain(
             @RequestHeader("Authorization") String accessToken,
-            @RequestBody Map<String, Object> requestBody) {
+            @RequestBody @Valid CommonMainRegDTO regDTO) {
         jwtGlobalService.getTokenInfo(accessToken, "A");
-        commonMainService.createCommonMain(requestBody.get("mainCommonName").toString());
+        commonMainService.createCommonMain(regDTO.getMainCommonName());
 
         ResponseDTO<?> responseDTO =
                 ResponseDTO.builder()
@@ -45,6 +48,22 @@ public class CommonMainController {
                 ResponseDTO.<List<CommonMainInfoDTO>>builder()
                         .result(1)
                         .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @PostMapping("update")
+    public ResponseEntity<ResponseDTO<?>> updateCommonMain(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid CommonMainModDTO modDTO) {
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        commonMainService.updateCommonMain(modDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다.")
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
