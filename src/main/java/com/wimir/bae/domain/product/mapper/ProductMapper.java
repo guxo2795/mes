@@ -18,6 +18,7 @@ public interface ProductMapper {
 
     // 품목 목록 조회
     List<ProductInfoDTO> getProductList();
+    List<ProductInfoDTO> getProductInfoList(List<String> productKeyList);
 
     // 품목 정보
     ProductInfoDTO getProductInfo(String productKey);
@@ -27,4 +28,5 @@ public interface ProductMapper {
 
     // 품목 삭제
     void deleteProduct(String productKey);
+    void deleteProductList(List<String> productKeyList);
 }

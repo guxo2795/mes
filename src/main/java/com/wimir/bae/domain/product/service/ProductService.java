@@ -57,15 +57,28 @@ public class ProductService {
 
     // 품목 삭제
     public void deleteProduct(UserLoginDTO userLoginDTO, List<String> productKeyList) {
-        for(String productKey : productKeyList) {
-            ProductInfoDTO productInfoDTO = productMapper.getProductInfo(productKey);
 
-            // 품목 존재 여부 확인
-            validateProductExists(productInfoDTO);
+//        for(String productKey : productKeyList) {
+//            ProductInfoDTO productInfoDTO = productMapper.getProductInfo(productKey);
+//
+//            // 품목 존재 여부 확인
+//            validateProductExists(productInfoDTO);
+//
+//            productMapper.deleteProduct(productKey);
+//
+//        }
 
-            productMapper.deleteProduct(productKey);
+        List<ProductInfoDTO> productInfoDTOList = productMapper.getProductInfoList(productKeyList);
 
+        // 유효성 검증
+        if(productInfoDTOList.size() != productKeyList.size()) {
+            throw new CustomRuntimeException("존재하지 않는 품목이 포함되어 있습니다.");
         }
+        for(ProductInfoDTO productInfoDTO : productInfoDTOList) {
+            validateProductExists(productInfoDTO);
+        }
+
+        productMapper.deleteProductList(productKeyList);
         
     }
 

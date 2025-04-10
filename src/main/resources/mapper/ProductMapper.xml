@@ -44,6 +44,17 @@
         WHERE is_deleted = 0
     </select>
 
+    <!-- 여러 개의 productKey로 상품 정보 가져오기 -->
+    <select id="getProductInfoList" resultType="com.wimir.bae.domain.product.dto.ProductInfoDTO">
+        SELECT *
+        FROM tbl_product
+        WHERE is_deleted = 0
+        AND product_key IN
+        <foreach item="productKey" collection="productKeyList" open="(" separator="," close=")">
+            #{productKey}
+        </foreach>
+    </select>
+
     <!-- 품목 정보 -->
     <select id="getProductInfo" resultType="com.wimir.bae.domain.product.dto.ProductInfoDTO">
         SELECT
@@ -77,6 +88,16 @@
         SET is_deleted = 1
         WHERE is_deleted = 0
           AND product_key = #{productKey}
+    </delete>
+
+    <delete id="deleteProductList">
+        UPDATE tbl_product
+        SET is_deleted = 1
+        WHERE is_deleted = 0
+          AND product_key IN
+        <foreach item="productKey" collection="productKeyList" open="(" separator="," close=")">
+            #{productKey}
+        </foreach>
     </delete>
 
 </mapper>
