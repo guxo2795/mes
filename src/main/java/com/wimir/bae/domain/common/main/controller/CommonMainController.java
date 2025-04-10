@@ -4,6 +4,7 @@ import com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO;
 import com.wimir.bae.domain.common.main.dto.CommonMainModDTO;
 import com.wimir.bae.domain.common.main.dto.CommonMainRegDTO;
 import com.wimir.bae.domain.common.main.service.CommonMainService;
+import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
@@ -68,4 +69,21 @@ public class CommonMainController {
 
         return ResponseEntity.ok().body(responseDTO);
     }
+
+    @PostMapping("delete")
+    public ResponseEntity<ResponseDTO<?>> deleteCommonMain(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> mainCommonKeyList) {
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        commonMainService.deleteCommonMain(mainCommonKeyList.getList());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
 }

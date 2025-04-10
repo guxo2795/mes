@@ -38,6 +38,16 @@
           AND main_common_key = #{mainCommonKey}
     </select>
 
+    <select id="getCommonMainInfoList" resultType="com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO">
+        SELECT *
+        FROM tbl_common_code_main
+        WHERE is_deleted = 0
+          AND main_common_keY IN
+        <foreach item="commonKey" collection="commonKeyList" open="(" separator="," close=")">
+            #{commonKey}
+        </foreach>
+    </select>
+
     <!-- 상위 공통 코드 수정 -->
     <update id="updateCommonMain">
         UPDATE tbl_common_code_main
@@ -45,5 +55,15 @@
         WHERE is_deleted = 0
           AND main_common_key = #{mainCommonKey}
     </update>
+
+    <delete id="deleteCommonMainList">
+        UPDATE tbl_common_code_main
+        SET is_deleted = 1
+        WHERE is_deleted = 0
+        AND main_common_key IN
+        <foreach item="commonKey" collection="commonKeyList" open="(" separator="," close=")">
+            #{commonKey}
+        </foreach>
+    </delete>
 
 </mapper>

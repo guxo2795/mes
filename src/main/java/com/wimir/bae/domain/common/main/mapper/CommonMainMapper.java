@@ -21,6 +21,11 @@ public interface CommonMainMapper {
     // 상위 공통 코드 조회
     CommonMainInfoDTO getCommonMainByKey(String mainCommonKey);
 
+    List<CommonMainInfoDTO> getCommonMainInfoList(List<String> commonKeyList);
+
     // 상위 공통 코드 수정
     void updateCommonMain(CommonMainModDTO modDTO);
+
+    // 상위 공통 코드 삭제
+    void deleteCommonMainList(List<String> commonKeyList);
 }
