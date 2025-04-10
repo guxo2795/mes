@@ -1,12 +1,18 @@
 package com.wimir.bae.domain.common.sub.service;
 
 import com.wimir.bae.domain.common.main.mapper.CommonMainMapper;
+import com.wimir.bae.domain.common.sub.dto.CommonSubInfoDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubRegDTO;
 import com.wimir.bae.domain.common.sub.mapper.CommonSubMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,4 +36,10 @@ public class CommonSubService {
         commonSubMapper.createCommonSub(regDTO);
     }
 
+    @Transactional(readOnly = true)
+    public List<CommonSubInfoDTO> getCommonMainList() {
+
+        return Optional.ofNullable(commonSubMapper.getCommonSubList())
+                .orElse(Collections.emptyList());
+    }
 }

@@ -1,5 +1,7 @@
 package com.wimir.bae.domain.common.sub.controller;
 
+import com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO;
+import com.wimir.bae.domain.common.sub.dto.CommonSubInfoDTO;
 import com.wimir.bae.domain.common.sub.service.CommonSubService;
 import com.wimir.bae.domain.common.sub.dto.CommonSubRegDTO;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -38,6 +41,21 @@ public class CommonSubController {
     }
 
     // 하위 공통 코드 목록
+    @GetMapping("list")
+    public ResponseEntity<ResponseDTO<List<CommonSubInfoDTO>>> getCommonSubList(
+            @RequestHeader("Authorization") String accessToken) {
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<CommonSubInfoDTO> list = commonSubService.getCommonMainList();
+
+        ResponseDTO<List<CommonSubInfoDTO>> responseDTO =
+                ResponseDTO.<List<CommonSubInfoDTO>>builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
 
     // 하위 공통 코드 수정
 
