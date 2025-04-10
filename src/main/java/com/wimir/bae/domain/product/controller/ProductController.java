@@ -78,6 +78,8 @@ public class ProductController {
     }
 
     // 품목 삭제
+    // 삭제 기능은 is_deleted를 이용한 '논리 삭제'로 구현
+    // DELETE FROM을 사용해서 데이터를 지우면 '물리 삭제'
     @PostMapping("delete")
     public ResponseEntity<ResponseDTO<?>> deleteProduct(
             @RequestHeader("Authorization") String accessToken,
