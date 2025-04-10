@@ -5,6 +5,7 @@ import com.wimir.bae.domain.user.dto.UserLoginInfoDTO;
 import com.wimir.bae.domain.user.dto.UserModDTO;
 import com.wimir.bae.domain.user.dto.UserRegDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -23,13 +24,23 @@ public interface UserMapper {
     String getUserKeyByUserCode(String userCode);
 
     // userKey, userCode로 password 조회
-    String getPasswordByUserKeyAndUserCode(String userKey, String userCode);
+    String getPasswordByUserKeyAndUserCode(
+            @Param("userKey") String userKey,
+            @Param("userCode") String userCode
+    );
 
     // 토큰 기간 갱신
-    void updateUserTokenDate(String userKey, String tokenDate, String userCode);
+    void updateUserTokenDate(
+            @Param("userKey") String userKey,
+            @Param("tokenDate") String tokenDate,
+            @Param("userCode") String userCode
+    );
 
     // 토큰 날짜 조회
-    UserLoginInfoDTO getUserTokenDate(String userKey, String tokenDate);
+    UserLoginInfoDTO getUserTokenDate(
+            @Param("userKey") String userKey,
+            @Param("tokenDate") String tokenDate
+    );
 
     // 사원 권한
     String getUserClass(String userKey);
