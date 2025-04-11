@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +49,16 @@ public class WarehouseService {
         }
 
         warehouseMapper.updateWarehouse(modDTO);
+    }
+
+    public void deleteWarehouse(UserLoginDTO userLoginDTO, List<String> warehouseKeyList) {
+        List<WarehouseInfoDTO> warehouseInfoDTOList = warehouseMapper.getWarehouseInfoList(warehouseKeyList);
+
+        if(warehouseInfoDTOList.size() != warehouseKeyList.size()) {
+            throw new CustomRuntimeException("존재하지 않는 창고가 포함되어 있습니다.");
+        }
+
+        warehouseMapper.deleteWarehouseList(warehouseKeyList);
     }
 
     private void validateDuplicateWarehouseName(String warehouseName) {

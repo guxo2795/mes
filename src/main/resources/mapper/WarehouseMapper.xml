@@ -31,7 +31,16 @@
             location
         FROM tbl_warehouse
         WHERE is_deleted = 0
+    </select>
 
+    <select id="getWarehouseInfoList" resultType="com.wimir.bae.domain.warehouse.dto.WarehouseInfoDTO">
+        SELECT *
+        FROM tbl_warehouse
+        WHERE is_deleted = 0
+        AND warehouse_key IN
+        <foreach item="warehouseKey" collection="warehouseKeyList" open="(" separator="," close=")">
+            #{warehouseKey}
+        </foreach>
     </select>
 
     <!-- 창고 정보 -->
@@ -50,5 +59,16 @@
         WHERE is_deleted = 0
           AND warehouse_key = #{warehouseKey}
     </update>
+
+    <!-- 창고 삭제 -->
+    <delete id="deleteWarehouseList">
+        UPDATE tbl_warehouse
+        SET is_deleted = 1
+        WHERE is_deleted = 0
+        AND warehouse_key IN
+        <foreach item="warehouseKey" collection="warehouseKeyList" open="(" separator="," close=")">
+            #{warehouseKey}
+        </foreach>
+    </delete>
 
 </mapper>

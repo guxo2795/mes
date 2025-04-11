@@ -5,6 +5,7 @@ import com.wimir.bae.domain.warehouse.dto.WarehouseInfoDTO;
 import com.wimir.bae.domain.warehouse.dto.WarehouseModDTO;
 import com.wimir.bae.domain.warehouse.dto.WarehouseRegDTO;
 import com.wimir.bae.domain.warehouse.service.WarehouseService;
+import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
@@ -76,5 +77,20 @@ public class WarehouseController {
     }
     
     // 창고 삭제
+    @PostMapping("delete")
+    public ResponseEntity<ResponseDTO<?>> deleteWarehouse(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> warehouseKeyList) {
 
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        warehouseService.deleteWarehouse(userLoginDTO ,warehouseKeyList.getList());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
 }

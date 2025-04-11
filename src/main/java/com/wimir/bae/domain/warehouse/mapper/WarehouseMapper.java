@@ -18,10 +18,14 @@ public interface WarehouseMapper {
 
     // 창고 조회
     List<WarehouseInfoDTO> getWarehouseList();
+    List<WarehouseInfoDTO> getWarehouseInfoList(List<String> warehouseKeyList);
 
     // 창고 정보
     WarehouseInfoDTO getWarehouseInfo(String warehouseKey);
 
     // 창고 수정
     void updateWarehouse(WarehouseModDTO modDTO);
+
+    // 창고 삭제
+    void deleteWarehouseList(List<String> warehouseKeyList);
 }
