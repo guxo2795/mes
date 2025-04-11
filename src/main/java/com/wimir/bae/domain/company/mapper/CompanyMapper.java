@@ -5,8 +5,6 @@ import com.wimir.bae.domain.company.dto.CompanyModDTO;
 import com.wimir.bae.domain.company.dto.CompanyRegDTO;
 import org.apache.ibatis.annotations.Mapper;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 @Mapper
@@ -20,10 +18,13 @@ public interface CompanyMapper {
 
     // 업체 목록 조회
     List<CompanyInfoDTO> getCompanyList();
-
+    List<CompanyInfoDTO> getCompanyInfoList(List<String> companyKeyList);
     // 업체 정보
     CompanyInfoDTO getCompanyInfo(String companyKey);
 
     // 업체 수정
     void updateCompany(CompanyModDTO modDTO);
+
+    // 업체 삭제
+    void deleteCompanyList(List<String> companyKeyList);
 }

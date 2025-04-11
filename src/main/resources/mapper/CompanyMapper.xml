@@ -38,6 +38,16 @@
     WHERE is_deleted = 0
     </select>
 
+    <select id="getCompanyInfoList" resultType="com.wimir.bae.domain.company.dto.CompanyInfoDTO">
+        SELECT *
+        FROM tbl_company
+        WHERE is_deleted = 0
+        AND company_key IN
+        <foreach item="companyKey" collection="companyKeyList" open="(" separator="," close=")">
+            #{companyKey}
+        </foreach>
+    </select>
+
     <!-- 업체 정보 -->
     <select id="getCompanyInfo" resultType="com.wimir.bae.domain.company.dto.CompanyInfoDTO">
         SELECT
@@ -60,6 +70,17 @@
             is_deleted = 0
           AND company_key = #{companyKey}
     </update>
+
+    <!-- 업체 삭제 -->
+    <delete id="deleteCompanyList">
+        UPDATE tbl_company
+        SET is_deleted = 1
+        WHERE is_deleted = 0
+        AND company_key IN
+        <foreach item="companyKey" collection="companyKeyList" open="(" separator="," close=")">
+            #{companyKey}
+        </foreach>
+    </delete>
 
 
 </mapper>

@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +47,17 @@ public class CompanyService {
         }
 
         companyMapper.updateCompany(modDTO);
+    }
+
+    public void deleteCompany(UserLoginDTO userLoginDTO, List<String> companyKeyList) {
+        List<CompanyInfoDTO> companyInfoDTOList = companyMapper.getCompanyInfoList(companyKeyList);
+
+        if(companyInfoDTOList.size() != companyKeyList.size()) {
+            throw new CustomRuntimeException("존재하지 않는 업체가 포함되어 있습니다.");
+        }
+        // 업체 발주 여부 확인
+        
+        companyMapper.deleteCompanyList(companyKeyList);
     }
 
     private void validateDuplicateCompanyName(String companyName) {
