@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.wimir.bae.domain.company.mapper.CompanyMapper">
+
+    <!-- 업체명 중복 확인 -->
+    <select id="isCompanyNameExist" resultType="boolean">
+        SELECT IF(COUNT(*)>0, true, false)
+        FROM tbl_company
+        WHERE is_deleted = 0
+          AND company_name = #{companyName}
+    </select>
+
+    <!-- 업체 등록 -->
+    <insert id="createCompany">
+        INSERT INTO tbl_company(
+            company_type_flag, company_name, company_reg_number, ceo_name, address, note
+        )
+        VALUES (
+            #{companyTypeFlag}, #{companyName}, #{companyRegNumber}, #{ceoName}, #{address}, #{note}
+        )
+    </insert>
+
+</mapper>
