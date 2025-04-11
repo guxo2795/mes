@@ -37,4 +37,29 @@
     FROM tbl_company
     WHERE is_deleted = 0
     </select>
+
+    <!-- 업체 정보 -->
+    <select id="getCompanyInfo" resultType="com.wimir.bae.domain.company.dto.CompanyInfoDTO">
+        SELECT
+            *
+        FROM tbl_company
+        WHERE is_deleted = 0
+          AND company_key = #{companyKey}
+    </select>
+
+    <!-- 업체 수정 -->
+    <update id="updateCompany">
+        UPDATE tbl_company
+        SET
+            company_name = #{companyName},
+            company_reg_number = #{companyRegNumber},
+            ceo_name = #{ceoName},
+            address = #{address},
+            note = #{note}
+        WHERE
+            is_deleted = 0
+          AND company_key = #{companyKey}
+    </update>
+
+
 </mapper>

@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.company.controller;
 
 import com.wimir.bae.domain.company.dto.CompanyInfoDTO;
+import com.wimir.bae.domain.company.dto.CompanyModDTO;
 import com.wimir.bae.domain.company.dto.CompanyRegDTO;
 import com.wimir.bae.domain.company.service.CompanyService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -57,7 +58,22 @@ public class CompanyController {
     }
 
     // 업체 수정
-    
+    @PostMapping("update")
+    public ResponseEntity<ResponseDTO<?>> updateCompany(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid CompanyModDTO modDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        companyService.updateCompany(userLoginDTO, modDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
     // 업체 삭제
 
 }
