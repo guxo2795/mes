@@ -2,8 +2,10 @@ package com.wimir.bae.domain.company.controller;
 
 import com.wimir.bae.domain.company.dto.CompanyInfoDTO;
 import com.wimir.bae.domain.company.dto.CompanyModDTO;
+import com.wimir.bae.domain.company.dto.CompanyProductsInfoDTO;
 import com.wimir.bae.domain.company.dto.CompanyRegDTO;
 import com.wimir.bae.domain.company.service.CompanyService;
+import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
@@ -75,6 +77,7 @@ public class CompanyController {
 
         return ResponseEntity.ok().body(responseDTO);
     }
+    
     // 업체 삭제
     @PostMapping("delete")
     public ResponseEntity<ResponseDTO<?>> deleteCompany(
@@ -91,5 +94,22 @@ public class CompanyController {
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 업체와 연결된 모든 품목 목록
+    @GetMapping("list/products")
+    public ResponseEntity<ResponseDTO<List<CompanyProductsInfoDTO>>> getCompanyProductsList(
+            @RequestHeader("Authorization") String accessToken) {
+
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<CompanyProductsInfoDTO> list = companyService.getCompanyProductsList();
+
+        ResponseDTO<List<CompanyProductsInfoDTO>> response =
+                ResponseDTO.<List<CompanyProductsInfoDTO>> builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
     }
 }

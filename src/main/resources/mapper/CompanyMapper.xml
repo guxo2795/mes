@@ -82,5 +82,45 @@
         </foreach>
     </delete>
 
+    <!-- 업체와 연결된 품목 목록 조회 -->
+    <resultMap id="CompanyProductsResultMap" type="com.wimir.bae.domain.company.dto.CompanyProductsInfoDTO">
+        <id property="companyKey" column="company_key"/>
+        <result property="companyName" column="company_name"/>
+
+        <collection property="productList" ofType="com.wimir.bae.domain.product.dto.ProductInfoDTO">
+            <id property="productKey" column="product_key"/>
+            <result property="productCode" column="product_code"/>
+            <result property="productName" column="product_name"/>
+            <result property="assetTypeFlag" column="asset_type_flag"/>
+            <result property="productTypeKey" column="product_type_key"/>
+            <result property="processTypeKey" column="process_type_key"/>
+            <result property="standardPrice" column="standard_price"/>
+            <result property="drawingKey" column="drawing_key"/>
+            <result property="safetyQuantity" column="safety_quantity"/>
+            <result property="unitKey" column="unit_key"/>
+            <result property="companyKey" column="company_key"/>
+        </collection>
+    </resultMap>
+    <select id="getCompanyProductsList" resultMap="CompanyProductsResultMap">
+        SELECT
+            c.company_key,
+            c.company_name,
+
+            p.product_key,
+            p.product_code,
+            p.product_name,
+            p.asset_type_flag,
+            p.product_type_key,
+            p.process_type_key,
+            p.standard_price,
+            p.drawing_key,
+            p.safety_quantity,
+            p.unit_key
+        FROM tbl_company c
+        LEFT JOIN tbl_product p ON c.company_key = p.company_key
+        WHERE c.is_deleted = 0
+          AND p.is_deleted = 0
+        ORDER BY c.company_key ASC
+    </select>
 
 </mapper>

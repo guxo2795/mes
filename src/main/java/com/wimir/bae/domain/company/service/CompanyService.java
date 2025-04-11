@@ -2,8 +2,10 @@ package com.wimir.bae.domain.company.service;
 
 import com.wimir.bae.domain.company.dto.CompanyInfoDTO;
 import com.wimir.bae.domain.company.dto.CompanyModDTO;
+import com.wimir.bae.domain.company.dto.CompanyProductsInfoDTO;
 import com.wimir.bae.domain.company.dto.CompanyRegDTO;
 import com.wimir.bae.domain.company.mapper.CompanyMapper;
+import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +60,12 @@ public class CompanyService {
         // 업체 발주 여부 확인
         
         companyMapper.deleteCompanyList(companyKeyList);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CompanyProductsInfoDTO> getCompanyProductsList() {
+        return Optional.ofNullable(companyMapper.getCompanyProductsList())
+                .orElse(Collections.emptyList());
     }
 
     private void validateDuplicateCompanyName(String companyName) {

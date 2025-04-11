@@ -2,6 +2,7 @@ package com.wimir.bae.domain.company.mapper;
 
 import com.wimir.bae.domain.company.dto.CompanyInfoDTO;
 import com.wimir.bae.domain.company.dto.CompanyModDTO;
+import com.wimir.bae.domain.company.dto.CompanyProductsInfoDTO;
 import com.wimir.bae.domain.company.dto.CompanyRegDTO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -27,4 +28,7 @@ public interface CompanyMapper {
 
     // 업체 삭제
     void deleteCompanyList(List<String> companyKeyList);
+
+    // 업체와 연결된 품목 목록 조회
+    List<CompanyProductsInfoDTO> getCompanyProductsList();
 }
