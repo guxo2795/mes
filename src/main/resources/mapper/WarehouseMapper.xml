@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wimir.bae.domain.warehouse.mapper.WarehouseMapper">
+
+    <!-- 창고 명 중복 확인 -->
+    <select id="isWarehouseNameExist" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(warehouse_key) > 0, true, false)
+        FROM tbl_warehouse
+        WHERE warehouse_name = #{warehouseName}
+          AND is_deleted = 0
+    </select>
+
+    <!-- 창고 등록 -->
+    <insert id="createWarehouse" useGeneratedKeys="true" keyProperty="warehouseKey">
+        INSERT INTO tbl_warehouse(
+            warehouse_name,location
+        )
+        VALUES (
+            #{warehouseName}, #{location}
+        )
+    </insert>
+
+</mapper>
