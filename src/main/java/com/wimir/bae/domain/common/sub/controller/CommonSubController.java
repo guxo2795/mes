@@ -2,6 +2,7 @@ package com.wimir.bae.domain.common.sub.controller;
 
 import com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubInfoDTO;
+import com.wimir.bae.domain.common.sub.dto.CommonSubModDTO;
 import com.wimir.bae.domain.common.sub.service.CommonSubService;
 import com.wimir.bae.domain.common.sub.dto.CommonSubRegDTO;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -58,6 +59,22 @@ public class CommonSubController {
 
 
     // 하위 공통 코드 수정
+    @PostMapping("update")
+    public ResponseEntity<ResponseDTO<?>> updateCommonSub(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid CommonSubModDTO modDTO) {
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        commonSubService.updateCommonSub(userLoginDTO, modDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
 
     // 하위 공통 코드 삭제
 }

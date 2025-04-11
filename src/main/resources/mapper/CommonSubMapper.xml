@@ -31,4 +31,38 @@
         WHERE is_deleted = 0
     </select>
 
+    <!-- 하위 공통 코드 수정 가능 여부 확인 -->
+    <select id="canUpdateCommonSub" resultType="boolean">
+        SELECT IF(COUNT(*) > 0 , true, false)
+        FROM tbl_common_code_sub sub
+        INNER JOIN tbl_common_code_main main
+        ON sub.main_common_key = main.main_common_key
+        WHERE
+        sub.is_deleted = 0
+        AND sub.is_immutable = 0
+        AND main.is_immutable = 0
+        <if test="subCommonKey != null and subCommonKey != ''">
+            AND sub.sub_common_key = #{subCommonKey}
+        </if>
+    </select>
+
+    <!-- 하위 공통 코드 정보 조회 -->
+    <select id="getCommonSubInfo" resultType="com.wimir.bae.domain.common.sub.dto.CommonSubInfoDTO">
+        SELECT *
+        FROM tbl_common_code_sub
+        WHERE is_deleted = 0
+          AND sub_common_key = #{subCommonKey}
+    </select>
+
+    <!-- 하위 공통 코드 수정 -->
+    <update id="updateCommonSub">
+        UPDATE tbl_common_code_sub
+        SET
+            sub_common_name = #{subCommonName},
+            note = #{note}
+        WHERE is_deleted = 0
+          AND is_immutable = 0
+          AND sub_common_key = #{subCommonKey}
+    </update>
+
 </mapper>
