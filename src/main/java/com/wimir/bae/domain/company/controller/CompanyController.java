@@ -40,21 +40,21 @@ public class CompanyController {
     }
 
     // 업체 목록
-//    @GetMapping("list")
-//    public ResponseEntity<ResponseDTO<List<CompanyInfoDTO>>> getCompanyList(
-//            @RequestHeader("Authorization") String accessToken) {
-//
-//        jwtGlobalService.getTokenInfo(accessToken,"A");
-//        List<CompanyInfoDTO> list = companyService.getCompanyList();
-//
-//        ResponseDTO<List<CompanyInfoDTO>> response =
-//                ResponseDTO.<List<CompanyInfoDTO>> builder()
-//                        .result(1)
-//                        .data(list)
-//                        .build();
-//
-//        return ResponseEntity.ok().body(response);
-//    }
+    @GetMapping("list")
+    public ResponseEntity<ResponseDTO<List<CompanyInfoDTO>>> getCompanyList(
+            @RequestHeader("Authorization") String accessToken) {
+
+        jwtGlobalService.getTokenInfo(accessToken,"A");
+        List<CompanyInfoDTO> list = companyService.getCompanyList();
+
+        ResponseDTO<List<CompanyInfoDTO>> response =
+                ResponseDTO.<List<CompanyInfoDTO>> builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
+    }
 
     // 업체 수정
     

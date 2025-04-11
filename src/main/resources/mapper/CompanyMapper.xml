@@ -24,4 +24,17 @@
         )
     </insert>
 
+    <!-- 업체 목록 조회 -->
+    <select id="getCompanyList" resultType="com.wimir.bae.domain.company.dto.CompanyInfoDTO">
+    SELECT
+        company_key,
+        company_type_flag,
+        company_name,
+        company_reg_number,
+        ceo_name,
+        address,
+        note
+    FROM tbl_company
+    WHERE is_deleted = 0
+    </select>
 </mapper>

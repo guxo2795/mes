@@ -29,9 +29,9 @@ public class CompanyService {
         companyMapper.createCompany(regDTO);
     }
 
-//    @Transactional(readOnly = true)
-//    public List<CompanyInfoDTO> getCompanyList() {
-//        return Optional.ofNullable(companyMapper.getCompanyList())
-//                .orElse(Collections.emptyList());
-//    }
+    @Transactional(readOnly = true)
+    public List<CompanyInfoDTO> getCompanyList() {
+        return Optional.ofNullable(companyMapper.getCompanyList())
+                .orElse(Collections.emptyList());
+    }
 }

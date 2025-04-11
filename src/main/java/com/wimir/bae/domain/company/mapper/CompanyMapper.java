@@ -17,5 +17,6 @@ public interface CompanyMapper {
     // 업체 등록
     void createCompany(CompanyRegDTO regDTO);
 
-//    List<CompanyInfoDTO> getCompanyList();
+    // 업체 목록 조회
+    List<CompanyInfoDTO> getCompanyList();
 }
