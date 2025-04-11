@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +35,8 @@ public class ProductService {
     // 품목 목록 조회
     @Transactional(readOnly = true)
     public List<ProductInfoDTO> getProductList() {
-        return productMapper.getProductList();
+        return Optional.ofNullable(productMapper.getProductList())
+                .orElse(Collections.emptyList());
     }
 
     // 품목 수정
