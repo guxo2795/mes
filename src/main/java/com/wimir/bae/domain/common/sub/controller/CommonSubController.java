@@ -6,6 +6,7 @@ import com.wimir.bae.domain.common.sub.dto.CommonSubModDTO;
 import com.wimir.bae.domain.common.sub.service.CommonSubService;
 import com.wimir.bae.domain.common.sub.dto.CommonSubRegDTO;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +58,6 @@ public class CommonSubController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
-
     // 하위 공통 코드 수정
     @PostMapping("update")
     public ResponseEntity<ResponseDTO<?>> updateCommonSub(
@@ -75,6 +75,21 @@ public class CommonSubController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
-
     // 하위 공통 코드 삭제
+    @PostMapping("delete")
+    public ResponseEntity<ResponseDTO<?>> deleteCommonSub(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> subCommonKeyList) {
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        commonSubService.deleteCommonSub(userLoginDTO, subCommonKeyList.getList());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
 }

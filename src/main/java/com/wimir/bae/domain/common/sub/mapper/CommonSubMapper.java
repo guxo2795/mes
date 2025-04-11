@@ -22,12 +22,17 @@ public interface CommonSubMapper {
 
     // 하위 공통 코드 목록 조회
     List<CommonSubInfoDTO> getCommonSubList();
+    List<CommonSubInfoDTO> getCommonSubInfoList(List<String> subCommonKeyList);
 
     boolean canUpdateCommonSub(@Param("subCommonKey") String subCommonKey);
+    boolean canUpdateCommonSubList(List<String> subCommonKeyList);
 
     // 하위 공통 코드 정보 조회
     CommonSubInfoDTO getCommonSubInfo(String subCommonKey);
 
     // 하위 공통 코드 수정
     void updateCommonSub(CommonSubModDTO modDTO);
+
+    // 하위 공통 코드 삭제
+    void deleteCommonSubList(List<String> subCommonKeyList);
 }

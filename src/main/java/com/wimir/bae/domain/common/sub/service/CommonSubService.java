@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -64,5 +63,20 @@ public class CommonSubService {
         }
 
         commonSubMapper.updateCommonSub(modDTO);
+    }
+
+    public void deleteCommonSub(UserLoginDTO userLoginDTO, List<String> subCommonKeyList) {
+
+        // 존재 여부
+        List<CommonSubInfoDTO> commonSubInfoDTOList = commonSubMapper.getCommonSubInfoList(subCommonKeyList);
+        if(commonSubInfoDTOList.size() != subCommonKeyList.size()) {
+            throw new CustomRuntimeException("존재하지 않는 하위 공통 코드가 포함되어 있습니다.");
+        }
+        // 삭제 가능 여부
+        if(!commonSubMapper.canUpdateCommonSubList(subCommonKeyList)) {
+            throw new CustomRuntimeException("수정할 수 없는 하위 공통 코드가 포함되어 있습니다.");
+        }
+
+        commonSubMapper.deleteCommonSubList(subCommonKeyList);
     }
 }

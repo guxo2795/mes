@@ -56,6 +56,7 @@
           AND main_common_key = #{mainCommonKey}
     </update>
 
+    <!-- 상위 공통 코드 삭제 -->
     <delete id="deleteCommonMainList">
         UPDATE tbl_common_code_main
         SET is_deleted = 1
