@@ -1,12 +1,17 @@
 package com.wimir.bae.domain.warehouse.service;
 
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.domain.warehouse.dto.WarehouseInfoDTO;
 import com.wimir.bae.domain.warehouse.dto.WarehouseRegDTO;
 import com.wimir.bae.domain.warehouse.mapper.WarehouseMapper;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,5 +29,10 @@ public class WarehouseService {
         warehouseMapper.createWarehouse(warehouseRegDTO);
         
         // 초기 품목 정의 - inventory 도메인, 여기서 warehouseKey 사용
+    }
+
+    public List<WarehouseInfoDTO> getWarehouseList() {
+        return Optional.ofNullable(warehouseMapper.getWarehouseList())
+                .orElse(Collections.emptyList());
     }
 }

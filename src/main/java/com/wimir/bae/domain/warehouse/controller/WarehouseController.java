@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.warehouse.controller;
 
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.domain.warehouse.dto.WarehouseInfoDTO;
 import com.wimir.bae.domain.warehouse.dto.WarehouseRegDTO;
 import com.wimir.bae.domain.warehouse.service.WarehouseService;
 import com.wimir.bae.global.dto.ResponseDTO;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,7 +40,21 @@ public class WarehouseController {
     }
     
     // 창고 조회
-    
+    @GetMapping("list")
+    public ResponseEntity<ResponseDTO<List<WarehouseInfoDTO>>> getWarehouseList(
+            @RequestHeader("Authorization") String accessToken) {
+
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<WarehouseInfoDTO> list = warehouseService.getWarehouseList();
+
+        ResponseDTO<List<WarehouseInfoDTO>> response =
+                ResponseDTO.<List<WarehouseInfoDTO>> builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
+    }
     
     // 창고 수정
     

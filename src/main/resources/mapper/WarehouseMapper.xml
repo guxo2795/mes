@@ -23,4 +23,15 @@
         )
     </insert>
 
+    <!-- 창고 조회 -->
+    <select id="getWarehouseList" resultType="com.wimir.bae.domain.warehouse.dto.WarehouseInfoDTO">
+        SELECT
+            warehouse_key,
+            warehouse_name,
+            location
+        FROM tbl_warehouse
+        WHERE is_deleted = 0
+
+    </select>
+
 </mapper>
