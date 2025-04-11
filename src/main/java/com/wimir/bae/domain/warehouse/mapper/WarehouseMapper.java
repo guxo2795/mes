@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.warehouse.mapper;
 
 import com.wimir.bae.domain.warehouse.dto.WarehouseInfoDTO;
+import com.wimir.bae.domain.warehouse.dto.WarehouseModDTO;
 import com.wimir.bae.domain.warehouse.dto.WarehouseRegDTO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -17,4 +18,10 @@ public interface WarehouseMapper {
 
     // 창고 조회
     List<WarehouseInfoDTO> getWarehouseList();
+
+    // 창고 정보
+    WarehouseInfoDTO getWarehouseInfo(String warehouseKey);
+
+    // 창고 수정
+    void updateWarehouse(WarehouseModDTO modDTO);
 }

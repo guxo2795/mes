@@ -2,6 +2,7 @@ package com.wimir.bae.domain.warehouse.controller;
 
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.domain.warehouse.dto.WarehouseInfoDTO;
+import com.wimir.bae.domain.warehouse.dto.WarehouseModDTO;
 import com.wimir.bae.domain.warehouse.dto.WarehouseRegDTO;
 import com.wimir.bae.domain.warehouse.service.WarehouseService;
 import com.wimir.bae.global.dto.ResponseDTO;
@@ -57,7 +58,22 @@ public class WarehouseController {
     }
     
     // 창고 수정
-    
+    @PostMapping("update")
+    public ResponseEntity<ResponseDTO<?>> updateWarehouse (
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid WarehouseModDTO modDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        warehouseService.updateWarehouse(userLoginDTO, modDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
     
     // 창고 삭제
 
