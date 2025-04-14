@@ -24,4 +24,21 @@
         )
     </insert>
 
+    <!-- BOM 목록 -->
+    <select id="getBomList" resultType="com.wimir.bae.domain.bom.dto.BomInfoDTO">
+    SELECT
+    bom.bom_key,
+    bom.root_key,
+    pro.product_code,
+    pro.product_name,
+    bom.quantity,
+    unit.sub_common_name AS unit_name,
+    bom.finished_key as finished_key,
+    pro.product_key as material_key
+    FROM tbl_product_bom bom
+    LEFT JOIN tbl_product pro ON bom.material_key = pro.product_key
+    LEFT JOIN tbl_common_code_sub unit ON pro.unit_key = unit.sub_common_key
+    WHERE bom.is_deleted = 0
+    </select>
+
 </mapper>

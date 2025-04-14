@@ -1,5 +1,6 @@
 package com.wimir.bae.domain.bom.service;
 
+import com.wimir.bae.domain.bom.dto.BomInfoDTO;
 import com.wimir.bae.domain.bom.dto.BomRegDTO;
 import com.wimir.bae.domain.bom.mapper.BomMapper;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
@@ -9,6 +10,10 @@ import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,5 +40,11 @@ public class BomService {
         }
 
         bomMapper.createBom(regDTO);
+    }
+
+    public List<BomInfoDTO> getBomList() {
+        return Optional.ofNullable(bomMapper.getBomList())
+                .orElse(Collections.emptyList());
+
     }
 }
