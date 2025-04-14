@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.bom.controller;
 
 import com.wimir.bae.domain.bom.dto.BomInfoDTO;
+import com.wimir.bae.domain.bom.dto.BomModDTO;
 import com.wimir.bae.domain.bom.dto.BomRegDTO;
 import com.wimir.bae.domain.bom.service.BomService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -49,6 +50,23 @@ public class BomController {
                 ResponseDTO.<List<BomInfoDTO>> builder()
                         .result(1)
                         .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("update")
+    public ResponseEntity<ResponseDTO<?>> updateBom(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid BomModDTO modDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        bomService.updateBom(userLoginDTO, modDTO);
+
+        ResponseDTO<?> response =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
                         .build();
 
         return ResponseEntity.ok().body(response);

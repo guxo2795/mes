@@ -5,7 +5,7 @@
 
 <mapper namespace="com.wimir.bae.domain.bom.mapper.BomMapper">
 
-    <!-- bom 중복 검사 -->
+    <!-- BOM 중복 검사 -->
     <select id="isExistBom" resultType="boolean">
         SELECT IF(COUNT(*) > 0, true, false)
         FROM tbl_product_bom
@@ -14,7 +14,7 @@
           AND material_key = #{materialKey}
     </select>
 
-    <!-- bom 등록 -->
+    <!-- BOM 등록 -->
     <insert id="createBom">
         INSERT INTO tbl_product_bom(
             root_key, finished_key, material_key, quantity
@@ -40,5 +40,21 @@
     LEFT JOIN tbl_common_code_sub unit ON pro.unit_key = unit.sub_common_key
     WHERE bom.is_deleted = 0
     </select>
+
+    <!-- BOM 정보 -->
+    <select id="getBomInfo" resultType="com.wimir.bae.domain.bom.dto.BomInfoDTO">
+        SELECT *
+        FROM tbl_product_bom
+        WHERE is_deleted = 0
+          AND bom_key = #{bomKey}
+    </select>
+
+    <!-- BOM 수정 -->
+    <update id="updateBom">
+        UPDATE tbl_product_bom
+        SET quantity = #{quantity}
+        WHERE is_deleted = 0
+          AND bom_key = #{bomKey}
+    </update>
 
 </mapper>

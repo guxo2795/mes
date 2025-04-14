@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.bom.service;
 
 import com.wimir.bae.domain.bom.dto.BomInfoDTO;
+import com.wimir.bae.domain.bom.dto.BomModDTO;
 import com.wimir.bae.domain.bom.dto.BomRegDTO;
 import com.wimir.bae.domain.bom.mapper.BomMapper;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -46,5 +48,18 @@ public class BomService {
         return Optional.ofNullable(bomMapper.getBomList())
                 .orElse(Collections.emptyList());
 
+    }
+
+    public void updateBom(UserLoginDTO userLoginDTO, BomModDTO modDTO) {
+
+        BomInfoDTO bomInfoDTD = bomMapper.getBomInfo(modDTO.getBomKey());
+        if(bomInfoDTD == null) {
+            throw new CustomRuntimeException("존재하지 않는 BOM입니다.");
+        }
+        
+        // 수주 진행 여부 확인
+
+
+        bomMapper.updateBom(modDTO);
     }
 }
