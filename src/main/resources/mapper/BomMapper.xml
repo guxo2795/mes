@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wimir.bae.domain.bom.mapper.BomMapper">
+
+    <!-- bom 중복 검사 -->
+    <select id="isExistBom" resultType="boolean">
+        SELECT IF(COUNT(*) > 0, true, false)
+        FROM tbl_product_bom
+        WHERE is_deleted = 0
+          AND finished_key = #{finishedKey}
+          AND material_key = #{materialKey}
+    </select>
+
+    <!-- bom 등록 -->
+    <insert id="createBom">
+        INSERT INTO tbl_product_bom(
+            root_key, finished_key, material_key, quantity
+        )
+        VALUES (
+            #{rootKey}, #{finishedKey}, #{materialKey}, #{quantity}
+        )
+    </insert>
+
+</mapper>
