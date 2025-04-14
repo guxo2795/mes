@@ -6,6 +6,7 @@ import com.wimir.bae.domain.company.dto.CompanyProductsInfoDTO;
 import com.wimir.bae.domain.company.dto.CompanyRegDTO;
 import org.apache.ibatis.annotations.Mapper;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Mapper
@@ -31,4 +32,7 @@ public interface CompanyMapper {
 
     // 업체와 연결된 품목 목록 조회
     List<CompanyProductsInfoDTO> getCompanyProductsList();
+
+    // 업체 종류 및 존재 유무 조회
+    String getCompanyTypeFlag(String companyKey);
 }
