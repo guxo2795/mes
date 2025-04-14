@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import javax.validation.constraints.NotEmpty;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +44,7 @@ public class BomService {
         bomMapper.createBom(regDTO);
     }
 
+    @Transactional(readOnly = true)
     public List<BomInfoDTO> getBomList() {
         return Optional.ofNullable(bomMapper.getBomList())
                 .orElse(Collections.emptyList());
@@ -61,5 +62,29 @@ public class BomService {
 
 
         bomMapper.updateBom(modDTO);
+    }
+
+    public void deleteBom(UserLoginDTO userLoginDTO, List<String> bomKeyList) {
+        List<BomInfoDTO> bomInfoDTOList = bomMapper.getBomInfoList(bomKeyList);
+
+        if(bomInfoDTOList.size() != bomKeyList.size()) {
+            throw new CustomRuntimeException("존재하지 않는 bom이 포함되어 있습니다.");
+        }
+
+        List<Map<String, String>> materialRootKeyList = bomInfoDTOList.stream()
+                .map(bomInfo -> {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("materialKey", bomInfo.getMaterialKey());
+                    map.put("rootKey", bomInfo.getRootKey());
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+        // bom 하위 품목이 있는 지 검사
+        if(bomMapper.isBomChildList(materialRootKeyList)) {
+            throw new CustomRuntimeException("하위 품목이 포함되어있는 bom이 존재합니다.");
+        }
+
+        bomMapper.deleteBomList(bomKeyList);
     }
 }

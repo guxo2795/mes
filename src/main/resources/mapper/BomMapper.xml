@@ -41,6 +41,16 @@
     WHERE bom.is_deleted = 0
     </select>
 
+    <select id="getBomInfoList" resultType="com.wimir.bae.domain.bom.dto.BomInfoDTO">
+        SELECT *
+        FROM tbl_product_bom
+        WHERE is_deleted = 0
+        AND bom_key IN
+        <foreach item="bomKey" collection="bomKeyList" open="(" separator="," close=")">
+            #{bomKey}
+        </foreach>
+    </select>
+
     <!-- BOM 정보 -->
     <select id="getBomInfo" resultType="com.wimir.bae.domain.bom.dto.BomInfoDTO">
         SELECT *
@@ -56,5 +66,39 @@
         WHERE is_deleted = 0
           AND bom_key = #{bomKey}
     </update>
+
+    <!-- BOM 삭제 -->
+    <delete id="deleteBomList">
+        UPDATE tbl_product_bom
+        SET is_deleted = 1
+        WHERE is_deleted = 0
+        AND bom_key IN
+        <foreach item="bomKey" collection="bomKeyList" open="(" separator="," close=")">
+            #{bomKey}
+        </foreach>
+    </delete>
+
+    <select id="isBomChildList" resultType="boolean">
+        WITH RECURSIVE input_keys AS (
+        <foreach collection="materialRootKeyList" item="item" separator="UNION ALL">
+            SELECT #{item.materialKey} AS material_key, #{item.rootKey} AS root_key
+        </foreach>
+        ),
+        bom_tree AS (
+        SELECT b.material_key, b.finished_key, b.root_key, 1 AS level
+        FROM tbl_product_bom b
+        JOIN input_keys ik ON b.finished_key = ik.material_key AND b.root_key = ik.root_key
+        WHERE b.is_deleted = 0
+
+        UNION ALL
+
+        SELECT b2.material_key, b2.finished_key, b2.root_key, bt.level + 1
+        FROM bom_tree bt
+        JOIN tbl_product_bom b2 ON bt.material_key = b2.finished_key AND bt.root_key = b2.root_key
+        WHERE b2.is_deleted = 0
+        )
+        SELECT IF(COUNT(*) > 0, TRUE, FALSE)
+        FROM bom_tree
+    </select>
 
 </mapper>
