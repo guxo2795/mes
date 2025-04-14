@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.contract.controller;
 
 
+import com.wimir.bae.domain.contract.dto.ContractInfoDTO;
 import com.wimir.bae.domain.contract.dto.ContractRegDTO;
 import com.wimir.bae.domain.contract.service.ContractService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -35,6 +37,22 @@ public class ContractController {
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @GetMapping("list")
+    public ResponseEntity<ResponseDTO<List<ContractInfoDTO>>> getContractList(
+            @RequestHeader("Authorization") String accessToken) {
+
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<ContractInfoDTO> list = contractService.getContractList();
+
+        ResponseDTO<List<ContractInfoDTO>> response =
+                ResponseDTO.<List<ContractInfoDTO>> builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
     }
 
 }

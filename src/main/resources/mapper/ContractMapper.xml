@@ -24,4 +24,30 @@
                  )
     </insert>
 
+    <!--  수주 리스트  -->
+    <select id="getContractList" resultType="com.wimir.bae.domain.contract.dto.ContractInfoDTO">
+        SELECT
+        con.contract_code,
+        com.company_key,
+        com.company_name,
+        con.contract_name,
+        con.contract_date,
+        con.delivery_date,
+        con.is_completed,
+        pro.product_key,
+        pro.product_code,
+        pro.product_name,
+        cmat.quantity,
+        pro.safety_quantity,
+        con.is_deleted,
+        pro.asset_type_flag,
+        sub.sub_common_name AS unitName
+        FROM tbl_order_contract con
+        LEFT JOIN tbl_company com ON con.company_key = com.company_key
+        LEFT JOIN tbl_order_contract_materials cmat ON con.contract_code = cmat.contract_code
+        LEFT JOIN tbl_product pro ON pro.product_key = cmat.product_key
+        LEFT JOIN tbl_common_code_sub sub ON sub.sub_common_key = pro.unit_key
+        WHERE con.is_deleted = 0
+    </select>
+
 </mapper>
