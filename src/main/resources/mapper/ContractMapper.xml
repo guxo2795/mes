@@ -24,6 +24,14 @@
                  )
     </insert>
 
+    <insert id="insertMaterial" useGeneratedKeys="true" keyColumn="contract_material_key" keyProperty="contractMaterialKey">
+        INSERT INTO tbl_order_contract_materials (
+            contract_code, product_key, quantity
+        ) VALUES (
+                     #{contractCode}, #{productKey}, #{quantity}
+                 )
+    </insert>
+
     <!--  수주 리스트  -->
     <select id="getContractList" resultType="com.wimir.bae.domain.contract.dto.ContractInfoDTO">
         SELECT
@@ -86,6 +94,16 @@
           AND contract_code = #{contractCode}
     </delete>
 
+    <!-- 수주 실행   -->
+    <update id="startContract">
+        UPDATE tbl_order_contract
+        SET is_completed = 2
+        WHERE
+            is_deleted = 0
+          AND is_completed = 0
+          AND contract_code = #{contractCode}
+    </update>
+
     <!--  수주 품목 전체 삭제  -->
     <delete id="deletedContractAllMaterials">
         UPDATE tbl_order_contract_materials
@@ -121,4 +139,49 @@
           AND con.contract_code = #{contractCode}
     </select>
 
+    <!-- 창고키, 품목키를 활용하여 창고 수량 가지고 오기 -->
+    <select id="getAvailableInventoryAsString" resultType="java.lang.String">
+        SELECT quantity
+        FROM tbl_inventory
+        WHERE product_key = #{productKey}
+          AND warehouse_key = #{warehouseKey}
+    </select>
+
+    <!-- 창고 수량 업데이트   -->
+    <update id="updateInventoryAsString">
+        UPDATE tbl_inventory
+        SET quantity =  #{updatedInventoryStr}
+        WHERE product_key = #{productKey}
+          AND warehouse_key = #{warehouseKey}
+    </update>
+
+    <!-- 수주 자재 키 값 가지고 오기  -->
+    <select id="selectContractMaterialKey" resultType="string" parameterType="com.wimir.bae.domain.contract.dto.ContractMaterialDBDTO">
+        SELECT contract_material_key
+        FROM tbl_order_contract_materials
+        WHERE product_key = #{productKey}
+          AND contract_code = #{contractCode}
+          AND is_deleted = 0
+    </select>
+
+    <!--  outgoing 테이블 저장  -->
+    <insert id="insertOutgoingRecord">
+        INSERT INTO tbl_outgoing (
+            product_key,
+            warehouse_key,
+            material_key,
+            outgoing_type_flag,
+            outgoing_date_time,
+            quantity,
+            note
+        ) VALUES (
+                     #{productKey},
+                     #{warehouseKey},
+                     #{materialKey},
+                     #{releaseType},
+                     CURRENT_TIMESTAMP,
+                     #{quantity},
+                     #{note}
+                 );
+    </insert>
 </mapper>

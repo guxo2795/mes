@@ -1,10 +1,8 @@
 package com.wimir.bae.domain.contract.mapper;
 
-import com.wimir.bae.domain.contract.dto.ContractInfoDTO;
-import com.wimir.bae.domain.contract.dto.ContractMaterialInfoDTO;
-import com.wimir.bae.domain.contract.dto.ContractModDTO;
-import com.wimir.bae.domain.contract.dto.ContractRegDTO;
+import com.wimir.bae.domain.contract.dto.*;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
@@ -38,4 +36,30 @@ public interface ContractMapper {
 
     // 수주 품목 전체 삭제
     void deletedContractAllMaterials(String contractCode);
+
+    // 수주 실행
+    void startContract(String contractCode);
+
+    // 창고키, 품목키를 활용하여 창고 수량 가지고 오기
+    String getAvailableInventoryAsString(@Param("productKey") String productKey,
+                                         @Param("warehouseKey") String warehouseKey);
+
+    // 창고 수량 업데이트
+    void updateInventoryAsString(@Param("productKey") String productKey,
+                                 @Param("warehouseKey") String warehouseKey,
+                                 @Param("updatedInventoryStr") String updatedInventoryStr);
+
+    // 수주 실행될 때 나머지 완제품 밑에 있는 사내 생산품 insert
+    void insertMaterial(ContractMaterialDBDTO materialDBDTO);
+
+    String selectContractMaterialKey(ContractMaterialDBDTO materialDTO);
+
+    //감소된 값을 outgoing테이블에 저장
+    void insertOutgoingRecord(@Param("productKey") String productKey,
+                              @Param("warehouseKey") String warehouseKey,
+                              @Param("materialKey") String materialKey,
+                              @Param("releaseType") String releaseType,
+                              @Param("planDate") String planDate,
+                              @Param("quantity") String quantity,
+                              @Param("note") String note);
 }

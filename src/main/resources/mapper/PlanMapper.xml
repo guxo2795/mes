@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.wimir.bae.domain.plan.mapper.PlanMapper">
+
+    <!-- 생산 계획 등록 -->
+    <insert id="createPlan">
+        INSERT INTO tbl_production_plan(
+            product_key, contract_code, plan_quantity, sub_plan_quantity, plan_date
+        )
+        VALUES (
+            #{productKey}, #{contractCode}, #{planQuantity}, #{subPlanQuantity}, #{planDate}
+        )
+    </insert>
+
+</mapper>

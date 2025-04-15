@@ -92,10 +92,27 @@ public class ContractController {
 
         return ResponseEntity.ok().body(responseDTO);
     }
-    
-    
 
-    // 수주 전 자재를 가져오는 api
+    // 수주 실행
+    @PostMapping("start")
+    public ResponseEntity<ResponseDTO<?>> startContract(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid StartContractRequestDTO requestDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        // 단일 계약 키를 전달
+        contractService.startContract(userLoginDTO, requestDTO.getContractCode(), requestDTO.getPlanDate(), requestDTO.getWarehouseKeyMap());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 수주 실행 전 품목정보를 가져오는 api
     @GetMapping("material/start/list")
     public ResponseEntity<ResponseDTO<List<ContractMaterialInfoDTO>>> listContractMaterial(
             @RequestHeader("Authorization") String accessToken,
