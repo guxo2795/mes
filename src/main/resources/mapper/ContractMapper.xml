@@ -50,4 +50,58 @@
         WHERE con.is_deleted = 0
     </select>
 
+    <!--  수주 정보  -->
+    <select id="getContractInfo" resultType="com.wimir.bae.domain.contract.dto.ContractInfoDTO">
+        SELECT *
+        FROM tbl_order_contract
+        WHERE is_deleted = 0
+          AND contract_code = #{contractCode}
+    </select>
+
+    <!--  수주 수정  -->
+    <update id="updateContract">
+        UPDATE tbl_order_contract
+        SET contract_name = #{contractName},
+            contract_date = #{contractDate},
+            delivery_date = #{deliveryDate}
+        WHERE is_completed = 0
+          AND is_deleted = 0
+          AND contract_code = #{contractCode}
+    </update>
+
+    <!--  수주 품목 수정  -->
+    <update id="updateContractMaterial">
+        UPDATE tbl_order_contract_materials
+        SET product_key = #{productKey},
+            quantity = #{quantity}
+        WHERE contract_code = #{contractCode}
+    </update>
+
+    <select id="listContractMaterial" resultType="com.wimir.bae.domain.contract.dto.ContractMaterialInfoDTO">
+        SELECT
+            con.contract_code,
+            material_bom.product_key,
+            material_bom.product_name,
+            material_bom.product_code,
+            (cmat.quantity * bom.quantity) as quantity
+
+        FROM tbl_order_contract con
+                 LEFT JOIN tbl_order_contract_materials cmat
+                           ON cmat.contract_code = con.contract_code
+                 LEFT JOIN tbl_product pro
+                           ON pro.product_key = cmat.product_key
+                 LEFT JOIN tbl_product_bom bom
+                           ON bom.finished_key = pro.product_key
+                 LEFT JOIN tbl_product material_bom
+                           ON material_bom.product_key = bom.material_key
+        WHERE
+            con.is_deleted = 0
+          AND material_bom.process_type_key = #{processTypeKey}
+          AND cmat.is_deleted = 0
+          AND pro.is_deleted = 0
+          AND bom.is_deleted = 0
+          AND pro.asset_type_flag = 'F'
+          AND con.contract_code = #{contractCode}
+    </select>
+
 </mapper>
