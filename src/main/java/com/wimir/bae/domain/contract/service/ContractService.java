@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,20 @@ public class ContractService {
 
         contractMapper.updateContract(modDTO);
         contractMapper.updateContractMaterial(modDTO.getContractCode(),modDTO.getProductKey(),modDTO.getQuantity());
+    }
+
+    public void deletedContract(UserLoginDTO userLoginDTO, List<String> contractCodeList) {
+
+        for (String contractCode : contractCodeList){
+
+            ContractInfoDTO infoDTO = contractMapper.getContractInfo(contractCode);
+            if (!"0".equals(infoDTO.getIsCompleted())) {
+                throw new CustomRuntimeException("종결된 수주는 삭제 할 수 없습니다.");
+            }
+
+            contractMapper.deletedContract(contractCode);
+            contractMapper.deletedContractAllMaterials(contractCode);
+        }
     }
 
     // 수주 전 자재를 가져오는 메서드

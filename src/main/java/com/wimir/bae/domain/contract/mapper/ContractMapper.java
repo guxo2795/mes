@@ -32,4 +32,10 @@ public interface ContractMapper {
 
     // 수주 품목 수정
     void updateContractMaterial(String contractCode, String productKey, String quantity);
+
+    // 수주 삭제
+    void deletedContract(String contractCode);
+
+    // 수주 품목 전체 삭제
+    void deletedContractAllMaterials(String contractCode);
 }

@@ -77,6 +77,23 @@
         WHERE contract_code = #{contractCode}
     </update>
 
+    <!--  수주 삭제  -->
+    <delete id="deletedContract">
+        UPDATE tbl_order_contract
+        SET is_deleted = 1
+        WHERE
+            is_deleted = 0
+          AND contract_code = #{contractCode}
+    </delete>
+
+    <!--  수주 품목 전체 삭제  -->
+    <delete id="deletedContractAllMaterials">
+        UPDATE tbl_order_contract_materials
+        SET is_deleted = 1
+        WHERE is_deleted = 0
+          AND contract_code = #{contractCode}
+    </delete>
+
     <select id="listContractMaterial" resultType="com.wimir.bae.domain.contract.dto.ContractMaterialInfoDTO">
         SELECT
             con.contract_code,

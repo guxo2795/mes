@@ -4,6 +4,7 @@ package com.wimir.bae.domain.contract.controller;
 import com.wimir.bae.domain.contract.dto.*;
 import com.wimir.bae.domain.contract.service.ContractService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,24 @@ public class ContractController {
 
         UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
         contractService.updateContract(userLoginDTO, modDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 수주 삭제
+    @PostMapping("delete")
+    public ResponseEntity<ResponseDTO<?>> deleteContract(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> contractKeyList) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        contractService.deletedContract(userLoginDTO, contractKeyList.getList());
 
         ResponseDTO<?> responseDTO =
                 ResponseDTO.builder()
