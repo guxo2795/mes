@@ -104,6 +104,16 @@
           AND contract_code = #{contractCode}
     </update>
 
+    <!-- 수주 완료   -->
+    <update id="completeContract">
+        UPDATE tbl_order_contract
+        SET is_completed = 1
+        WHERE
+            is_deleted = 0
+          AND is_completed = 2
+          AND contract_code = #{contractCode}
+    </update>
+
     <!--  수주 품목 전체 삭제  -->
     <delete id="deletedContractAllMaterials">
         UPDATE tbl_order_contract_materials

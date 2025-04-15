@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -226,5 +228,19 @@ public class ContractService {
             throw new CustomRuntimeException("수주 실행 중 오류 발생");
         }
 
+    }
+
+    public void completeContract(UserLoginDTO userLoginDTO, List<String> contractCodeList) {
+
+        for (String contractCode : contractCodeList) {
+
+            ContractInfoDTO infoDTO = contractMapper.getContractInfo(contractCode);
+
+            if (!"0".equals(infoDTO.getIsCompleted())) {
+                throw new CustomRuntimeException("이미 종결되거나 실행중인 수주 입니다.");
+            }
+
+            contractMapper.completeContract(contractCode);
+        }
     }
 }

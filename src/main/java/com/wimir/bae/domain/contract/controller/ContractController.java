@@ -112,6 +112,24 @@ public class ContractController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    // 수주 완료
+    @PostMapping("complete")
+    public ResponseEntity<ResponseDTO<?>> completeContract(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> contractKeyList) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        contractService.completeContract(userLoginDTO, contractKeyList.getList());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
     // 수주 실행 전 품목정보를 가져오는 api
     @GetMapping("material/start/list")
     public ResponseEntity<ResponseDTO<List<ContractMaterialInfoDTO>>> listContractMaterial(

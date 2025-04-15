@@ -54,7 +54,7 @@ public interface ContractMapper {
 
     String selectContractMaterialKey(ContractMaterialDBDTO materialDTO);
 
-    //감소된 값을 outgoing테이블에 저장
+    // 감소된 값을 outgoing테이블에 저장
     void insertOutgoingRecord(@Param("productKey") String productKey,
                               @Param("warehouseKey") String warehouseKey,
                               @Param("materialKey") String materialKey,
@@ -62,4 +62,7 @@ public interface ContractMapper {
                               @Param("planDate") String planDate,
                               @Param("quantity") String quantity,
                               @Param("note") String note);
+
+    // 수주 완료
+    void completeContract(String contractCode);
 }
