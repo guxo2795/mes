@@ -1,16 +1,16 @@
 package com.wimir.bae.domain.plan.controller;
 
 import com.wimir.bae.domain.plan.dto.PlanInfoDTO;
+import com.wimir.bae.domain.plan.dto.PlanModDTO;
 import com.wimir.bae.domain.plan.service.PlanService;
+import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -36,6 +36,24 @@ public class PlanController {
                 ResponseDTO.<List<PlanInfoDTO>> builder()
                         .result(1)
                         .data(planInfoDTOList)
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+    
+    // 생산 계획 수정
+    @PostMapping("update")
+    public ResponseEntity<ResponseDTO<?>> updatePlan(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid PlanModDTO modDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        planService.updatePlan(userLoginDTO, modDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);

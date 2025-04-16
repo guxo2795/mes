@@ -38,6 +38,15 @@
           AND pro.asset_type_flag = 'F'
     </select>
 
+    <!-- 생산 실적 테이블 조회 -->
+    <select id="getProductPlanTotal" resultType="com.wimir.bae.domain.plan.dto.PlanTotalSearchDTO">
+        SELECT *
+        FROM tbl_production_total total
+        WHERE total.plan_key = #{planKey}
+          AND total.product_key = #{productKey}
+          AND is_deleted = 0
+    </select>
+
     <!-- 생산 계획 등록 -->
     <insert id="createPlan">
         INSERT INTO tbl_production_plan(
@@ -47,6 +56,16 @@
             #{productKey}, #{contractCode}, #{planQuantity}, #{subPlanQuantity}, #{planDate}
         )
     </insert>
+
+    <!-- 생산 계획 수정 -->
+    <update id="updatePlan">
+        UPDATE tbl_production_plan
+        SET team_key = #{teamKey},
+            team_common_key = #{teamCommonKey}
+        WHERE plan_key = #{planKey}
+          AND is_deleted = 0
+          AND is_executed = 0
+    </update>
 
     <!-- 생산 계획 및 실적 조회 -->
     <select id="getProductionPlan" resultType="com.wimir.bae.domain.plan.dto.PlanInfoDTO">
@@ -62,12 +81,20 @@
           AND pro.asset_type_flag = 'F'
     </select>
 
-    <!-- 생산 실적 테이블 조회 -->
-    <select id="getProductPlanTotal" resultType="com.wimir.bae.domain.plan.dto.PlanTotalSearchDTO">
-        SELECT *
-        FROM tbl_production_total total
-        WHERE total.plan_key = #{planKey}
-          AND total.product_key = #{productKey}
+    <!-- 생산 계획 키 유효성 -->
+    <select id="isPlanKeyExist" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(plan_key) > 0, true, false)
+        FROM tbl_production_plan
+        WHERE plan_key = #{planKey}
+          AND is_deleted = 0
+    </select>
+
+    <!-- 생산 계획 키 유효성 -->
+    <select id="isPlanAlreadyExecuted" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(plan_key) > 0, true, false)
+        FROM tbl_production_plan
+        WHERE plan_key = #{planKey}
+          AND is_executed = 0
           AND is_deleted = 0
     </select>
 
