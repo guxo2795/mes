@@ -83,7 +83,7 @@ public class ContractService {
 
     public void startContract(UserLoginDTO userLoginDTO, String contractCode, String planDate, List<ContractWarehouseDTO> warehouseKeyMap) {
 
-        ContractInfoDTO infoDTO = contractMapper.getContractInfo(contractCode);
+        ContractInfoDTO infoDTO = contractMapper.getContractForPlan(contractCode);
 
         if("1".equals(infoDTO.getIsCompleted())){
             throw new CustomRuntimeException("이미 종결된 수주입니다. " + contractCode);
@@ -173,7 +173,7 @@ public class ContractService {
 
                 // 해당 완제품의 productKey에 맞는 warehouseKey 찾기
                 ContractWarehouseDTO productWarehouse = warehouseKeyMap.stream()
-                        .filter(warehpuse ->warehpuse.getProductKey().equals(infoDTO.getProductKey()))
+                        .filter(warehouse ->warehouse.getProductKey().equals(infoDTO.getProductKey()))
                         .findFirst()
                         .orElse(null);
 
@@ -242,5 +242,23 @@ public class ContractService {
 
             contractMapper.completeContract(contractCode);
         }
+    }
+
+    public void deletedContractMaterials(UserLoginDTO userLoginDTO, List<String> contractMaterialKeyList, String contractCode) {
+
+        ContractInfoDTO infoDTO =contractMapper.getContractInfo(contractCode);
+
+        if(!"0".equals(infoDTO.getIsCompleted()))
+            throw new CustomRuntimeException("이미 종결된 수주 입니다.");
+
+        for (String contractMaterialKey : contractMaterialKeyList) {
+
+            contractMapper.deletedContractMaterials(contractMaterialKey);
+        }
+    }
+
+    public List<MaterialsInfoDTO> getMaterialInfoList() {
+        return Optional.ofNullable(contractMapper.getMaterialInfoList())
+                .orElse(Collections.emptyList());
     }
 }

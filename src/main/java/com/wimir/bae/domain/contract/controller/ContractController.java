@@ -93,6 +93,24 @@ public class ContractController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    // 수주 실행 전 품목정보를 가져오는 api
+    @GetMapping("material/start/list")
+    public ResponseEntity<ResponseDTO<List<ContractMaterialInfoDTO>>> listContractMaterial(
+            @RequestHeader("Authorization") String accessToken,
+            @ModelAttribute @Valid ContractMaterialSearchDTO searchDTO ) {
+
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<ContractMaterialInfoDTO> list = contractService.listContractMaterial(searchDTO);
+
+        ResponseDTO<List<ContractMaterialInfoDTO>> responseDTO =
+                ResponseDTO.<List<ContractMaterialInfoDTO>> builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
     // 수주 실행
     @PostMapping("start")
     public ResponseEntity<ResponseDTO<?>> startContract(
@@ -130,17 +148,32 @@ public class ContractController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
-    // 수주 실행 전 품목정보를 가져오는 api
-    @GetMapping("material/start/list")
-    public ResponseEntity<ResponseDTO<List<ContractMaterialInfoDTO>>> listContractMaterial(
+    @PostMapping("material/delete")
+    public ResponseEntity<ResponseDTO<?>> contractMaterialDelete(
             @RequestHeader("Authorization") String accessToken,
-            @ModelAttribute @Valid ContractMaterialSearchDTO searchDTO ) {
+            @RequestBody @Valid ContractMaterialDeleteDTO deleteDTO) {
 
-        jwtGlobalService.getTokenInfo(accessToken, "A");
-        List<ContractMaterialInfoDTO> list = contractService.listContractMaterial(searchDTO);
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        contractService.deletedContractMaterials(userLoginDTO, deleteDTO.getContractMaterialKeyList(), deleteDTO.getContractCode());
 
-        ResponseDTO<List<ContractMaterialInfoDTO>> responseDTO =
-                ResponseDTO.<List<ContractMaterialInfoDTO>> builder()
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @GetMapping("material/list")
+    public ResponseEntity<ResponseDTO<List<MaterialsInfoDTO>>> getMaterialInfoList(
+            @RequestHeader("Authorization") String accessToken) {
+
+        jwtGlobalService.getTokenInfo(accessToken,"A");
+        List<MaterialsInfoDTO> list = contractService.getMaterialInfoList();
+
+        ResponseDTO<List<MaterialsInfoDTO>> responseDTO =
+                ResponseDTO.<List<MaterialsInfoDTO>> builder()
                         .result(1)
                         .data(list)
                         .build();

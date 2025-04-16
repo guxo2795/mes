@@ -19,6 +19,9 @@ public interface ContractMapper {
     // 수주 정보
     ContractInfoDTO getContractInfo(String contractCode);
 
+    //수주 정보 가지고오기(팀 연결 전 사용)
+    ContractInfoDTO getContractForPlan(String contractCode);
+
     // 수주 실행 시 품목 자재들 등록에 필요한 내용 불러오기
     List<ContractMaterialInfoDTO> listContractMaterial(String contractCode, String processTypeKey);
 
@@ -36,6 +39,9 @@ public interface ContractMapper {
 
     // 수주 품목 전체 삭제
     void deletedContractAllMaterials(String contractCode);
+
+    // 수주 품목 삭제
+    void deletedContractMaterials(String contractMaterialKey);
 
     // 수주 실행
     void startContract(String contractCode);
@@ -65,4 +71,7 @@ public interface ContractMapper {
 
     // 수주 완료
     void completeContract(String contractCode);
+
+    // 수주 품목 리스트
+    List<MaterialsInfoDTO> getMaterialInfoList();
 }

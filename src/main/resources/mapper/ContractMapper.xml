@@ -58,12 +58,61 @@
         WHERE con.is_deleted = 0
     </select>
 
+    <!-- 수주 품목 리스트   -->
+    <select id="getMaterialInfoList" resultType="com.wimir.bae.domain.contract.dto.MaterialsInfoDTO">
+    SELECT
+    cmat.contract_code,
+    cmat.product_key,
+    cmat.quantity,
+    pro.product_code,
+    pro.product_name,
+    pro.asset_type_flag,
+    pro.safety_quantity,
+    cmat.is_deleted,
+    CASE
+    WHEN pro.asset_type_flag = 'F' THEN finished.quantity
+    WHEN pro.asset_type_flag = 'M' THEN material.quantity
+    ELSE 0
+    END AS selected_quantity
+    FROM tbl_order_contract_materials cmat
+    LEFT JOIN tbl_product pro ON pro.product_key = cmat.product_key
+    LEFT JOIN tbl_product_bom finished ON finished.finished_key = pro.product_key
+    LEFT JOIN tbl_product_bom material ON material.material_key = pro.product_key
+    WHERE cmat.is_deleted = 0
+    AND pro.is_deleted = 0
+    AND (
+    (pro.asset_type_flag = 'F' AND finished.is_deleted = 0)
+    OR
+    (pro.asset_type_flag = 'M' AND material.is_deleted = 0)
+    )
+    </select>
+
     <!--  수주 정보  -->
     <select id="getContractInfo" resultType="com.wimir.bae.domain.contract.dto.ContractInfoDTO">
         SELECT *
         FROM tbl_order_contract
         WHERE is_deleted = 0
           AND contract_code = #{contractCode}
+    </select>
+
+    <!-- 수주 정보 가지고 오기 for Plan  -->
+    <select id="getContractForPlan" resultType="com.wimir.bae.domain.contract.dto.ContractInfoDTO">
+        SELECT
+            con.contract_code,
+            con.company_key,
+            cmat.product_key,
+            cmat.quantity,
+            con.contract_name,
+            con.contract_date,
+            con.delivery_date,
+            con.reg_date_time,
+            con.is_completed,
+            con.is_deleted
+        FROM tbl_order_contract con
+                 LEFT JOIN tbl_order_contract_materials cmat ON con.contract_code = cmat.contract_code
+        WHERE
+            con.is_deleted = 0
+          AND con.contract_code = #{contractCode}
     </select>
 
     <!--  수주 수정  -->
@@ -120,6 +169,14 @@
         SET is_deleted = 1
         WHERE is_deleted = 0
           AND contract_code = #{contractCode}
+    </delete>
+
+    <!--  수주 품목 삭제  -->
+    <delete id="deletedContractMaterials">
+        UPDATE tbl_order_contract_materials
+        SET is_deleted = 1
+        WHERE is_deleted = 0
+          AND contract_material_key = #{contractMaterialKey}
     </delete>
 
     <select id="listContractMaterial" resultType="com.wimir.bae.domain.contract.dto.ContractMaterialInfoDTO">
