@@ -6,6 +6,38 @@
 
 <mapper namespace="com.wimir.bae.domain.plan.mapper.PlanMapper">
 
+    <!-- 생산 계획 리스트 -->
+    <select id="getPlanList" resultType="com.wimir.bae.domain.plan.dto.PlanInfoDTO">
+        SELECT
+            con.contract_name AS contractName,
+            plan.plan_key AS planKey,
+            plan.team_key AS teamKey,
+            plan.contract_code AS contractCode,
+            plan.is_executed AS isExecuted,
+            plan.plan_date AS planDate,
+            con.delivery_date AS deliveryDate,
+            com.company_name AS companyName,
+            sub.sub_common_name AS teamName,
+            sub.sub_common_key AS teamCommonKey,
+            pro.product_name AS productName,
+            pro.product_code AS productCode,
+            plan.plan_quantity AS planQuantity,
+            plan.sub_plan_quantity AS subPlanQuantity,
+            COALESCE((COALESCE(plan.sub_plan_quantity, 0) / NULLIF(COALESCE(plan.plan_quantity, 0), 0)) * 100, 0) AS production_rate,
+            COALESCE(total.fault_quantity, 0) AS fault_quantity,
+            COALESCE((COALESCE(total.fault_quantity, 0) / NULLIF(COALESCE(total.execute_quantity, 0), 0)) * 100, 0) AS fault_rate
+        FROM tbl_production_plan plan
+                 LEFT JOIN tbl_order_contract con ON con.contract_code = plan.contract_code
+                 LEFT JOIN tbl_company com ON con.company_key = com.company_key
+                 LEFT JOIN tbl_product pro ON pro.product_key = plan.product_key
+                 LEFT JOIN tbl_production_team team ON team.team_key = plan.team_key
+                 LEFT JOIN tbl_common_code_sub sub ON sub.sub_common_key = team.team_common_key
+                 LEFT JOIN tbl_production_total total ON total.plan_key = plan.plan_key
+            AND total.product_key = plan.product_key
+        WHERE plan.is_deleted = 0
+          AND pro.asset_type_flag = 'F'
+    </select>
+
     <!-- 생산 계획 등록 -->
     <insert id="createPlan">
         INSERT INTO tbl_production_plan(
@@ -15,5 +47,28 @@
             #{productKey}, #{contractCode}, #{planQuantity}, #{subPlanQuantity}, #{planDate}
         )
     </insert>
+
+    <!-- 생산 계획 및 실적 조회 -->
+    <select id="getProductionPlan" resultType="com.wimir.bae.domain.plan.dto.PlanInfoDTO">
+        SELECT plan.plan_key, plan.team_common_key, plan.product_key, plan.team_key, plan.contract_code AS contractKey,
+               plan.is_executed, plan.plan_date, plan.sub_plan_quantity, plan.plan_quantity,
+               sub.sub_common_name AS teamName, pro.product_name
+        FROM tbl_production_plan plan
+                 LEFT JOIN tbl_common_code_sub sub ON plan.team_common_key = sub.sub_common_key
+                 LEFT JOIN tbl_product pro ON plan.product_key = pro.product_key
+        WHERE plan.contract_code = #{contractCode}
+          AND pro.is_deleted = 0
+          AND plan.is_deleted = 0
+          AND pro.asset_type_flag = 'F'
+    </select>
+
+    <!-- 생산 실적 테이블 조회 -->
+    <select id="getProductPlanTotal" resultType="com.wimir.bae.domain.plan.dto.PlanTotalSearchDTO">
+        SELECT *
+        FROM tbl_production_total total
+        WHERE total.plan_key = #{planKey}
+          AND total.product_key = #{productKey}
+          AND is_deleted = 0
+    </select>
 
 </mapper>
