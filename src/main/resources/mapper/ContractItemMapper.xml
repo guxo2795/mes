@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.wimir.bae.domain.contract.mapper.ContractItemMapper">
+
+    <!-- 수주 품목 정보 -->
+    <select id="getContractShipmentItemInfo" resultType="com.wimir.bae.domain.contract.dto.ContractShipmentItemInfoDTO">
+        SELECT
+            cmat.contract_material_key,
+            cmat.product_key,
+            pro.product_code,
+            pro.product_name,
+            pro.asset_type_flag,
+            cmat.quantity AS contract_quantity, sub.sub_common_name AS unit_name
+        FROM tbl_order_contract_materials cmat
+                 LEFT JOIN tbl_product pro
+                           ON cmat.product_key = pro.product_key
+                 LEFT JOIN tbl_common_code_sub sub
+                           ON pro.unit_key = sub.sub_common_key
+        WHERE
+            cmat.is_deleted = 0
+          AND cmat.contract_code = #{contractKey}
+        ORDER BY cmat.contract_material_key DESC
+    </select>
+</mapper>

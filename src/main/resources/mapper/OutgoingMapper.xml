@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.wimir.bae.domain.outgoing.mapper.OutgoingMapper">
+
+    <!-- 출하 등록 -->
+    <insert id="createShipment">
+        INSERT INTO tbl_outgoing (
+            product_key, material_key, warehouse_key,
+            outgoing_type_flag, outgoing_date_time, quantity, note
+        ) VALUES (
+                     #{productKey}, #{contractMaterialKey}, #{warehouseKey}, 'M3',
+                     #{outgoingDateTime}, #{finishQuantity},  '출하 등록'
+                 )
+    </insert>
+
+    <!-- 출하 중복 확인 -->
+    <select id="isShipmentDuplicateCheck" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(outgoing_key) > 0, true, false)
+        FROM tbl_outgoing
+        WHERE is_deleted = 0
+          AND product_key = #{productKey}
+          AND material_key = #{materialKey}
+    </select>
+
+</mapper>
