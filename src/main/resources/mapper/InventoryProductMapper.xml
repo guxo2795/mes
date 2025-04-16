@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.wimir.bae.domain.inventory.mapper.InventoryProductMapper">
+
+    <!-- 품목 등록 시 초기 재고 설정(품목 새로 등록 시) -->
+    <insert id="setInitialInventory">
+        INSERT INTO tbl_inventory (
+            product_key, warehouse_key, quantity
+        )
+        VALUES (
+            #{productKey}, #{warehouseKey}, 0
+        )
+    </insert>
+
+    <!-- 자재, 완제품 재고 조회 -->
+    <select id="getProductInventory" resultType="java.lang.Double">
+        SELECT COALESCE(SUM(quantity), 0)
+        FROM tbl_inventory
+        WHERE
+        product_key = #{productKey}
+        <if test="warehouseKey != null and warehouseKey != ''">
+            AND warehouse_key = #{warehouseKey}
+        </if>
+    </select>
+
+    <!-- 자재, 완제품 재고 정정 -->
+    <update id="setProductInventoryCorrection">
+        UPDATE tbl_inventory
+        SET quantity = #{quantity}
+        WHERE
+            product_key = #{productKey}
+          AND warehouse_key = #{warehouseKey}
+    </update>
+</mapper>
