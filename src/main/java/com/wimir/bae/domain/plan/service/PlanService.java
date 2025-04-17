@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -35,5 +36,19 @@ public class PlanService {
             throw new CustomRuntimeException("이미 실행된 계획은 수정 할 수 없습니다");
 
         planMapper.updatePlan(modDTO);
+    }
+
+    public void deletePlan(UserLoginDTO userLoginDTO, List<String> planKeyList) {
+
+        for (String planKey : planKeyList) {
+
+            if (!planMapper.isPlanKeyExist(planKey))
+                throw new CustomRuntimeException("존재 하지 않는 생산 계획 입니다");
+
+            if (!planMapper.isPlanAlreadyExecuted(planKey))
+                throw new CustomRuntimeException("이미 실행된 계획은 삭제 할 수 없습니다.");
+
+            planMapper.deletePlan(planKey);
+        }
     }
 }

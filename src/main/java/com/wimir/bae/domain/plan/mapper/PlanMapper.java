@@ -25,6 +25,9 @@ public interface PlanMapper {
     // 생산 계획 수정
     void updatePlan(PlanModDTO modDTO);
 
+    // 생산 계획 삭제
+    void deletePlan(String planKey);
+
     // 생산 계획 및 실적 조회
     PlanInfoDTO getProductionPlan(String contractCode);
 
@@ -34,6 +37,4 @@ public interface PlanMapper {
     // 생산 계획 키 유효성
     boolean isPlanKeyExist(String planKey);
     boolean isPlanAlreadyExecuted(String planKey);
-
-
 }

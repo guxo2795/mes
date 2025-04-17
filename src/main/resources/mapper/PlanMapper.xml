@@ -67,6 +67,15 @@
           AND is_executed = 0
     </update>
 
+    <!-- 생산 계획 삭제 -->
+    <update id="deletePlan">
+        UPDATE tbl_production_plan
+        SET is_deleted = 1
+        WHERE is_deleted = 0
+          AND is_executed = 0
+          AND plan_key = #{planKey}
+    </update>
+
     <!-- 생산 계획 및 실적 조회 -->
     <select id="getProductionPlan" resultType="com.wimir.bae.domain.plan.dto.PlanInfoDTO">
         SELECT plan.plan_key, plan.team_common_key, plan.product_key, plan.team_key, plan.contract_code AS contractKey,
