@@ -1,5 +1,6 @@
 package com.wimir.bae.domain.plan.controller;
 
+import com.wimir.bae.domain.plan.dto.PlanContractInfoDTO;
 import com.wimir.bae.domain.plan.dto.PlanInfoDTO;
 import com.wimir.bae.domain.plan.dto.PlanModDTO;
 import com.wimir.bae.domain.plan.service.PlanService;
@@ -91,6 +92,23 @@ public class PlanController {
                 ResponseDTO.builder()
                         .result(1)
                         .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 수주 실행 리스트(작업 지시)
+    @GetMapping("contract/list")
+    public ResponseEntity<ResponseDTO<List<PlanContractInfoDTO>>> listPlanContract(
+           @RequestHeader("Authorization") String accseeToken) {
+
+        jwtGlobalService.getTokenInfo(accseeToken, "A");
+        List<PlanContractInfoDTO> list = planService.listPlanContract();
+
+        ResponseDTO<List<PlanContractInfoDTO>> responseDTO =
+                ResponseDTO.<List<PlanContractInfoDTO>> builder()
+                        .result(1)
+                        .data(list)
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);

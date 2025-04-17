@@ -25,6 +25,7 @@ public class PlanService {
     private final PlanMapper planMapper;
     private final PlanTotalMapper planTotalMapper;
 
+    @Transactional(readOnly = true)
     public List<PlanInfoDTO> getPlanList() {
         return Optional.ofNullable(planMapper.getPlanList())
                 .orElse(Collections.emptyList());
@@ -85,5 +86,11 @@ public class PlanService {
             }
 
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlanContractInfoDTO> listPlanContract() {
+        return Optional.ofNullable(planMapper.listPlanContract())
+                .orElse(Collections.emptyList());
     }
 }

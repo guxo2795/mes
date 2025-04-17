@@ -39,6 +39,9 @@ public interface PlanMapper {
     boolean isPlanKeyExist(String planKey);
     boolean isPlanAlreadyExecuted(String planKey);
 
+    // 실행 중인 수주 리스트
+    List<PlanContractInfoDTO> listPlanContract();
+
     // 실행 중인 수주 리스트를 total 데이터에 넣기 위한 select
     List<PlanContractInfoDTO> getPlanContractInfoList(@Param("planKey") String planKey,
                                                       @Param("outsourced") String outsourced);

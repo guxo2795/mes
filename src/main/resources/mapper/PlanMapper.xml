@@ -107,6 +107,66 @@
           AND is_deleted = 0
     </select>
 
+    <!--  수주 실행 리스트  -->
+    <select id="listPlanContract" resultType="com.wimir.bae.domain.plan.dto.PlanContractInfoDTO">
+        SELECT * FROM (
+        -- 완제품 조회
+        SELECT
+        plan.plan_key,
+        con.contract_name,
+        plan.team_key,
+        pro.product_key,
+        pro.product_name,
+        pro.product_code,
+        total.warehouse_key,
+        cmat.quantity as contract_quantity,
+        plan.plan_date AS contract_start_date,
+        con.delivery_date,
+        pro.asset_type_flag as key_code,
+        total.is_completed
+        FROM tbl_production_plan plan
+        LEFT JOIN tbl_product pro ON pro.product_key = plan.product_key
+        LEFT JOIN tbl_order_contract con ON plan.contract_code = con.contract_code
+        INNER JOIN tbl_order_contract_materials cmat ON cmat.contract_code = con.contract_code AND cmat.product_key = pro.product_key
+        LEFT JOIN tbl_production_total total ON plan.product_key = total.product_key
+        LEFT JOIN tbl_inventory inven ON total.warehouse_key = inven.warehouse_key AND pro.product_key = inven.product_key
+        WHERE plan.is_executed = 1
+        AND plan.is_deleted = 0
+        AND con.is_deleted = 0
+        AND pro.asset_type_flag = 'F'
+        AND total.is_completed = 0
+
+        UNION
+
+        -- 자재 조회
+        SELECT
+        plan.plan_key,
+        con.contract_name,
+        plan.team_key,
+        material.product_key,
+        material.product_name,
+        material.product_code,
+        total.warehouse_key,
+        cmat.quantity as contract_quantity,
+        plan.plan_date AS contract_start_date,
+        con.delivery_date,
+        material.asset_type_flag as key_code,
+        total.is_completed
+        FROM tbl_production_plan plan
+        LEFT JOIN tbl_order_contract con ON plan.contract_code = con.contract_code
+        INNER JOIN tbl_product pro ON pro.product_key = plan.product_key
+        LEFT JOIN tbl_product_bom bom ON pro.product_key = bom.finished_key
+        LEFT JOIN tbl_product material ON material.product_key = bom.material_key
+        INNER JOIN tbl_order_contract_materials cmat ON cmat.contract_code = con.contract_code AND cmat.product_key = material.product_key
+        LEFT JOIN tbl_production_total total ON material.product_key = total.product_key
+        LEFT JOIN tbl_inventory inven ON total.warehouse_key = inven.warehouse_key AND material.product_key = inven.product_key
+        WHERE plan.is_executed = 1
+        AND plan.is_deleted = 0
+        AND con.is_deleted = 0
+        AND total.is_completed = 0
+        ) AS combined_results
+    </select>
+
     <!-- 실행 중인 수주 리스트를 total 데이터에 넣기 위한 select -->
     <select id="getPlanContractInfoList" resultType="com.wimir.bae.domain.plan.dto.PlanContractInfoDTO">
         SELECT
