@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wimir.bae.domain.team.mapper.StaffMapper">
+
+    <!-- 생산팀 인원 등록  -->
+    <insert id="createStaff" useGeneratedKeys="true" keyProperty="teamKey" keyColumn="team_key">
+        INSERT INTO tbl_production_team_staff (
+            user_key, team_key, is_vacated
+        ) VALUES (
+            #{userKey}, #{teamKey}, #{isVacated}
+        )
+    </insert>
+</mapper>
