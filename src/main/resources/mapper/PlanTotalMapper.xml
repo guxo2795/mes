@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.wimir.bae.domain.planTotal.mapper.PlanTotalMapper">
+
+    <!--  실적 추가   -->
+    <insert id="createResult">
+        INSERT INTO tbl_production_total (
+            plan_key, team_key, product_key, plan_quantity, execute_quantity, fault_quantity, contract_complete_date
+        )
+        VALUES (
+            #{planKey}, #{teamKey}, #{productKey}, #{planQuantity}, #{executeQuantity}, #{faultQuantity}, #{contractCompleteDate}
+        )
+    </insert>
+
+</mapper>
+
