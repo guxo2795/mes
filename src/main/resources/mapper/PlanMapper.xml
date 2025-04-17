@@ -107,4 +107,75 @@
           AND is_deleted = 0
     </select>
 
+    <!-- 실행 중인 수주 리스트를 total 데이터에 넣기 위한 select -->
+    <select id="getPlanContractInfoList" resultType="com.wimir.bae.domain.plan.dto.PlanContractInfoDTO">
+        SELECT
+            plan.plan_key,
+            contract.contract_name,
+            plan.team_key,
+            product.product_key,
+            product.product_name,
+            product.product_code,
+            total.warehouse_key,
+            materials.quantity as contract_quantity,
+            plan.plan_date AS contract_start_date,
+            contract.delivery_date,
+            product.asset_type_flag as key_code
+        FROM tbl_production_plan plan
+                 LEFT JOIN tbl_product product ON product.product_key = plan.product_key
+                 LEFT JOIN tbl_order_contract contract ON plan.contract_code = contract.contract_code
+                 INNER JOIN tbl_order_contract_materials materials ON materials.contract_code = contract.contract_code AND materials.product_key = product.product_key
+                 LEFT JOIN tbl_production_total total ON plan.plan_key = total.plan_key
+                 LEFT JOIN tbl_inventory inventory ON total.warehouse_key = inventory.warehouse_key AND product.product_key = inventory.product_key
+        WHERE plan.is_executed = 0
+          AND product.asset_type_flag = 'F'
+          AND plan.plan_key = #{planKey}
+          AND product.process_type_key != #{outsourced}
+
+        UNION
+
+        SELECT
+            plan.plan_key,
+            contract.contract_name,
+            plan.team_key,
+            material.product_key,
+            material.product_name,
+            material.product_code,
+            total.warehouse_key,
+            materials.quantity as contract_quantity,
+            plan.plan_date AS contract_start_date,
+            contract.delivery_date,
+            material.asset_type_flag as key_code
+        FROM tbl_production_plan plan
+                 LEFT JOIN tbl_order_contract contract ON plan.contract_code = contract.contract_code
+                 INNER JOIN tbl_product product ON product.product_key = plan.product_key
+                 LEFT JOIN tbl_product_bom bom ON product.product_key = bom.finished_key
+                 LEFT JOIN tbl_product material ON material.product_key = bom.material_key
+                 INNER JOIN tbl_order_contract_materials materials ON materials.contract_code = contract.contract_code
+            AND materials.product_key = material.product_key
+                 LEFT JOIN tbl_production_total total ON material.product_key = total.product_key
+                 LEFT JOIN tbl_inventory inventory ON total.warehouse_key = inventory.warehouse_key
+            AND material.product_key = inventory.product_key
+        WHERE plan.is_executed = 0
+          AND material.process_type_key != #{outsourced}
+          AND plan.plan_key = #{planKey}
+    </select>
+
+    <!-- 해당 생산 계획에 팀이 존재하는지 확인 -->
+    <select id="isPlanTeamExist" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(*) > 0, true, false)
+        FROM tbl_production_plan
+        WHERE team_Key IS NOT NULL
+          AND plan_key = #{palnKey}
+    </select>
+
+    <!-- 생산 계획 확정 -->
+    <update id="executedPlan">
+        UPDATE tbl_production_plan
+        SET is_executed = 1
+        WHERE is_deleted = 0
+          AND is_executed = 0
+          AND plan_key = #{planKey}
+    </update>
+
 </mapper>

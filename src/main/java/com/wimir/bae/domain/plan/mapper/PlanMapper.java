@@ -1,5 +1,6 @@
 package com.wimir.bae.domain.plan.mapper;
 
+import com.wimir.bae.domain.plan.dto.PlanContractInfoDTO;
 import com.wimir.bae.domain.plan.dto.PlanInfoDTO;
 import com.wimir.bae.domain.plan.dto.PlanModDTO;
 import com.wimir.bae.domain.plan.dto.PlanTotalSearchDTO;
@@ -37,4 +38,14 @@ public interface PlanMapper {
     // 생산 계획 키 유효성
     boolean isPlanKeyExist(String planKey);
     boolean isPlanAlreadyExecuted(String planKey);
+
+    // 실행 중인 수주 리스트를 total 데이터에 넣기 위한 select
+    List<PlanContractInfoDTO> getPlanContractInfoList(@Param("planKey") String planKey,
+                                                      @Param("outsourced") String outsourced);
+    
+    // 생산 계획 팀 존재 확인
+    boolean isPlanTeamExist(String planKey);
+
+    // 생산 계획 확정
+    void executedPlan(String planKey);
 }

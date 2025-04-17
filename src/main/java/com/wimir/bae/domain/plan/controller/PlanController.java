@@ -77,4 +77,22 @@ public class PlanController {
 
         return ResponseEntity.ok().body(responseDTO);
     }
+
+    // 생산 계획 확정
+    @PostMapping("completed")
+    public ResponseEntity<ResponseDTO<?>> executedPlan(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> planKeyList) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        planService.executedPlan(userLoginDTO, planKeyList.getList());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
 }
