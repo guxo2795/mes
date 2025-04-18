@@ -25,5 +25,47 @@
         WHERE total.result_key = #{resultKey}
     </select>
 
+    <!-- 실적 결과 리스트 -->
+    <select id="getResultList" resultType="com.wimir.bae.domain.planTotal.dto.PlanTotalInfoDTO">
+        SELECT
+        con.contract_code,
+        total.result_key,
+        plan.plan_date,
+        com.company_name,
+        sub.sub_common_name as team_name,
+        con.contract_name,
+        pro.product_name,
+        pro.product_code,
+        total.plan_quantity,
+        total.execute_quantity as sub_execute_quantity,
+        total.fault_quantity,
+        con.contract_date,
+        total.last_contract_date,
+        con.delivery_date,
+        total.note,
+        total.is_completed,
+        pro.standard_price,
+        (pro.standard_price * total.execute_quantity) AS totalPrice
+        FROM tbl_production_total total
+        LEFT JOIN tbl_production_plan plan ON plan.plan_key = total.plan_key
+        LEFT JOIN tbl_production_team team ON total.team_key = team.team_key
+        LEFT JOIN tbl_common_code_sub sub ON team.team_common_key = sub.sub_common_key
+        LEFT JOIN tbl_order_contract con ON plan.contract_code = con.contract_code
+        AND con.is_completed = 2
+        LEFT JOIN tbl_company com ON com.company_key = con.company_key
+        LEFT JOIN tbl_product pro ON pro.product_key = total.product_key
+        WHERE total.is_deleted = 0
+        AND com.company_key IS NOT NULL
+    </select>
+
+    <!--  실적 결과 특이사항 업로드  -->
+    <update id="updateResultNote">
+        UPDATE tbl_production_total
+        SET note = #{note}
+        WHERE
+            is_deleted = 0
+          AND result_key = #{resultKey}
+    </update>
+
 </mapper>
 

@@ -1,10 +1,10 @@
 package com.wimir.bae.domain.plan.mapper;
 
 import com.wimir.bae.domain.plan.dto.*;
+import com.wimir.bae.domain.plan.dto.PlanTotalSearchDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Mapper
