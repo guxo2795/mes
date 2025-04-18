@@ -1,8 +1,6 @@
 package com.wimir.bae.domain.plan.controller;
 
-import com.wimir.bae.domain.plan.dto.PlanContractInfoDTO;
-import com.wimir.bae.domain.plan.dto.PlanInfoDTO;
-import com.wimir.bae.domain.plan.dto.PlanModDTO;
+import com.wimir.bae.domain.plan.dto.*;
 import com.wimir.bae.domain.plan.service.PlanService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.dto.ListWrapperDTO;
@@ -112,5 +110,42 @@ public class PlanController {
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 작업지시 - 창고 연결
+    @PostMapping("warehouse/update")
+    public ResponseEntity<ResponseDTO<?>> updatePlanTotalWarehouse(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid UpdateWarehouseDTO updateWarehouseDTO){
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        planService.updatePlanTotalWarehouse(userLoginDTO, updateWarehouseDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 작업지시 - 창고 내 수량 확인
+    @GetMapping("warehouse/list")
+    public ResponseEntity<ResponseDTO<List<PlanWarehouseDTO>>> listWarehouseProduct(
+            @RequestHeader("Authorization") String accessToken,
+            @ModelAttribute @Valid String productKey ){
+
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<PlanWarehouseDTO> list = planService.listWarehouseProduct(productKey);
+
+        ResponseDTO<List<PlanWarehouseDTO>> responseDTO =
+                ResponseDTO.<List<PlanWarehouseDTO>> builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+
     }
 }

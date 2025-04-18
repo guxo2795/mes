@@ -1,8 +1,6 @@
 package com.wimir.bae.domain.plan.service;
 
-import com.wimir.bae.domain.plan.dto.PlanContractInfoDTO;
-import com.wimir.bae.domain.plan.dto.PlanInfoDTO;
-import com.wimir.bae.domain.plan.dto.PlanModDTO;
+import com.wimir.bae.domain.plan.dto.*;
 import com.wimir.bae.domain.plan.mapper.PlanMapper;
 import com.wimir.bae.domain.planTotal.mapper.PlanTotalMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -91,6 +89,21 @@ public class PlanService {
     @Transactional(readOnly = true)
     public List<PlanContractInfoDTO> listPlanContract() {
         return Optional.ofNullable(planMapper.listPlanContract())
+                .orElse(Collections.emptyList());
+    }
+
+    public void updatePlanTotalWarehouse(UserLoginDTO userLoginDTO, UpdateWarehouseDTO updateWarehouseDTO) {
+
+        if(!planMapper.isPlanDetailListExist(updateWarehouseDTO.getPlanKey(),updateWarehouseDTO.getProductKey())){
+            throw new CustomRuntimeException("이미 생산 확정된 물품이 있습니다.");
+        }
+
+        planMapper.updatePlanTotalWarehouse(updateWarehouseDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlanWarehouseDTO> listWarehouseProduct(String productKey) {
+        return Optional.ofNullable(planMapper.listWarehouseProduct(productKey))
                 .orElse(Collections.emptyList());
     }
 }

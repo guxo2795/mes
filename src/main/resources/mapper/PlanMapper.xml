@@ -238,4 +238,44 @@
           AND plan_key = #{planKey}
     </update>
 
+    <!-- 생산 확정된 물품 확인 -->
+    <select id="isPlanDetailListExist" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(*) > 0, true, false)
+        FROM tbl_production_total total
+                 INNER JOIN tbl_production_detail detail
+                         ON total.plan_key = detail.plan_key
+                        AND total.product_key = detail.product_key
+        WHERE total.plan_key = #{palnKey}
+          AND total.product_key = #{productKey}
+    </select>
+
+    <!-- 실적에 업데이트 할 창고 업데이트 -->
+    <update id="updatePlanTotalWarehouse">
+        UPDATE tbl_production_total
+        SET warehouse_key = #{warehouseKey}
+        WHERE plan_key = #{planKey}
+          AND product_key = #{productKey}
+          AND is_deleted = 0
+          AND is_completed = 0
+    </update>
+
+    <!-- 창고 품목 리스트 -->
+    <select id="listWarehouseProduct" resultType="com.wimir.bae.domain.plan.dto.PlanWarehouseDTO">
+        SELECT
+            pro.product_key,
+            ware.warehouse_key,
+            ware.warehouse_name,
+            ware.location,
+            inven.quantity
+        FROM tbl_product pro
+                 LEFT JOIN tbl_inventory inven
+                           ON pro.product_key = inven.product_key
+                 LEFT JOIN tbl_warehouse ware
+                           ON inven.warehouse_key = ware.warehouse_key
+        WHERE pro.product_key = #{productKey}
+          AND pro.is_deleted = 0
+          AND ware.is_deleted = 0
+        ORDER BY ware.warehouse_name ASC
+    </select>
+
 </mapper>

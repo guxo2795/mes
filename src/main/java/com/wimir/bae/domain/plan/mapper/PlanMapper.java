@@ -1,9 +1,6 @@
 package com.wimir.bae.domain.plan.mapper;
 
-import com.wimir.bae.domain.plan.dto.PlanContractInfoDTO;
-import com.wimir.bae.domain.plan.dto.PlanInfoDTO;
-import com.wimir.bae.domain.plan.dto.PlanModDTO;
-import com.wimir.bae.domain.plan.dto.PlanTotalSearchDTO;
+import com.wimir.bae.domain.plan.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -51,4 +48,13 @@ public interface PlanMapper {
 
     // 생산 계획 확정
     void executedPlan(String planKey);
+
+    // 생산 확정된 물품 확인
+    boolean isPlanDetailListExist(String planKey, String productKey);
+
+    // 생산실적 창고 업데이트
+    void updatePlanTotalWarehouse(UpdateWarehouseDTO updateWarehouseDTO);
+
+    // 창고 품목 리스트
+    List<PlanWarehouseDTO> listWarehouseProduct(String productKey);
 }
