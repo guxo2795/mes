@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wimir.bae.domain.planDetail.mapper.PlanDetailMapper">
+
+    <!-- 작업지시서 등록 -->
+    <insert id="createPlanDetailQuantity">
+        INSERT INTO tbl_production_detail (
+            plan_key,
+            team_key,
+            product_key,
+            execute_quantity,
+            sub_execute_quantity,
+            fault_quantity,
+            execute_date
+        )
+        VALUES (
+             #{planKey},
+             #{teamKey},
+             #{productKey},
+             #{executeQuantity},
+             #{subExecuteQuantity},
+             #{faultQuantity},
+             #{executeDate}
+        )
+    </insert>
+
+    <!-- 실적이 이미 등록 되어 있는지 확인 -->
+    <select id="isExistDetail" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(*) > 0, true, false)
+        FROM tbl_production_detail
+        WHERE is_deleted = 0
+          AND plan_key = #{planKey}
+          AND execute_date = #{executeDate}
+          AND product_key = #{productKey}
+    </select>
+
+    <!-- 작업지시서에 등록된 총 수량 -->
+    <select id="getTotalRegisteredQuantity" resultType="string">
+        SELECT COALESCE(SUM(execute_quantity), 0)
+        FROM tbl_production_detail
+        WHERE plan_key = #{planKey}
+          AND product_key = #{productKey}
+    </select>
+
+    <!-- 생산계획서에 등록된 수주 수량 -->
+    <select id="getPlanOrderedQuantity" resultType="string">
+        SELECT plan_quantity
+        FROM tbl_production_plan
+        WHERE plan_key = #{planKey}
+          AND product_key = #{productKey}
+    </select>
+
+</mapper>
