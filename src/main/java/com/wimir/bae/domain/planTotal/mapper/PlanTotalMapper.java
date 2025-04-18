@@ -14,4 +14,7 @@ public interface PlanTotalMapper {
                       @Param("executeQuantity") String executeQuantity,
                       @Param("faultQuantity") String faultQuantity,
                       @Param("contractCompleteDate") String contractCompleteDate);
+
+    // 완제품인지 자재인지 확인
+    boolean checkAssetTypeFlag(String resultKey);
 }

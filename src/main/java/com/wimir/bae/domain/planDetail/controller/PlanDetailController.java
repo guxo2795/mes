@@ -81,12 +81,30 @@ public class PlanDetailController {
 
     // 작업지시서 상세 삭제
     @PostMapping("delete")
-    public ResponseEntity<ResponseDTO<?>> deleteResult (
+    public ResponseEntity<ResponseDTO<?>> deletePlanDetail (
             @RequestHeader("Authorization") String accessToken,
             @RequestBody @Valid ListWrapperDTO<String> detailKeyList ) {
 
         UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
         planDetailService.deletePlanDetail(detailKeyList.getList(), userLoginDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 작업지시서 상세 확정
+    @PostMapping("completed")
+    public ResponseEntity<ResponseDTO<?>> updatePlanDetailCompleted (
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> detailKeyList ) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        planDetailService.updatePlanDetailCompleted(detailKeyList.getList(), userLoginDTO);
 
         ResponseDTO<?> responseDTO =
                 ResponseDTO.builder()

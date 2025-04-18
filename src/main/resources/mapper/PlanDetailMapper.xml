@@ -52,7 +52,7 @@
           AND execute_date = #{executeDate}
     </update>
 
-    <!-- 작업 지시서 삭제 -->
+    <!-- 작업지시서 상세 삭제 -->
     <delete id="deletePlanDetail">
         UPDATE tbl_production_detail
         SET is_deleted = 1
@@ -61,6 +61,17 @@
           AND is_completed = 0
           AND detail_key = #{detailKey}
     </delete>
+
+    <!-- 작업지시서 상세 확정-->
+    <update id="updatePlanDetailCompleted">
+        UPDATE tbl_production_detail
+        SET is_completed = 1
+        WHERE
+            is_completed = 0
+          AND is_deleted = 0
+          AND detail_key = #{detailKey}
+    </update>
+
 
     <!-- 실적이 이미 등록 되어 있는지 확인 -->
     <select id="isExistDetail" resultType="java.lang.Boolean">
@@ -95,5 +106,58 @@
         WHERE is_completed = 0
           AND detail_key = #{detailKey}
     </select>
+
+    <!-- 작업지시서 상세+생산실적 정보 -->
+    <select id="listDetailWarehouse" resultType="com.wimir.bae.domain.planDetail.dto.DetailWarehouseDTO">
+        SELECT
+            total.plan_key,
+            total.product_key,
+            contract.contract_name,
+            detail.detail_key,
+            detail.sub_execute_quantity as execute_quantity,
+            detail.fault_quantity,
+            detail.execute_date,
+            total.warehouse_key,
+            total.result_key
+        FROM tbl_production_detail detail
+                 LEFT JOIN tbl_production_total total
+                           ON total.plan_key = detail.plan_key
+                               AND total.product_key = detail.product_key
+                 LEFT JOIN tbl_production_plan plan
+                           ON plan.plan_key = detail.plan_key
+                 LEFT JOIN tbl_order_contract contract
+                           ON contract.contract_code = plan.contract_code
+        WHERE detail.detail_key = #{detailKey}
+    </select>
+
+    <!-- 불량 결과 쪽 값 전달 업데이트 (추가 + 기능) -->
+    <update id="updateFaultForTotal">
+        UPDATE tbl_production_total
+        SET fault_quantity = fault_quantity + #{faultQuantity}
+        WHERE
+            plan_key = #{planKey}
+          AND product_key = #{productKey}
+          AND is_completed = 0
+    </update>
+
+    <!-- 생산 결과 쪽 값 전달 업데이트 (추가 + 기능) -->
+    <update id="updateExecuteForTotal">
+        UPDATE tbl_production_total
+        SET execute_quantity = execute_quantity + #{executeQuantity},
+            last_contract_date = CURRENT_DATE
+        WHERE plan_key = #{planKey}
+          AND product_key = #{productKey}
+          AND is_completed = 0
+    </update>
+
+    <!-- 생산 결과 쪽 값 전달 업데이트 (추가 + 기능) -->
+    <update id="updateExecuteForPlan">
+        UPDATE tbl_production_plan
+        SET sub_plan_quantity = sub_plan_quantity + #{executeQuantity}
+        WHERE
+            plan_key = #{planKey}
+          AND product_key = #{productKey}
+          AND is_deleted = 0
+    </update>
 
 </mapper>

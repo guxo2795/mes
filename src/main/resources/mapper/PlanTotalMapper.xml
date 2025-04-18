@@ -16,5 +16,14 @@
         )
     </insert>
 
+    <!--  완제품인지 자재인지 확인  -->
+    <select id="checkAssetTypeFlag" resultType="java.lang.Boolean">
+        SELECT IF(product.asset_type_flag != 'F', true, false)
+        FROM tbl_production_total total
+                 LEFT JOIN tbl_product product
+                           ON total.product_key = product.product_key
+        WHERE total.result_key = #{resultKey}
+    </select>
+
 </mapper>
 

@@ -1,9 +1,6 @@
 package com.wimir.bae.domain.planDetail.mapper;
 
-import com.wimir.bae.domain.planDetail.dto.DetailInfoDTO;
-import com.wimir.bae.domain.planDetail.dto.DetailSearchDTO;
-import com.wimir.bae.domain.planDetail.dto.PlanDetailQuantityModDTO;
-import com.wimir.bae.domain.planDetail.dto.PlanDetailRegDTO;
+import com.wimir.bae.domain.planDetail.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,7 +20,11 @@ public interface PlanDetailMapper {
 
     // 작업지시서 상세 삭제
     void deletePlanDetail(String detailKey);
-    
+
+    // 작업지시서 상세 확정
+    void updatePlanDetailCompleted(String detailKey);
+
+
     // 실적 중복 확인
     boolean isExistDetail(@Param("planKey") String planKey,
                           @Param("productKey") String productKey,
@@ -39,4 +40,19 @@ public interface PlanDetailMapper {
 
     // 지시서 확정 여부
     boolean checkPlanDetailCompleted(String detailKey);
+
+    // 작업지시서 상세+생산실적 정보
+    List<DetailWarehouseDTO> listDetailWarehouse(String detailKey);
+
+    // 불량 결과 쪽 값 전달 업데이트 (추가 + 기능)
+    void updateFaultForTotal(@Param("planKey") String planKey,
+                             @Param("productKey") String productKey,
+                             @Param("faultQuantity") int faultQuantity);
+    // 생산 결과 쪽 값 전달 업데이트 (추가 + 기능)
+    void updateExecuteForTotal(@Param("planKey") String planKey,
+                               @Param("productKey") String productKey,
+                               @Param("executeQuantity") int executeQuantity);
+
+    // 생산 결과 쪽 값 전달 업데이트 (추가 + 기능)
+    void updateExecuteForPlan(String planKey, String productKey, int executeQuantity);
 }
