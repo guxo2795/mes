@@ -52,6 +52,16 @@
           AND execute_date = #{executeDate}
     </update>
 
+    <!-- 작업 지시서 삭제 -->
+    <delete id="deletePlanDetail">
+        UPDATE tbl_production_detail
+        SET is_deleted = 1
+        WHERE
+            is_deleted = 0
+          AND is_completed = 0
+          AND detail_key = #{detailKey}
+    </delete>
+
     <!-- 실적이 이미 등록 되어 있는지 확인 -->
     <select id="isExistDetail" resultType="java.lang.Boolean">
         SELECT IF(COUNT(*) > 0, true, false)

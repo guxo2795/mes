@@ -6,6 +6,7 @@ import com.wimir.bae.domain.planDetail.dto.PlanDetailQuantityModDTO;
 import com.wimir.bae.domain.planDetail.dto.PlanDetailRegDTO;
 import com.wimir.bae.domain.planDetail.service.PlanDetailService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +69,24 @@ public class PlanDetailController {
 
         UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "U");
         planDetailService.updatePlanDetailQuantity(regDTO,userLoginDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 작업지시서 상세 삭제
+    @PostMapping("delete")
+    public ResponseEntity<ResponseDTO<?>> deleteResult (
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> detailKeyList ) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        planDetailService.deletePlanDetail(detailKeyList.getList(), userLoginDTO);
 
         ResponseDTO<?> responseDTO =
                 ResponseDTO.builder()

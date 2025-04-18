@@ -54,4 +54,13 @@ public class PlanDetailService {
 
         planDetailMapper.updatePlanDetailQuantity(regDTO);
     }
+
+    public void deletePlanDetail(List<String> detailKeyList, UserLoginDTO userLoginDTO) {
+
+        for (String detailKey : detailKeyList) {
+            if (!planDetailMapper.checkPlanDetailCompleted(detailKey))
+                throw new CustomRuntimeException("이미 확정된 지시서입니다.");
+            planDetailMapper.deletePlanDetail(detailKey);
+        }
+    }
 }

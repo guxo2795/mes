@@ -20,6 +20,9 @@ public interface PlanDetailMapper {
 
     // 작업지시서 상세 수정 (계획, 생산, 불량 수량)
     void updatePlanDetailQuantity(PlanDetailQuantityModDTO regDTO);
+
+    // 작업지시서 상세 삭제
+    void deletePlanDetail(String detailKey);
     
     // 실적 중복 확인
     boolean isExistDetail(@Param("planKey") String planKey,
@@ -31,7 +34,8 @@ public interface PlanDetailMapper {
                                       @Param("productKey") String productKey);
 
     // 생산계획서에 등록된 수주 수량
-    String getPlanOrderedQuantity(String planKey, String productKey);
+    String getPlanOrderedQuantity(@Param("planKey") String planKey,
+                                  @Param("productKey") String productKey);
 
     // 지시서 확정 여부
     boolean checkPlanDetailCompleted(String detailKey);
