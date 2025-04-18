@@ -42,6 +42,16 @@
         AND product_key = #{productKey}
     </select>
 
+    <!-- 작업지시서 상세 수정 (계획, 생산, 불량 수량) -->
+    <update id="updatePlanDetailQuantity">
+        UPDATE tbl_production_detail
+        SET execute_quantity = #{executeQuantity},
+            sub_execute_quantity = #{subExecuteQuantity},
+            fault_quantity = #{faultQuantity}
+        WHERE detail_key = #{detailKey}
+          AND execute_date = #{executeDate}
+    </update>
+
     <!-- 실적이 이미 등록 되어 있는지 확인 -->
     <select id="isExistDetail" resultType="java.lang.Boolean">
         SELECT IF(COUNT(*) > 0, true, false)
@@ -66,6 +76,14 @@
         FROM tbl_production_plan
         WHERE plan_key = #{planKey}
           AND product_key = #{productKey}
+    </select>
+
+    <!-- 확정 여부 체크 -->
+    <select id="checkPlanDetailCompleted" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(*) > 0, true, false)
+        FROM tbl_production_detail
+        WHERE is_completed = 0
+          AND detail_key = #{detailKey}
     </select>
 
 </mapper>

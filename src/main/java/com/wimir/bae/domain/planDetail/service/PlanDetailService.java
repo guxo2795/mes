@@ -3,6 +3,7 @@ package com.wimir.bae.domain.planDetail.service;
 import com.wimir.bae.domain.plan.mapper.PlanMapper;
 import com.wimir.bae.domain.planDetail.dto.DetailInfoDTO;
 import com.wimir.bae.domain.planDetail.dto.DetailSearchDTO;
+import com.wimir.bae.domain.planDetail.dto.PlanDetailQuantityModDTO;
 import com.wimir.bae.domain.planDetail.dto.PlanDetailRegDTO;
 import com.wimir.bae.domain.planDetail.mapper.PlanDetailMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -44,5 +45,13 @@ public class PlanDetailService {
     public List<DetailInfoDTO> getDetailList(DetailSearchDTO searchDTO) {
         return Optional.ofNullable(planDetailMapper.getDetailList(searchDTO))
                 .orElse(Collections.emptyList());
+    }
+
+    public void updatePlanDetailQuantity(PlanDetailQuantityModDTO regDTO, UserLoginDTO userLoginDTO) {
+
+        if (!planDetailMapper.checkPlanDetailCompleted(regDTO.getDetailKey()))
+            throw new CustomRuntimeException("이미 확정된 지시서입니다.");
+
+        planDetailMapper.updatePlanDetailQuantity(regDTO);
     }
 }

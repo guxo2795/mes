@@ -2,6 +2,7 @@ package com.wimir.bae.domain.planDetail.controller;
 
 import com.wimir.bae.domain.planDetail.dto.DetailInfoDTO;
 import com.wimir.bae.domain.planDetail.dto.DetailSearchDTO;
+import com.wimir.bae.domain.planDetail.dto.PlanDetailQuantityModDTO;
 import com.wimir.bae.domain.planDetail.dto.PlanDetailRegDTO;
 import com.wimir.bae.domain.planDetail.service.PlanDetailService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -24,7 +25,7 @@ public class PlanDetailController {
 
     // 작업지시서 생성
     @PostMapping("create")
-    public ResponseEntity<ResponseDTO<?>> createResultQuantity(
+    public ResponseEntity<ResponseDTO<?>> createPlanDetailQuantity(
             @RequestHeader("Authorization") String accessToken,
             @RequestBody @Valid PlanDetailRegDTO regDTO ) {
 
@@ -58,4 +59,24 @@ public class PlanDetailController {
         return ResponseEntity.ok().body(responseDTO);
 
     }
+
+    // 작업지시서 상세 수정 (계획, 생산, 불량 수량)
+    @PostMapping("update")
+    public ResponseEntity<ResponseDTO<?>> updatePlanDetailQuantity(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid PlanDetailQuantityModDTO regDTO ) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "U");
+        planDetailService.updatePlanDetailQuantity(regDTO,userLoginDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    
 }
