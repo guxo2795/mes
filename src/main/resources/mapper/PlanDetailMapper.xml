@@ -27,6 +27,21 @@
         )
     </insert>
 
+    <!-- 작업지시서 상세 리스트 -->
+    <select id="getDetailList" resultType="com.wimir.bae.domain.planDetail.dto.DetailInfoDTO">
+        SELECT
+        detail_key,
+        execute_date,
+        execute_quantity,
+        sub_execute_quantity,
+        fault_quantity,
+        is_completed
+        FROM tbl_production_detail
+        WHERE is_deleted = 0
+        AND plan_key = #{planKey}
+        AND product_key = #{productKey}
+    </select>
+
     <!-- 실적이 이미 등록 되어 있는지 확인 -->
     <select id="isExistDetail" resultType="java.lang.Boolean">
         SELECT IF(COUNT(*) > 0, true, false)

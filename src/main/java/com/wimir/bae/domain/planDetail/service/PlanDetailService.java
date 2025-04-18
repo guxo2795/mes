@@ -1,6 +1,8 @@
 package com.wimir.bae.domain.planDetail.service;
 
 import com.wimir.bae.domain.plan.mapper.PlanMapper;
+import com.wimir.bae.domain.planDetail.dto.DetailInfoDTO;
+import com.wimir.bae.domain.planDetail.dto.DetailSearchDTO;
 import com.wimir.bae.domain.planDetail.dto.PlanDetailRegDTO;
 import com.wimir.bae.domain.planDetail.mapper.PlanDetailMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -10,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,5 +38,11 @@ public class PlanDetailService {
         }
 
         planDetailMapper.createPlanDetailQuantity(regDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public List<DetailInfoDTO> getDetailList(DetailSearchDTO searchDTO) {
+        return Optional.ofNullable(planDetailMapper.getDetailList(searchDTO))
+                .orElse(Collections.emptyList());
     }
 }

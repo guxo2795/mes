@@ -1,8 +1,12 @@
 package com.wimir.bae.domain.planDetail.mapper;
 
+import com.wimir.bae.domain.planDetail.dto.DetailInfoDTO;
+import com.wimir.bae.domain.planDetail.dto.DetailSearchDTO;
 import com.wimir.bae.domain.planDetail.dto.PlanDetailRegDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface PlanDetailMapper {
@@ -10,7 +14,8 @@ public interface PlanDetailMapper {
     // 작업지시서 등록
     void createPlanDetailQuantity(PlanDetailRegDTO regDTO);
 
-
+    // 작업지시서 상세 리스트
+    List<DetailInfoDTO> getDetailList(DetailSearchDTO searchDTO);
 
     // 실적 중복 확인
     boolean isExistDetail(@Param("planKey") String planKey,
