@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.order.service;
 
 import com.wimir.bae.domain.company.mapper.CompanyMapper;
+import com.wimir.bae.domain.order.dto.OrderInfoDTO;
 import com.wimir.bae.domain.order.dto.OrderRegDTO;
 import com.wimir.bae.domain.order.mapper.OrderMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +32,11 @@ public class OrderService {
         }
 
         orderMapper.createOrder(orderRegDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderInfoDTO> getOrderList() {
+        return Optional.ofNullable(orderMapper.getOrderList())
+                .orElse(Collections.emptyList());
     }
 }

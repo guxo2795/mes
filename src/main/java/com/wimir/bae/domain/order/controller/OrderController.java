@@ -1,5 +1,6 @@
 package com.wimir.bae.domain.order.controller;
 
+import com.wimir.bae.domain.order.dto.OrderInfoDTO;
 import com.wimir.bae.domain.order.dto.OrderRegDTO;
 import com.wimir.bae.domain.order.service.OrderService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,4 +38,22 @@ public class OrderController {
 
         return ResponseEntity.ok().body(responseDTO);
     }
+    
+    // 자재 발주 목록
+    @GetMapping("/list")
+    public ResponseEntity<ResponseDTO<List<OrderInfoDTO>>> getOrderList(
+            @RequestHeader("Authorization") String accessToken) {
+
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<OrderInfoDTO> list = orderService.getOrderList();
+
+        ResponseDTO<List<OrderInfoDTO>> response =
+                ResponseDTO.<List<OrderInfoDTO>>builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
+    }
+
 }

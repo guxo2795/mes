@@ -15,4 +15,37 @@
         )
     </insert>
 
+    <!-- 자재 발주 목록 -->
+    <select id="getOrderList" resultType="com.wimir.bae.domain.order.dto.OrderInfoDTO">
+        WITH order_info AS (
+            SELECT
+                orders.order_key, com.company_key,
+                com.company_name, orders.order_name,
+                orders.order_date, orders.send_date,
+                orders.is_completed, orders.reg_date_time
+            FROM tbl_order orders
+                     LEFT JOIN tbl_company com
+                               ON orders.company_key = com.company_key
+            WHERE orders.is_deleted = 0
+        ),
+             material_info AS (
+                 SELECT
+                     mat.order_key, mat.quantity AS quantity,
+                     pro.standard_price AS standardPrice,
+                     SUM(mat.quantity * pro.standard_price) AS total_price
+                 FROM tbl_order_materials mat
+                          LEFT JOIN tbl_product pro
+                                    ON mat.product_key = pro.product_key
+                 WHERE mat.is_deleted = 0
+                 GROUP BY mat.order_key
+             )
+        SELECT
+            oi.*, mi.quantity, mi.standardPrice,
+            COALESCE(mi.total_price, 0) AS totalOrderPrice
+        FROM order_info oi
+                 LEFT JOIN material_info mi
+                           ON oi.order_key = mi.order_key
+        ORDER BY oi.reg_date_time DESC, oi.send_date, oi.order_date
+    </select>
+
 </mapper>
