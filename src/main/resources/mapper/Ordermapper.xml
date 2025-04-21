@@ -48,4 +48,27 @@
         ORDER BY oi.reg_date_time DESC, oi.send_date, oi.order_date
     </select>
 
+    <!-- 자재 발주 정보 -->
+    <select id="getOrderInfo" resultType="com.wimir.bae.domain.order.dto.OrderInfoDTO">
+        SELECT *
+        FROM tbl_order
+        WHERE is_deleted = 0
+          AND order_key = #{orderKey}
+    </select>
+
+    <!-- 자재 발주 수정 -->
+    <update id="updateOrder">
+        UPDATE tbl_order
+        SET
+        <if test="orderDate != null and orderDate != ''">
+            order_date = #{orderDate},
+        </if>
+        <if test="sendDate != null and sendDate != ''">
+            send_date = #{sendDate},
+        </if>
+            order_name = #{orderName}
+        WHERE is_deleted = 0
+          AND order_key = #{orderKey}
+    </update>
+
 </mapper>

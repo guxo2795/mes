@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.order.controller;
 
 import com.wimir.bae.domain.order.dto.OrderInfoDTO;
+import com.wimir.bae.domain.order.dto.OrderModDTO;
 import com.wimir.bae.domain.order.dto.OrderRegDTO;
 import com.wimir.bae.domain.order.service.OrderService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -54,6 +55,24 @@ public class OrderController {
                         .build();
 
         return ResponseEntity.ok().body(response);
+    }
+
+    // 자재 발주 수정
+    @PostMapping("/update")
+    public ResponseEntity<ResponseDTO<?>> updateOrder(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid OrderModDTO orderModDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        orderService.updateOrder(userLoginDTO, orderModDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
 }
