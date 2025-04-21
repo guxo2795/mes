@@ -67,5 +67,104 @@
           AND result_key = #{resultKey}
     </update>
 
+    <!-- 실적 결과 확정 여부   -->
+    <select id="isCompleted" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(*) > 0, true, false)
+        FROM tbl_production_total
+        WHERE
+            result_key = #{resultKey}
+          AND is_completed = 0;
+    </select>
+
+    <!-- 완제품에 필요한 자재 실적 결과 확정 여부 -->
+    <select id="isCompletedMaterial" resultType="java.lang.Boolean">
+        SELECT
+            IF(MIN(all_results.is_completed) = 1, true, false) as is_completed
+        FROM (
+                 SELECT totalC.is_completed
+                 FROM tbl_production_total total
+                          LEFT JOIN tbl_production_plan plan
+                                    ON plan.plan_key = total.plan_key
+                          LEFT JOIN tbl_order_contract_materials materials
+                                    ON materials.contract_code = plan.contract_code
+                          LEFT JOIN tbl_production_total totalC
+                                    ON materials.product_key = totalC.product_key
+                                        AND total.plan_key = totalC.plan_key
+                                        AND total.product_key != totalC.product_key
+                 WHERE total.result_key = #{resultKey}
+                   AND totalC.is_completed IS NOT NULL
+             ) as all_results
+    </select>
+
+    <!-- 실적 결과 확정   -->
+    <update id="completedResult">
+        UPDATE tbl_production_total
+        SET is_completed = 1
+        WHERE
+            is_deleted = 0
+          AND result_key = #{resultKey}
+    </update>
+
+    <!--  실적 확정에 필요한 리스트 불러오기  -->
+    <select id="listPlanTotalResult" resultType="com.wimir.bae.domain.planTotal.dto.PlanTotalResultDTO">
+        SELECT
+            plan.plan_key,
+            cmat.product_key,
+            cmat.quantity as plan_quantity,
+            total.execute_quantity,
+            cmat.contract_material_key,
+            total.warehouse_key,
+            ware.warehouse_name,
+            cmat.contract_code AS contract_key
+        FROM tbl_production_total total
+                 LEFT JOIN tbl_production_plan plan
+                           ON plan.plan_key = total.plan_key
+                 LEFT JOIN tbl_order_contract con
+                           ON plan.contract_code = con.contract_code
+                 LEFT JOIN tbl_order_contract_materials cmat
+                           ON con.contract_code = cmat.contract_code
+                               AND total.product_key = cmat.product_key
+                 LEFT JOIN tbl_warehouse ware
+                           ON total.warehouse_key = ware.warehouse_key
+        WHERE result_key = #{resultKey}
+    </select>
+
+    <!-- incoming 추가   -->
+    <insert id="insertIncomingProduct">
+        INSERT INTO tbl_incoming
+        (
+            product_key, warehouse_key, material_key, incoming_type_flag, quantity, note, incoming_date_time
+        )
+        VALUES
+            (
+            #{productKey}, #{warehouseKey}, #{contractMaterialKey}, #{incomingTypeFlag}, #{executeQuantity} ,#{note}, CURRENT_TIMESTAMP
+        )
+    </insert>
+
+    <!--  창고 업데이트   -->
+    <update id="updateWarehouse">
+        UPDATE tbl_production_total
+        SET warehouse_key = #{warehouseKey}
+        WHERE
+            is_deleted = 0
+          AND result_key = #{resultKey}
+    </update>
+
+    <!-- inventory에 값이 있는지 체크   -->
+    <select id="checkInventory" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(*) > 0, true, false)
+        FROM tbl_inventory
+        WHERE
+            product_key = #{productKey}
+          AND warehouse_key =#{warehouseKey}
+    </select>
+
+    <!-- inventory 업로드   -->
+    <update id="updateInventory">
+        UPDATE tbl_inventory
+        SET quantity = quantity + #{executeQuantity}
+        WHERE product_key = #{productKey}
+          AND warehouse_key = #{warehouseKey}
+    </update>
 </mapper>
 

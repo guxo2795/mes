@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.planTotal.controller;
 
 import com.wimir.bae.domain.plan.dto.PlanTotalSearchDTO;
+import com.wimir.bae.domain.planTotal.dto.PlanTotalCompletedDTO;
 import com.wimir.bae.domain.planTotal.dto.PlanTotalInfoDTO;
 import com.wimir.bae.domain.planTotal.dto.PlanTotalModDTO;
 import com.wimir.bae.domain.planTotal.service.PlanTotalService;
@@ -23,7 +24,7 @@ public class PlanTotalController {
     private final PlanTotalService planTotalService;
 
     // 생산 실적 결과 리스트
-    @GetMapping("/list")
+    @GetMapping("list")
     public ResponseEntity<ResponseDTO<List<PlanTotalInfoDTO>>> getResultList(
             @RequestHeader("Authorization") String accessToken) {
 
@@ -40,7 +41,7 @@ public class PlanTotalController {
     }
 
     // 생산 실적 결과 특이사항 메모
-    @PostMapping("/update")
+    @PostMapping("update")
     public ResponseEntity<ResponseDTO<?>> updateResultNote(
             @RequestHeader("Authorization") String accessToken,
             @RequestBody @Valid PlanTotalModDTO modDTO ) {
@@ -52,6 +53,24 @@ public class PlanTotalController {
                 ResponseDTO.builder()
                         .result(1)
                         .message("정상 처리 되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 생산 실적 결과 확인
+    @PostMapping("completed")
+    public ResponseEntity<ResponseDTO<?>> completedResult(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid PlanTotalCompletedDTO planTotalCompletedDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        planTotalService.completedResult(userLoginDTO, planTotalCompletedDTO.getResultKey() , planTotalCompletedDTO.getWarehouseKey());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
