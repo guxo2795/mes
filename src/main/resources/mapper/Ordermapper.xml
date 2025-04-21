@@ -71,4 +71,23 @@
           AND order_key = #{orderKey}
     </update>
 
+    <!-- 자재 발주 삭제 -->
+    <update id="deleteOrder">
+        UPDATE tbl_order
+        SET is_deleted = 1
+        WHERE
+            is_deleted = 0
+          AND order_key = #{orderKey}
+    </update>
+
+    <!-- 자재 발주 완료(종결) -->
+    <update id="completeOrder">
+        UPDATE tbl_order
+        SET is_completed = 1
+        WHERE
+            is_deleted = 0
+          AND is_completed = 0
+          AND order_key = #{orderKey}
+    </update>
+
 </mapper>

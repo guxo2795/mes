@@ -22,4 +22,7 @@ public interface OrderMapper {
 
     // 자재 발주 수정
     void updateOrder(OrderModDTO orderModDTO);
+
+    // 자재 발주 삭제
+    void deleteOrder(String orderKey);
 }

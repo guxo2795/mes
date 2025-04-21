@@ -2,9 +2,13 @@ package com.wimir.bae.domain.order.service;
 
 import ch.qos.logback.core.util.TimeUtil;
 import com.wimir.bae.domain.company.mapper.CompanyMapper;
+import com.wimir.bae.domain.incoming.dto.IncomingQuantityDTO;
+import com.wimir.bae.domain.incoming.mapper.IncomingMapper;
 import com.wimir.bae.domain.order.dto.OrderInfoDTO;
+import com.wimir.bae.domain.order.dto.OrderItemInfoDTO;
 import com.wimir.bae.domain.order.dto.OrderModDTO;
 import com.wimir.bae.domain.order.dto.OrderRegDTO;
+import com.wimir.bae.domain.order.mapper.OrderItemMapper;
 import com.wimir.bae.domain.order.mapper.OrderMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +32,8 @@ public class OrderService {
 
     private final OrderMapper orderMapper;
     private final CompanyMapper companyMapper;
+    private final OrderItemMapper orderItemMapper;
+    private final IncomingMapper incomingMapper;
 
     public void createOrder(UserLoginDTO userLoginDTO, OrderRegDTO orderRegDTO) {
         
@@ -97,5 +104,37 @@ public class OrderService {
         }
 
         orderMapper.updateOrder(orderModDTO);
+    }
+
+    public void deleteOrder(UserLoginDTO userLoginDTO, List<String> list) {
+
+        for(String orderKey : list) {
+
+            // 종결 여부 검사
+            OrderInfoDTO orderInfo = orderMapper.getOrderInfo(orderKey);
+            if(!"0".equals(orderInfo.getIsCompleted())) {
+                throw new CustomRuntimeException("종결된 발주는 삭제할 수 없습니다.");
+            }
+            
+            // 발주 품목 중 입고되지 않은 수량이 있는 지 검사
+            List<OrderItemInfoDTO> orderItemList = orderItemMapper.getOrderItemList();
+            for(OrderItemInfoDTO orderItemInfoDTO : orderItemList) {
+                IncomingQuantityDTO incomingQuantityDTO = incomingMapper.getQuantitySum(orderItemInfoDTO.getOrderMaterialKey());
+                double arrivedQuantity = incomingQuantityDTO.getArrivedQuantity(); // 입하 수량
+                double inboundedQuantity = incomingQuantityDTO.getInboundedQuantity(); // 입고 수량
+                arrivedQuantity -= inboundedQuantity;
+
+                // 입고 가능 수량이 남이있거나 입고 기록이 있을 경우
+                if (arrivedQuantity > 0 || inboundedQuantity > 0) {
+                    throw new CustomRuntimeException("입하, 입고 기록이 있는 품목이 포함되어 있어 삭제할 수 없습니다.");
+                }
+
+                // 해당 발주 품목 삭제
+                orderItemMapper.deleteOrderItem(orderItemInfoDTO.getOrderMaterialKey());
+            }
+
+            orderMapper.deleteOrder(orderKey);
+        }
+
     }
 }
