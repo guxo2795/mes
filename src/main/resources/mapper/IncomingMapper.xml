@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.wimir.bae.domain.incoming.mapper.IncomingMapper">
+
+    <!-- 자재 발주 품목 수량 합계 -->
+    <select id="getQuantitySum" resultType="com.wimir.bae.domain.incoming.dto.IncomingQuantityDTO">
+        SELECT
+            COALESCE(ROUND(SUM(CASE WHEN incoming_type_flag = 'M1' THEN quantity END), 3), 0.0) AS arrivedQuantity,
+            COALESCE(ROUND(SUM(CASE WHEN incoming_type_flag = 'M2' THEN quantity END), 3), 0.0) AS inboundedQuantity
+        FROM tbl_incoming
+        WHERE
+            is_deleted = 0
+          AND incoming_type_flag IN ('M1', 'M2')
+          AND material_key = #{orderMaterialKey}
+
+    </select>
+</mapper>

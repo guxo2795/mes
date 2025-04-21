@@ -25,4 +25,7 @@ public interface OrderMapper {
 
     // 자재 발주 삭제
     void deleteOrder(String orderKey);
+
+    // 자재 발주 완료
+    void completeOrder(String orderKey);
 }

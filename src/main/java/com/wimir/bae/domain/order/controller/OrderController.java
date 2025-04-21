@@ -94,4 +94,22 @@ public class OrderController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    // 자재 발주 완료
+    @PostMapping("/complete")
+    public ResponseEntity<ResponseDTO<?>> completeOrder(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> orderKeyList) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        orderService.completeOrder(userLoginDTO, orderKeyList.getList());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
 }

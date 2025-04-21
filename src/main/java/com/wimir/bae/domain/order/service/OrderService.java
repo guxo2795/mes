@@ -137,4 +137,28 @@ public class OrderService {
         }
 
     }
+
+    public void completeOrder(UserLoginDTO userLoginDTO, List<String> orderKeyList) {
+
+        for(String orderKey : orderKeyList) {
+
+            OrderInfoDTO orderInfo = orderMapper.getOrderInfo(orderKey);
+            if(!"0".equals(orderInfo.getIsCompleted())) {
+                throw new CustomRuntimeException("이미 종결된 발주입니다.");
+            }
+
+            // 발주 품목 중 입고되지 않은 수량이 있는 지 검사
+            List<OrderItemInfoDTO> orderItemList = orderItemMapper.getOrderItemList();
+            for(OrderItemInfoDTO orderItemInfoDTO : orderItemList) {
+                IncomingQuantityDTO incomingQuantityDTO = incomingMapper.getQuantitySum(orderItemInfoDTO.getOrderMaterialKey());
+
+                // 발주 수량 체크
+                if (incomingQuantityDTO.getInboundedQuantity() < Double.parseDouble(orderItemInfoDTO.getOrderQuantity())) {
+                    throw new CustomRuntimeException("'" + orderItemInfoDTO.getMaterialName() + "' 품목의 입고 수량이 부족합니다.");
+                }
+            }
+
+            orderMapper.completeOrder(orderKey);
+        }
+    }
 }

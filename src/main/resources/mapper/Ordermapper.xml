@@ -80,7 +80,7 @@
           AND order_key = #{orderKey}
     </update>
 
-    <!-- 자재 발주 완료(종결) -->
+    <!-- 자재 발주 완료 -->
     <update id="completeOrder">
         UPDATE tbl_order
         SET is_completed = 1
