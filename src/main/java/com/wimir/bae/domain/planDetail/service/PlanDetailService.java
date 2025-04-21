@@ -34,8 +34,8 @@ public class PlanDetailService {
 
         // 수주 수량을 넘어서면 안됨.
         int inputQuantity = Integer.parseInt(regDTO.getExecuteQuantity());
-        int totalRegisteredQuantity = Integer.parseInt(planDetailMapper.getTotalRegisteredQuantity(regDTO.getPlanKey(), regDTO.getProductKey()));
-        int orderedQuantity = Integer.parseInt(planDetailMapper.getPlanOrderedQuantity(regDTO.getPlanKey(), regDTO.getProductKey()));
+        int totalRegisteredQuantity = Optional.ofNullable(planDetailMapper.getTotalRegisteredQuantity(regDTO.getPlanKey(), regDTO.getProductKey())).orElse(0);
+        int orderedQuantity = Optional.ofNullable(planDetailMapper.getPlanOrderedQuantity(regDTO.getProductKey())).orElse(0);
         if(totalRegisteredQuantity + inputQuantity > orderedQuantity){
             throw new CustomRuntimeException("등록된 수량이 수주 수량을 초과할 수 없습니다.");
         }
@@ -86,9 +86,9 @@ public class PlanDetailService {
                 // 생산한 품목들을 total에 업로드
                 planDetailMapper.updateExecuteForTotal(dto.getPlanKey(),dto.getProductKey(),Integer.parseInt(dto.getExecuteQuantity()));
 
-                // 완재품일경우
+                // 완제품일경우
                 if(!planTotalMapper.checkAssetTypeFlag(dto.getResultKey())){
-                    //생산한 품목 plan에도 업로드
+                    // 생산한 품목 plan에도 업로드
                     planDetailMapper.updateExecuteForPlan(dto.getPlanKey(),dto.getProductKey(),Integer.parseInt(dto.getExecuteQuantity()));
                 }
             }

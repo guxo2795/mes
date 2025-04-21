@@ -31,12 +31,11 @@ public interface PlanDetailMapper {
                           @Param("executeDate") String executeDate);
 
     // 작업지시서에 등록된 총 수량
-    String getTotalRegisteredQuantity(@Param("planKey") String planKey,
+    Integer getTotalRegisteredQuantity(@Param("planKey") String planKey,
                                       @Param("productKey") String productKey);
 
     // 생산계획서에 등록된 수주 수량
-    String getPlanOrderedQuantity(@Param("planKey") String planKey,
-                                  @Param("productKey") String productKey);
+    Integer getPlanOrderedQuantity(@Param("productKey") String productKey);
 
     // 지시서 확정 여부
     boolean checkPlanDetailCompleted(String detailKey);

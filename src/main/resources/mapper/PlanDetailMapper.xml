@@ -84,18 +84,19 @@
     </select>
 
     <!-- 작업지시서에 등록된 총 수량 -->
-    <select id="getTotalRegisteredQuantity" resultType="string">
-        SELECT COALESCE(SUM(execute_quantity), 0)
+    <select id="getTotalRegisteredQuantity" resultType="int">
+        SELECT COALESCE(SUM(sub_execute_quantity), 0)
         FROM tbl_production_detail
         WHERE plan_key = #{planKey}
           AND product_key = #{productKey}
+          AND is_deleted = 0
     </select>
 
     <!-- 생산계획서에 등록된 수주 수량 -->
-    <select id="getPlanOrderedQuantity" resultType="string">
+    <select id="getPlanOrderedQuantity" resultType="int">
         SELECT plan_quantity
         FROM tbl_production_plan
-        WHERE plan_key = #{planKey}
+        WHERE is_deleted = 0
           AND product_key = #{productKey}
     </select>
 
