@@ -2,10 +2,7 @@ package com.wimir.bae.domain.order.service;
 
 import com.wimir.bae.domain.incoming.dto.IncomingQuantityDTO;
 import com.wimir.bae.domain.incoming.mapper.IncomingMapper;
-import com.wimir.bae.domain.order.dto.OrderInfoDTO;
-import com.wimir.bae.domain.order.dto.OrderItemInfoDTO;
-import com.wimir.bae.domain.order.dto.OrderItemRegDTO;
-import com.wimir.bae.domain.order.dto.OrderItemRegDetailDTO;
+import com.wimir.bae.domain.order.dto.*;
 import com.wimir.bae.domain.order.mapper.OrderItemMapper;
 import com.wimir.bae.domain.order.mapper.OrderMapper;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
@@ -16,8 +13,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,5 +98,31 @@ public class OrderItemService {
             
         }
 
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderItemInfoDTO> getOrderItemList(OrderItemSearchDTO orderItemSearchDTO) {
+
+        List<OrderItemInfoDTO> orderItemList =
+                Optional.ofNullable(orderItemMapper.getOrderItemList(orderItemSearchDTO.getOrderKey()))
+                .orElse(Collections.emptyList());
+
+        orderItemList = orderItemList.stream()
+                .peek(dto -> {
+                    IncomingQuantityDTO quantityDTO = incomingMapper.getQuantitySum(dto.getOrderMaterialKey());
+                    double quantity = Double.parseDouble(dto.getOrderQuantity());
+                    double arrivedQuantity = quantityDTO.getArrivedQuantity(); // 입하
+                    double inboundedQuantity = quantityDTO.getInboundedQuantity(); // 입고
+                    arrivedQuantity -= inboundedQuantity;
+
+                    double orderInboundRate = quantity != 0 ? (inboundedQuantity / quantity * 100) : 0;
+
+                    dto.setArrivedQuantity(String.valueOf(arrivedQuantity));
+                    dto.setInboundedQuantity(String.valueOf(inboundedQuantity));
+                    dto.setOrderInboundRate(String.format("%.2f%%", orderInboundRate));
+                })
+                .toList();
+
+        return orderItemList;
     }
 }
