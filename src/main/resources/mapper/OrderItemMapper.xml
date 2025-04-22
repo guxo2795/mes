@@ -51,5 +51,23 @@
           AND order_key = #{orderKey}
     </update>
 
+    <!-- 자재 발주 품목 정보 -->
+    <select id="getOrderItemInfo" resultType="com.wimir.bae.domain.order.dto.OrderItemInfoDTO">
+        SELECT
+            mat.order_material_key, mat.order_key, mat.quantity,
+            mat.product_key AS materialKey,
+            pro.product_code AS material_code,
+            pro.product_name AS material_name,
+            sub.sub_common_name AS unit_name
+        FROM tbl_order_materials mat
+                 LEFT JOIN tbl_product pro
+                           ON mat.product_key = pro.product_key
+                 LEFT JOIN tbl_common_code_sub sub
+                           ON pro.unit_key = sub.sub_common_key
+        WHERE
+            mat.is_deleted = 0
+          AND mat.order_material_key = #{orderMaterialKey}
+    </select>
+
 
 </mapper>

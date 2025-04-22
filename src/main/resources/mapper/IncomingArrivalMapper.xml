@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.wimir.bae.domain.incoming.mapper.IncomingArrivalMapper">
+
+    <!-- 자재 입하 등록 -->
+    <insert id="createArrival">
+        INSERT INTO tbl_incoming (
+            product_key, material_key, incoming_type_flag,
+            incoming_date_time, quantity, note, incoming_user_key
+        ) VALUES (
+            #{productKey}, #{orderMaterialKey}, 'M1',
+            CURRENT_TIMESTAMP, #{quantity},  #{note}, #{userCode}
+        )
+    </insert>
+
+</mapper>
