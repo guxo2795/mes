@@ -100,4 +100,18 @@
         </foreach>
     </delete>
 
+    <!-- 특정 업체의 품목 목록 조회 -->
+    <select id="getCompanyProductList" resultType="com.wimir.bae.domain.product.dto.ProductInfoDTO">
+        SELECT product.product_key
+        FROM tbl_product product
+                 LEFT JOIN tbl_company company
+                           ON product.company_key = company.company_key
+        WHERE
+            product.is_deleted = 0
+          AND product.asset_type_flag = 'M'
+          AND company.is_deleted = 0
+          AND company.company_type_flag = 'O'
+          AND company.company_key = #{companyKey}
+    </select>
+
 </mapper>

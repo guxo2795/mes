@@ -29,4 +29,7 @@ public interface ProductMapper {
     // 품목 삭제
     void deleteProduct(String productKey);
     void deleteProductList(List<String> productKeyList);
+
+    // 특정 업체의 품목 목록 조회
+    List<ProductInfoDTO> getCompanyProductList(String companyKey);
 }

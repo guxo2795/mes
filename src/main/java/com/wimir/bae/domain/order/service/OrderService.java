@@ -117,7 +117,7 @@ public class OrderService {
             }
             
             // 발주 품목 중 입고되지 않은 수량이 있는 지 검사
-            List<OrderItemInfoDTO> orderItemList = orderItemMapper.getOrderItemList();
+            List<OrderItemInfoDTO> orderItemList = orderItemMapper.getOrderItemList(orderKey);
             for(OrderItemInfoDTO orderItemInfoDTO : orderItemList) {
                 IncomingQuantityDTO incomingQuantityDTO = incomingMapper.getQuantitySum(orderItemInfoDTO.getOrderMaterialKey());
                 double arrivedQuantity = incomingQuantityDTO.getArrivedQuantity(); // 입하 수량
@@ -148,7 +148,7 @@ public class OrderService {
             }
 
             // 발주 품목 중 입고되지 않은 수량이 있는 지 검사
-            List<OrderItemInfoDTO> orderItemList = orderItemMapper.getOrderItemList();
+            List<OrderItemInfoDTO> orderItemList = orderItemMapper.getOrderItemList(orderKey);
             for(OrderItemInfoDTO orderItemInfoDTO : orderItemList) {
                 IncomingQuantityDTO incomingQuantityDTO = incomingMapper.getQuantitySum(orderItemInfoDTO.getOrderMaterialKey());
 

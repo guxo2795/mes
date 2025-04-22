@@ -20,6 +20,7 @@
         LEFT JOIN tbl_product pro ON mat.product_key = pro.product_key
         LEFT JOIN tbl_common_code_sub sub ON pro.unit_key = sub.sub_common_key
         WHERE mat.is_deleted = 0
+          AND mat.order_key = #{orderKey}
     </select>
 
     <!-- 자재 발주 품목 삭제 -->
@@ -30,5 +31,25 @@
             is_deleted = 0
           AND order_material_key = #{orderMaterialKey}
     </update>
+
+    <!-- 자재 발주 품목 등록 -->
+    <insert id="createOrderItem">
+        INSERT INTO tbl_order_materials (
+            order_key, product_key, quantity
+        ) VALUES (
+            #{orderKey}, #{regDTO.materialKey}, #{regDTO.orderQuantity}
+        )
+    </insert>
+
+    <!-- 자재 발주 품목 수정(개수) -->
+    <update id="updateOrderItem">
+        UPDATE tbl_order_materials
+        SET quantity = #{regDTO.orderQuantity}
+        WHERE
+            is_deleted = 0
+          AND order_material_key = #{regDTO.orderMaterialKey}
+          AND order_key = #{orderKey}
+    </update>
+
 
 </mapper>
