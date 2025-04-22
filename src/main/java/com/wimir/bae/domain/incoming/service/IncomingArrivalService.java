@@ -1,6 +1,8 @@
 package com.wimir.bae.domain.incoming.service;
 
+import com.wimir.bae.domain.incoming.dto.IncomingArrivalInfoDTO;
 import com.wimir.bae.domain.incoming.dto.IncomingArrivalRegDTO;
+import com.wimir.bae.domain.incoming.dto.IncomingArrivalSearchDTO;
 import com.wimir.bae.domain.incoming.mapper.IncomingArrivalMapper;
 import com.wimir.bae.domain.order.dto.OrderInfoDTO;
 import com.wimir.bae.domain.order.dto.OrderItemInfoDTO;
@@ -11,6 +13,11 @@ import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.validation.Valid;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +41,11 @@ public class IncomingArrivalService {
         incomingArrivalRegDTO.setProductKey(orderItemInfo.getMaterialKey());
         incomingArrivalRegDTO.setUserCode(userLoginDTO.getUserCode());
         incomingArrivalMapper.createArrival(incomingArrivalRegDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public List<IncomingArrivalInfoDTO> getArrivalList(IncomingArrivalSearchDTO incomingArrivalSearchDTO) {
+        return Optional.ofNullable(incomingArrivalMapper.getArrivalList(incomingArrivalSearchDTO))
+                .orElse(Collections.emptyList());
     }
 }

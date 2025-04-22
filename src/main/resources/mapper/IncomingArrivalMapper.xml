@@ -17,4 +17,29 @@
         )
     </insert>
 
+    <!-- 자재 입하/입고 요약(모달) 목록 -->
+    <select id="getArrivalList" resultType="com.wimir.bae.domain.incoming.dto.IncomingArrivalInfoDTO">
+        SELECT
+        pro.product_code, pro.product_name,
+        ware.warehouse_name,
+        inc.incoming_date_time, inc.quantity,
+        sub.sub_common_name AS unit_name,
+        user.user_name
+        FROM tbl_incoming inc
+            LEFT JOIN tbl_product pro
+                ON inc.product_key = pro.product_key
+            LEFT JOIN tbl_warehouse ware
+                ON inc.warehouse_key = ware.warehouse_key
+            LEFT JOIN tbl_common_code_sub sub
+                ON pro.unit_key = sub.sub_common_key
+            LEFT JOIN tbl_user AS user
+                ON user.user_code = inc.incoming_user_key
+                AND user.is_deleted = 0
+        WHERE
+        inc.is_deleted = 0
+        AND inc.material_key = #{orderMaterialKey}
+        <if test="incomingTypeFlag != null and incomingTypeFlag != ''">
+            AND inc.incoming_type_flag = #{incomingTypeFlag}
+        </if>
+    </select>
 </mapper>
