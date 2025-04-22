@@ -18,4 +18,38 @@
           AND material_key = #{orderMaterialKey}
 
     </select>
+
+    <!-- 자재 입고, 완제품 생산 등록 -->
+    <insert id="createIncoming">
+        INSERT INTO tbl_incoming (
+        product_key, warehouse_key, incoming_type_flag, quantity, note, inbound_user_key
+        <if test="orderMaterialKey != null and orderMaterialKey != ''">
+            , material_key
+        </if>
+
+            , incoming_date_time
+
+        <if test="executeDate != null and executeDate != ''">
+            , execute_date
+        </if>
+        <if test="correctionDateTime != null and correctionDateTime != ''">
+            , correction_date_time
+        </if>
+        ) VALUES (
+        #{productKey}, #{warehouseKey}, #{incomingTypeFlag}, #{quantity}, #{note}, #{userCode}
+        <if test="orderMaterialKey != null and orderMaterialKey != ''">
+            , #{orderMaterialKey}
+        </if>
+
+            , CURRENT_TIMESTAMP
+
+        <if test="executeDate != null and executeDate != ''">
+            , #{executeDate}
+        </if>
+        <if test="correctionDateTime != null and correctionDateTime != ''">
+            , #{correctionDateTime}
+        </if>
+        )
+    </insert>
+
 </mapper>

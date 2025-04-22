@@ -1,5 +1,6 @@
 package com.wimir.bae.domain.warehouse.service;
 
+import com.wimir.bae.domain.inventory.service.InventoryProductService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.domain.warehouse.dto.WarehouseInfoDTO;
 import com.wimir.bae.domain.warehouse.dto.WarehouseModDTO;
@@ -23,6 +24,8 @@ public class WarehouseService {
 
     private final WarehouseMapper warehouseMapper;
 
+    private final InventoryProductService inventoryProductService;
+
     public void createWarehouse(UserLoginDTO userLoginDTO, WarehouseRegDTO regDTO) {
 
         validateDuplicateWarehouseName(regDTO.getWarehouseName());
@@ -30,6 +33,7 @@ public class WarehouseService {
         warehouseMapper.createWarehouse(regDTO);
         
         // 초기 품목 정의 - inventory 도메인, 여기서 warehouseKey 사용
+        inventoryProductService.setInitialInventoryByWarehouse(regDTO.getWarehouseKey());
     }
 
     public List<WarehouseInfoDTO> getWarehouseList() {

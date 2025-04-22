@@ -2,6 +2,8 @@ package com.wimir.bae.domain.inventory.service;
 
 import com.wimir.bae.domain.inventory.dto.InventoryCorrectionDTO;
 import com.wimir.bae.domain.inventory.mapper.InventoryProductMapper;
+import com.wimir.bae.domain.product.dto.ProductInfoDTO;
+import com.wimir.bae.domain.product.mapper.ProductMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.domain.warehouse.dto.WarehouseInfoDTO;
 import com.wimir.bae.domain.warehouse.mapper.WarehouseMapper;
@@ -20,6 +22,7 @@ public class InventoryProductService {
 
     private final InventoryProductMapper inventoryProductMapper;
     private final WarehouseMapper warehouseMapper;
+    private final ProductMapper productMapper;
 
     public void setInitialInventoryByProduct(String productKey) {
 
@@ -32,6 +35,16 @@ public class InventoryProductService {
         for (WarehouseInfoDTO warehouseDTO: warehouseList) {
             String warehouseKey = warehouseDTO.getWarehouseKey();
             inventoryProductMapper.setInitialInventory(productKey, warehouseKey);
+        }
+    }
+
+    public void setInitialInventoryByWarehouse(String warehouseKey) {
+
+        // 모든 제품 리스트 조회
+        List<ProductInfoDTO> productList = productMapper.getProductList();
+
+        for(ProductInfoDTO productDTO: productList) {
+            inventoryProductMapper.setInitialInventory(productDTO.getProductKey(), warehouseKey);
         }
     }
 

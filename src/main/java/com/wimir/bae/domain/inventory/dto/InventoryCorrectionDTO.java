@@ -1,5 +1,6 @@
 package com.wimir.bae.domain.inventory.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -7,6 +8,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
+@Builder
 public class InventoryCorrectionDTO {
 
     @NotBlank
