@@ -1,5 +1,7 @@
 package com.wimir.bae.domain.incoming.service;
 
+import com.wimir.bae.domain.incoming.dto.IncomingMaterialInfoDTO;
+import com.wimir.bae.domain.incoming.dto.IncomingMaterialSearchDTO;
 import com.wimir.bae.domain.incoming.dto.IncomingQuantityDTO;
 import com.wimir.bae.domain.incoming.dto.IncomingRegDTO;
 import com.wimir.bae.domain.incoming.mapper.IncomingMapper;
@@ -16,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -64,5 +69,11 @@ public class IncomingService {
                 .note(incomingRegDTO.getNote())
                 .build();
         inventoryProductService.increaseProductInventory(userLoginDTO, correctionDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public List<IncomingMaterialInfoDTO> getIncomingMaterialList(IncomingMaterialSearchDTO incomingMaterialSearchDTO) {
+        return Optional.ofNullable(incomingMapper.getIncomingMaterialList(incomingMaterialSearchDTO))
+                .orElse(Collections.emptyList());
     }
 }

@@ -1,5 +1,7 @@
 package com.wimir.bae.domain.incoming.controller;
 
+import com.wimir.bae.domain.incoming.dto.IncomingMaterialInfoDTO;
+import com.wimir.bae.domain.incoming.dto.IncomingMaterialSearchDTO;
 import com.wimir.bae.domain.incoming.dto.IncomingRegDTO;
 import com.wimir.bae.domain.incoming.service.IncomingService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,7 +44,22 @@ public class IncomingController {
 
 
     // 자재 입하/입고 현황
+    @GetMapping("material/list")
+    public ResponseEntity<ResponseDTO<List<IncomingMaterialInfoDTO>>> getIncomingMaterialList(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid IncomingMaterialSearchDTO incomingMaterialSearchDTO) {
 
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<IncomingMaterialInfoDTO> list = incomingService.getIncomingMaterialList(incomingMaterialSearchDTO);
+
+        ResponseDTO<List<IncomingMaterialInfoDTO>> response =
+                ResponseDTO.<List<IncomingMaterialInfoDTO>>builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
+    }
 
 
 

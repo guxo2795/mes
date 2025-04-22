@@ -52,4 +52,41 @@
         )
     </insert>
 
+    <!-- 자재 입하/입고 현황 -->
+    <select id="getIncomingMaterialList"
+            resultType="com.wimir.bae.domain.incoming.dto.IncomingMaterialInfoDTO">
+        SELECT
+          CASE
+            WHEN inc.incoming_type_flag = 'M1' THEN '입하'
+            WHEN inc.incoming_type_flag = 'M2' THEN '입고'
+            WHEN inc.incoming_type_flag = 'F' THEN '완제품 생산'
+            WHEN inc.incoming_type_flag = 'C1' THEN '외주 입고'
+            ELSE '데이터 이상'
+          END AS incoming_type_flag,
+        pro.product_code, pro.product_name,
+        pro.standard_price,
+        ware.warehouse_name,
+        inc.incoming_date_time,
+        inc.quantity, inc.reg_date_time,
+        sub.sub_common_name AS unit_name,
+        inc.note,
+        pro.standard_price * inc.quantity AS total_price,
+        us.user_name
+        FROM tbl_incoming inc
+        LEFT JOIN tbl_product pro
+        ON inc.product_key = pro.product_key
+        LEFT JOIN tbl_warehouse ware
+        ON inc.warehouse_key = ware.warehouse_key
+        LEFT JOIN tbl_order_materials mat
+        ON inc.material_key = mat.order_material_key
+        LEFT JOIN tbl_common_code_sub sub
+        ON pro.unit_key = sub.sub_common_key
+        LEFT JOIN tbl_user AS us
+        ON us.user_code = inc.inbound_user_key
+        AND us.is_deleted = 0
+        WHERE
+        inc.is_deleted = 0
+        AND mat.order_key = #{orderKey}
+
+    </select>
 </mapper>
