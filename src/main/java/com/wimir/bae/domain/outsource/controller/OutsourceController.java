@@ -1,5 +1,6 @@
 package com.wimir.bae.domain.outsource.controller;
 
+import com.wimir.bae.domain.outsource.dto.OutsourceContractListDTO;
 import com.wimir.bae.domain.outsource.dto.OutsourceRegDTO;
 import com.wimir.bae.domain.outsource.dto.OutsourceUpdateDTO;
 import com.wimir.bae.domain.outsource.service.OutsourceService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -74,6 +76,23 @@ public class OutsourceController {
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
+    }
+    
+    // 외주 등록 가능한 품목 조회
+    @GetMapping("/list")
+    public ResponseEntity<ResponseDTO<List<OutsourceContractListDTO>>> getOutsourceList (
+             @RequestHeader("Authorization") String accessToken) {
+
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<OutsourceContractListDTO> list = outsourceService.getOutsourceContractList();
+
+        ResponseDTO<List<OutsourceContractListDTO>> response =
+                ResponseDTO.<List<OutsourceContractListDTO>> builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
     }
 
 }

@@ -63,4 +63,34 @@
         WHERE
             outsource_key = #{outsourceKey}
     </update>
+
+    <!-- 외주 생산 제품 리스트 조회 -->
+    <select id="getOutsourceItemList" resultType="com.wimir.bae.domain.outsource.dto.OutsourceItemDTO">
+        SELECT
+        pro.product_key,
+        bom.material_key AS productCode,
+        pro.product_name,
+        pro.company_key,
+        com.company_name,
+        (cmat.quantity * bom.quantity) AS quantity,
+        orout.outsource_key,
+        orout.outsource_state,
+        pro.standard_price,
+        (pro.standard_price * cmat.quantity) AS totalPrice
+        FROM tbl_order_contract con
+        LEFT JOIN tbl_order_contract_materials cmat ON cmat.contract_code = con.contract_code
+        LEFT JOIN tbl_product_bom bom ON cmat.product_key = bom.root_key
+        LEFT JOIN tbl_product pro ON pro.product_key = bom.material_key
+        LEFT JOIN tbl_company com ON com.company_key = pro.company_key
+        LEFT JOIN tbl_common_code_sub sub ON pro.process_type_key = sub.sub_common_key
+        LEFT JOIN tbl_order_outsource orout ON cmat.contract_code = orout.contract_code
+        AND orout.product_key = bom.material_key
+        WHERE cmat.contract_code = #{contractCode}
+        AND sub.sub_common_key = #{processOutsourcedKey}
+        AND cmat.is_deleted = 0
+        AND orout.contract_code IS NULL
+        AND bom.is_deleted = 0
+        AND con.is_deleted = 0
+        AND con.is_completed = 2
+    </select>
 </mapper>

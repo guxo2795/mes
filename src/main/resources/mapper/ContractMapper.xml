@@ -58,6 +58,39 @@
         WHERE con.is_deleted = 0
     </select>
 
+    <!-- 실행중인 전체 수주 리스트 -->
+    <select id="getStartContractInfoList" resultType="com.wimir.bae.domain.contract.dto.ContractInfoDTO">
+        SELECT DISTINCT
+            con.contract_code,
+            con.contract_name,
+            con.company_key,
+            com.company_name,
+            con.contract_date,
+            con.delivery_date,
+            cmat.product_key,
+            cmat.quantity,
+            pro.product_code,
+            pro.product_name,
+            sub.sub_common_name AS unit_name,
+            pro.asset_type_flag,
+            pro.safety_quantity,
+            con.is_completed,
+            con.is_deleted
+        FROM tbl_order_contract con
+            LEFT JOIN tbl_order_contract_materials cmat ON con.contract_code = cmat.contract_code
+            LEFT JOIN tbl_company com ON com.company_key = con.company_key
+            LEFT JOIN tbl_product pro ON pro.product_key = cmat.product_key
+                  AND pro.asset_type_flag = 'F'
+            LEFT JOIN tbl_common_code_sub sub ON sub.sub_common_key = pro.unit_key
+        WHERE con.is_completed = '2'
+        AND ( pro.product_key IS NOT NULL
+            OR NOT EXISTS (
+             SELECT 1
+             FROM tbl_order_contract_materials cmat2
+                JOIN tbl_product pro2 ON pro2.product_key = cmat2.product_key
+             WHERE cmat2.contract_code = con.contract_code))
+    </select>
+
     <!-- 수주 품목 리스트   -->
     <select id="getMaterialInfoList" resultType="com.wimir.bae.domain.contract.dto.MaterialsInfoDTO">
     SELECT

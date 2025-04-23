@@ -15,6 +15,8 @@ public interface ContractMapper {
 
     // 수주 목록 조회
     List<ContractInfoDTO> getContractList();
+    // 실행중인 수주 리스트
+    List<ContractInfoDTO> getStartContractInfoList();
 
     // 수주 정보
     ContractInfoDTO getContractInfo(String contractCode);

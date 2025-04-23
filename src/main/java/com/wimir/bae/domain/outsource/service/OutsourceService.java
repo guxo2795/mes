@@ -2,9 +2,7 @@ package com.wimir.bae.domain.outsource.service;
 
 import com.wimir.bae.domain.contract.dto.ContractInfoDTO;
 import com.wimir.bae.domain.contract.mapper.ContractMapper;
-import com.wimir.bae.domain.outsource.dto.OutsourceRegDTO;
-import com.wimir.bae.domain.outsource.dto.OutsourceSearchInfoDTO;
-import com.wimir.bae.domain.outsource.dto.OutsourceUpdateDTO;
+import com.wimir.bae.domain.outsource.dto.*;
 import com.wimir.bae.domain.outsource.mapper.OutsourceMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
@@ -14,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,5 +100,28 @@ public class OutsourceService {
             }
             outsourceMapper.deleteOutsource(outsourceKey);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<OutsourceContractListDTO> getOutsourceContractList() {
+
+        // 실행중인 수주 리스트(품목이 존재하지 않아도 수주가 실행만 되어있으면 일단 포함)
+        List<ContractInfoDTO> contractExecutedList = contractMapper.getStartContractInfoList();
+
+        List<OutsourceContractListDTO> outsourceContractList = new ArrayList<>();
+        for (ContractInfoDTO executedList : contractExecutedList) {
+            // 외주 생산인 품목 정보 list
+            List<OutsourceItemDTO> outsourceItemDTOList = outsourceMapper.getOutsourceItemList(executedList.getContractCode(), "14");
+
+            if (outsourceItemDTOList == null || outsourceItemDTOList.isEmpty()) {
+                continue;
+            }
+
+            OutsourceContractListDTO outsourceContractListDTO = new OutsourceContractListDTO();
+            outsourceContractListDTO.setContractInfo(executedList);
+            outsourceContractListDTO.setOutsourceItemList(outsourceItemDTOList);
+            outsourceContractList.add(outsourceContractListDTO);
+        }
+        return outsourceContractList;
     }
 }
