@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -72,7 +74,7 @@ public class OutsourceService {
         if(!outsourceUpdateDTO.getQuantity().isEmpty()){
             quantityFlag = true;
             if("O".equals(outsourceSearchInfoDTO.getOutsourceState())){
-                throw new CustomRuntimeException("이미 출고가 진행된 외주는 수량을 수정할 수 없습니다.");
+                throw new CustomRuntimeException("이미 출고 완료되었거나 일부 출고된 외주는 수량을 수정할 수 없습니다.");
             }
         }
 
@@ -82,5 +84,22 @@ public class OutsourceService {
             outsourceMapper.updateOutsource(outsourceUpdateDTO);
         }
 
+    }
+
+    public void deleteOutsource(UserLoginDTO userLoginDTO, List<String> outsourceKeyList) {
+
+        for(String outsourceKey : outsourceKeyList){
+            OutsourceSearchInfoDTO outsourceSearchInfoDTO = outsourceMapper.searchOutsourceInfo(outsourceKey);
+            if(outsourceSearchInfoDTO == null){
+                throw new CustomRuntimeException("존재하지 않는 외주입니다.");
+            }
+            if(outsourceSearchInfoDTO.getOutsourceState().equals("C")){
+                throw new CustomRuntimeException("이미 완료된 외주는 삭제할 수 없습니다.");
+            }
+            if(outsourceSearchInfoDTO.getOutsourceState().equals("O")){
+                throw new CustomRuntimeException("이미 출고 완료되었거나 일부 출고된 외주는 삭제할 수 없습니다.");
+            }
+            outsourceMapper.deleteOutsource(outsourceKey);
+        }
     }
 }

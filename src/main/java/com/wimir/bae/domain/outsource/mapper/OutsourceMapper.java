@@ -22,4 +22,7 @@ public interface OutsourceMapper {
 
     // 외주 수정
     void updateOutsource(OutsourceUpdateDTO outsourceUpdateDTO);
+
+    // 외주 삭제
+    void deleteOutsource(String outsourceKey);
 }

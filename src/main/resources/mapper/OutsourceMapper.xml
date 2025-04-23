@@ -54,4 +54,13 @@
         AND is_deleted = 0
         AND outsource_state = 'P'
     </update>
+
+    <!-- 외주 삭제 -->
+    <update id="deleteOutsource">
+        UPDATE tbl_order_outsource
+        SET
+            is_deleted = 1
+        WHERE
+            outsource_key = #{outsourceKey}
+    </update>
 </mapper>

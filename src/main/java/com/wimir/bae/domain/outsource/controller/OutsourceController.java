@@ -4,6 +4,7 @@ import com.wimir.bae.domain.outsource.dto.OutsourceRegDTO;
 import com.wimir.bae.domain.outsource.dto.OutsourceUpdateDTO;
 import com.wimir.bae.domain.outsource.service.OutsourceService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,24 @@ public class OutsourceController {
 
         return ResponseEntity.ok().body(responseDTO);
 
+    }
+
+    // 외주 삭제
+    @PostMapping("/delete")
+    public ResponseEntity<ResponseDTO<?>> updateOutsource (
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> outsourceKeyList) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        outsourceService.deleteOutsource(userLoginDTO, outsourceKeyList.getList());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
 }
