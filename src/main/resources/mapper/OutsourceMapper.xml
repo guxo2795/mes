@@ -93,4 +93,93 @@
         AND con.is_deleted = 0
         AND con.is_completed = 2
     </select>
+
+    <!-- 외주 등록된 유효한 수주 리스트 -->
+    <select id="getOutsourceAllState"
+            resultType="com.wimir.bae.domain.outsource.dto.OutsourceIncomingStateDTO">
+        SELECT
+            result.contract_code,
+            result.quantity,
+            result.is_completed,
+            result.outsource_state,
+            result.outsourceStatusResult,
+            result.contract_name,
+            result.contract_date,
+            result.delivery_date,
+            result.company_name,
+            result.company_key,
+            result.product_code,
+            result.product_name,
+            result.product_key,
+            result.asset_type_flag,
+            result.safety_quantity,
+            result.sub_common_name AS unit_name,
+            result.reg_date_time
+        FROM (
+            SELECT
+                orout.contract_code,
+                orout.quantity,
+                con.is_completed,
+                con.contract_name,
+                con.contract_date,
+                con.delivery_date,
+                com.company_name,
+                com.company_key,
+                pro.product_code,
+                pro.product_name,
+                pro.product_key,
+                pro.asset_type_flag,
+                pro.safety_quantity,
+                sub.sub_common_name,
+                orout.reg_date_time,
+                MAX(orout.outsource_state) AS outsource_state,
+                CASE
+                    WHEN SUM(CASE WHEN orout.outsource_state = 'C' THEN 1 ELSE 0 END) = COUNT(*) THEN 'C'
+                    WHEN SUM(CASE WHEN orout.outsource_state = 'O' THEN 1 ELSE 0 END) > 0 AND
+                         SUM(CASE WHEN orout.outsource_state = 'C' THEN 1 ELSE 0 END) > 0 THEN 'O'
+                    WHEN SUM(CASE WHEN orout.outsource_state = 'O' THEN 1 ELSE 0 END) = COUNT(*) THEN 'O'
+                    WHEN SUM(CASE WHEN orout.outsource_state IN ('O', 'P') THEN 1 ELSE 0 END) > 0 THEN 'X'
+                    ELSE 'O'
+                    END AS outsourceStatusResult
+            FROM tbl_order_outsource orout
+                LEFT JOIN tbl_order_contract con ON con.contract_code = orout.contract_code
+                LEFT JOIN tbl_order_contract_materials conm ON con.contract_code = conm.contract_code
+                LEFT JOIN tbl_company com ON com.company_key = orout.company_key
+                LEFT JOIN tbl_product pro ON pro.product_key = conm.product_key
+                LEFT JOIN tbl_common_code_sub sub ON sub.sub_common_key = pro.unit_key
+            WHERE orout.is_deleted = 0
+            GROUP BY orout.contract_code
+            ) AS result
+        WHERE result.outsourceStatusResult IN ('C', 'O', 'X')
+    </select>
+
+    <!-- 외주 등록된 모든 목록 조회 -->
+    <select id="getOutsourceCreateAllList"
+            resultType="com.wimir.bae.domain.outsource.dto.OutsourceIncomingDTO">
+        SELECT
+            orout.contract_code,
+            orout.outsource_key,
+            orout.company_key,
+            com.company_name,
+            orout.quantity,
+            orout.outgoing_complete_date,
+            orout.inbound_date_time,
+            orout.incoming_est_date,
+            orout.incoming_date_time,
+            orout.outgoing_user_key,
+            orout.incoming_user_key,
+            orout.outsource_state,
+            orout.product_key,
+            pro.product_name,
+            pro.product_code,
+            pro.standard_price,
+            (pro.standard_price * orout.quantity) AS totalPrice
+        FROM tbl_order_outsource orout
+                 LEFT JOIN tbl_order_contract con ON con.contract_code = orout.contract_code
+                 LEFT JOIN tbl_company com ON com.company_key = orout.company_key
+                 LEFT JOIN tbl_product pro ON pro.product_key = orout.product_key
+        WHERE orout.is_deleted = 0
+          AND pro.is_deleted = 0
+        ORDER BY orout.reg_date_time DESC
+    </select>
 </mapper>

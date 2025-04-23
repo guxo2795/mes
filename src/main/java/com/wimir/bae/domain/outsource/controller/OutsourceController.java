@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.outsource.controller;
 
 import com.wimir.bae.domain.outsource.dto.OutsourceContractListDTO;
+import com.wimir.bae.domain.outsource.dto.OutsourceIncomingListDTO;
 import com.wimir.bae.domain.outsource.dto.OutsourceRegDTO;
 import com.wimir.bae.domain.outsource.dto.OutsourceUpdateDTO;
 import com.wimir.bae.domain.outsource.service.OutsourceService;
@@ -93,6 +94,24 @@ public class OutsourceController {
                         .build();
 
         return ResponseEntity.ok().body(response);
+    }
+
+    // 입하/입고 예정 목록 조회
+    @GetMapping("/incoming/list")
+    public ResponseEntity<ResponseDTO<List<OutsourceIncomingListDTO>>> getOutsourceIncomingList(
+            @RequestHeader("Authorization") String accessToken) {
+
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<OutsourceIncomingListDTO> list = outsourceService.getOutsourceIncomingList();
+
+        ResponseDTO<List<OutsourceIncomingListDTO>> response =
+                ResponseDTO.<List<OutsourceIncomingListDTO>> builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
+
     }
 
 }

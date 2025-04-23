@@ -30,7 +30,7 @@ public class OutsourceService {
             throw new CustomRuntimeException("이미 등록된 외주 품목입니다.");
         }
         
-        // 수주에 포함된 제품 하나만 반환(LIMIT 1) => 최적화
+        // 수주에 포함된 완제품 하나만 반환(LIMIT 1) => 최적화
         ContractInfoDTO contractInfo = contractMapper.getContractAndItemInfo(outsourceRegDTO.getContractKey());
 
         if(contractInfo == null){
@@ -48,7 +48,7 @@ public class OutsourceService {
                 .filter(key -> !key.isEmpty())
                 .orElseThrow(() -> new CustomRuntimeException("존재하지 않는 품목입니다."));
 
-        // 완제품은 등록 못하게
+        // 수주에 등록된 완제품은 등록 못하게
         // ??
         // 완제품이 외주 생산일 경우에는?
         if (contractInfo.getProductKey().equals(outsourceRegDTO.getProductKey())) {
@@ -123,5 +123,26 @@ public class OutsourceService {
             outsourceContractList.add(outsourceContractListDTO);
         }
         return outsourceContractList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<OutsourceIncomingListDTO> getOutsourceIncomingList() {
+
+        // 외주 등록된 모든 품목 리스트
+        // 쿼리 이해 잘 안됨
+        List<OutsourceIncomingStateDTO> outsourceIncomingStateDTOList = outsourceMapper.getOutsourceAllState();
+
+        // 반환할 리스트
+        List<OutsourceIncomingListDTO> outsourceIncomingList = new ArrayList<>();
+        for(OutsourceIncomingStateDTO incomingStateDTO : outsourceIncomingStateDTOList){
+            // OutsourceIncomingStateDTO
+            OutsourceIncomingListDTO outsourceIncomingListDTO = new OutsourceIncomingListDTO();
+            outsourceIncomingListDTO.setContractInfo(incomingStateDTO);
+
+            // List<OutsourceIncomingDTO>
+            outsourceIncomingListDTO.setOutsourceIncomingList(outsourceMapper.getOutsourceCreateAllList());
+            outsourceIncomingList.add(outsourceIncomingListDTO);
+        }
+        return outsourceIncomingList;
     }
 }
