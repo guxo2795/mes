@@ -26,4 +26,32 @@
             #{outboundDateTime}, #{inboundEstDate}, #{productKey}
         )
     </insert>
+
+    <!-- 외주 정보 조회 -->
+    <select id="searchOutsourceInfo" resultType="com.wimir.bae.domain.outsource.dto.OutsourceSearchInfoDTO">
+        SELECT *
+        FROM tbl_order_outsource
+        WHERE outsource_key = #{outsourceKey}
+          AND is_deleted = 0
+    </select>
+
+    <!-- 외주 수정 -->
+    <update id="updateOutsource">
+        UPDATE tbl_order_outsource
+        <set>
+            <if test="inboundEstDate != null and inboundEstDate != ''">
+                incoming_est_date = #{inboundEstDate},
+            </if>
+            <if test="outboundDateTime != null and outboundDateTime != ''">
+                outbound_date_time = #{outboundDateTime},
+            </if>
+            <if test="quantity != null and quantity != ''">
+                quantity = #{quantity},
+            </if>
+        </set>
+        WHERE
+        outsource_key = #{outsourceKey}
+        AND is_deleted = 0
+        AND outsource_state = 'P'
+    </update>
 </mapper>

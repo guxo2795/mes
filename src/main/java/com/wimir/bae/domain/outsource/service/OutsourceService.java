@@ -3,6 +3,8 @@ package com.wimir.bae.domain.outsource.service;
 import com.wimir.bae.domain.contract.dto.ContractInfoDTO;
 import com.wimir.bae.domain.contract.mapper.ContractMapper;
 import com.wimir.bae.domain.outsource.dto.OutsourceRegDTO;
+import com.wimir.bae.domain.outsource.dto.OutsourceSearchInfoDTO;
+import com.wimir.bae.domain.outsource.dto.OutsourceUpdateDTO;
 import com.wimir.bae.domain.outsource.mapper.OutsourceMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
@@ -53,5 +55,32 @@ public class OutsourceService {
         }
 
         outsourceMapper.createOutsource(outsourceRegDTO);
+    }
+
+    public void updateOutsource(UserLoginDTO userLoginDTO, OutsourceUpdateDTO outsourceUpdateDTO) {
+
+        OutsourceSearchInfoDTO outsourceSearchInfoDTO = outsourceMapper.searchOutsourceInfo(outsourceUpdateDTO.getOutsourceKey());
+
+        if (outsourceSearchInfoDTO == null) {
+            throw new CustomRuntimeException("존재하지 않는 외주입니다.");
+        }
+        if("C".equals(outsourceSearchInfoDTO.getOutsourceState())){
+            throw new CustomRuntimeException("이미 완료된 외주는 수정할 수 없습니다.");
+        }
+
+        boolean quantityFlag = false;
+        if(!outsourceUpdateDTO.getQuantity().isEmpty()){
+            quantityFlag = true;
+            if("O".equals(outsourceSearchInfoDTO.getOutsourceState())){
+                throw new CustomRuntimeException("이미 출고가 진행된 외주는 수량을 수정할 수 없습니다.");
+            }
+        }
+
+        if(outsourceUpdateDTO.getOutboundDateTime() == null || outsourceUpdateDTO.getInboundEstDate() == null || !quantityFlag){
+            throw new CustomRuntimeException("수정 사항을 입력해주세요.");
+        } else {
+            outsourceMapper.updateOutsource(outsourceUpdateDTO);
+        }
+
     }
 }

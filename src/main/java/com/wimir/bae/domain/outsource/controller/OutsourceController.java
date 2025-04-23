@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.outsource.controller;
 
 import com.wimir.bae.domain.outsource.dto.OutsourceRegDTO;
+import com.wimir.bae.domain.outsource.dto.OutsourceUpdateDTO;
 import com.wimir.bae.domain.outsource.service.OutsourceService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
@@ -36,4 +37,24 @@ public class OutsourceController {
 
         return ResponseEntity.ok().body(responseDTO);
     }
+
+    // 외주 수정
+    @PostMapping("/update")
+    public ResponseEntity<ResponseDTO<?>> updateOutsource (
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid OutsourceUpdateDTO outsourceUpdateDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        outsourceService.updateOutsource(userLoginDTO, outsourceUpdateDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+
+    }
+
 }
