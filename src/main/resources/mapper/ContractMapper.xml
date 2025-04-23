@@ -95,6 +95,25 @@
           AND contract_code = #{contractCode}
     </select>
 
+    <!-- 수주 + 수주 품목(완제품) 정보 조회 -->
+    <select id="getContractAndItemInfo" resultType="com.wimir.bae.domain.contract.dto.ContractInfoDTO">
+        SELECT DISTINCT *, s.sub_common_name AS unitName
+        FROM tbl_order_contract con
+                 LEFT JOIN tbl_order_contract_materials conmat ON con.contract_code = conmat.contract_code
+                 LEFT JOIN tbl_product pro ON pro.product_key = conmat.product_key
+            AND pro.asset_type_flag = 'F'
+                 LEFT JOIN tbl_common_code_sub s ON s.sub_common_key = pro.unit_key
+        WHERE con.contract_code = #{contractKey}
+          AND (pro.product_key IS NOT NULL
+            OR NOT EXISTS (
+            SELECT 1
+            FROM tbl_order_contract_materials cm
+                     JOIN tbl_product p ON p.product_key = cm.product_key
+            WHERE cm.contract_code = con.contract_code
+        ))
+        LIMIT 1
+    </select>
+
     <!-- 수주 정보 가지고 오기 for Plan  -->
     <select id="getContractForPlan" resultType="com.wimir.bae.domain.contract.dto.ContractInfoDTO">
         SELECT

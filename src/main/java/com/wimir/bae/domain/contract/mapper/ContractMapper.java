@@ -18,6 +18,7 @@ public interface ContractMapper {
 
     // 수주 정보
     ContractInfoDTO getContractInfo(String contractCode);
+    ContractInfoDTO getContractAndItemInfo(String contractKey);
 
     //수주 정보 가지고오기(팀 연결 전 사용)
     ContractInfoDTO getContractForPlan(String contractCode);

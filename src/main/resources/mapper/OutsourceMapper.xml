@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.wimir.bae.domain.outsource.mapper.OutsourceMapper">
+
+    <!-- 이미 등록된 외주 확인 -->
+    <select id="isExistOutsource" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(*) > 0, true, false) AS result
+        FROM tbl_order_outsource
+        WHERE is_deleted = 0
+          AND product_key = #{productKey}
+          AND contract_code = #{contractKey}
+    </select>
+
+    <!-- 외주 등록 -->
+    <insert id="createOutsource">
+        INSERT INTO tbl_order_outsource (
+            contract_code, company_key, quantity,
+            outbound_date_time, incoming_est_date, product_key
+        )
+        VALUES (
+            #{contractKey}, #{companyKey}, #{quantity},
+            #{outboundDateTime}, #{inboundEstDate}, #{productKey}
+        )
+    </insert>
+</mapper>
