@@ -6,17 +6,22 @@ import com.wimir.bae.domain.contract.mapper.ContractItemMapper;
 import com.wimir.bae.domain.contract.mapper.ContractMapper;
 import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentInfoDTO;
 import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentRegDTO;
+import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentUpdateDTO;
+import com.wimir.bae.domain.outgoing.dto.outgoingInfoDTO;
 import com.wimir.bae.domain.outgoing.mapper.OutgoingMapper;
 import com.wimir.bae.domain.outsource.mapper.OutsourceMapper;
 import com.wimir.bae.domain.plan.dto.PlanInfoDTO;
 import com.wimir.bae.domain.plan.dto.PlanTotalSearchDTO;
 import com.wimir.bae.domain.plan.mapper.PlanMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.domain.warehouse.mapper.WarehouseMapper;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +37,7 @@ public class OutgoingService {
     private final PlanMapper planMapper;
     private final OutgoingMapper outgoingMapper;
     private final OutsourceMapper outsourceMapper;
+    private final WarehouseMapper warehouseMapper;
 
     public void createOutgoing(UserLoginDTO userLoginDTO, OutgoingShipmentRegDTO outgoingShipmentRegDTO) {
 
@@ -117,5 +123,22 @@ public class OutgoingService {
             outgoingShipmentInfoList.add(outgoingShipmentInfoDTO);
         }
         return outgoingShipmentInfoList;
+    }
+
+    public void setOutgoingUpdate(UserLoginDTO userLoginDTO, OutgoingShipmentUpdateDTO outgoingShipmentUpdateDTO) {
+
+        if(!warehouseMapper.isWarehouseExist(outgoingShipmentUpdateDTO.getWarehouseKey())){
+            throw new CustomRuntimeException("존재하지 않는 창고입니다. 다시 확인해 주세요.");
+        }
+
+        outgoingMapper.updateOutgoing(outgoingShipmentUpdateDTO);
+    }
+
+    public void deleteOutgoing(UserLoginDTO userLoginDTO, List<String> outgoingKeyList) {
+
+        for(String outgoingKey : outgoingKeyList) {
+            outgoingInfoDTO outgoingInfo = outgoingMapper.getOutgoingInfo(outgoingKey);
+            outgoingMapper.deleteOutgoing(outgoingKey);
+        }
     }
 }

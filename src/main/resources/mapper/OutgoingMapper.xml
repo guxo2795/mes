@@ -62,4 +62,39 @@
             AND outgo.is_deleted = '0'
     </select>
 
+    <!-- 출하 목록 지정창고, 출하 일자 수정 -->
+    <update id="updateOutgoing">
+        UPDATE tbl_outgoing outgo
+        SET
+            warehouse_key = #{warehouseKey},
+            outgoing_date_time = #{outgoingDateTime}
+        WHERE
+            is_deleted = 0
+          AND is_completed = 0
+          AND outgoing_key = #{outgoingKey}
+    </update>
+
+    <!-- 출하 정보 -->
+    <select id="getOutgoingInfo" resultType="com.wimir.bae.domain.outgoing.dto.outgoingInfoDTO">
+        SELECT
+            *,con.contract_name
+        FROM tbl_outgoing outgo
+            LEFT JOIN tbl_order_contract_materials conm ON outgo.material_key = conm.contract_material_key
+            LEFT JOIN tbl_order_contract con ON conm.contract_code = con.contract_code
+        WHERE outgo.is_deleted = 0
+          AND outgo.is_completed = 0
+          AND outgo.outgoing_key = #{outgoingKey}
+          AND outgo.outgoing_type_flag IN ("M3", "M4")
+    </select>
+
+    <!-- 출하 삭제 -->
+    <update id="deleteOutgoing">
+        UPDATE tbl_outgoing
+        SET is_deleted = 1
+        WHERE
+            is_completed = 0
+          AND is_deleted = 0
+          AND outgoing_key = #{outgoingKey}
+    </update>
+
 </mapper>

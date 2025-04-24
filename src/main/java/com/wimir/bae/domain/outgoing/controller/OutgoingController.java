@@ -2,8 +2,10 @@ package com.wimir.bae.domain.outgoing.controller;
 
 import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentInfoDTO;
 import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentRegDTO;
+import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentUpdateDTO;
 import com.wimir.bae.domain.outgoing.service.OutgoingService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
@@ -54,5 +56,40 @@ public class OutgoingController {
                         .build();
 
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<ResponseDTO<?>> updateOutgoing (
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid OutgoingShipmentUpdateDTO outgoingShipmentUpdateDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        outgoingService.setOutgoingUpdate(userLoginDTO, outgoingShipmentUpdateDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<ResponseDTO<?>> deleteOutgoing (
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> outgoingKeyList) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        outgoingService.deleteOutgoing(userLoginDTO, outgoingKeyList.getList());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+
     }
 }

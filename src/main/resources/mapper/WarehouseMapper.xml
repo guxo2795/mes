@@ -71,4 +71,12 @@
         </foreach>
     </delete>
 
+    <!--  창고 키 체크   -->
+    <select id="isWarehouseExist" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(warehouse_key) > 0, true, false)
+        FROM tbl_warehouse
+        WHERE warehouse_key = #{warehouseKey}
+          AND is_deleted = 0
+    </select>
+
 </mapper>
