@@ -39,4 +39,8 @@ public interface OutsourceMapper {
 
     // 외주 입고 등록
     void setOutsourceIncoming(OutsourceIncomingCompleteRegDTO outsourceIncomingCompleteRegDTO);
+
+    // 해당 수주의 외주 출하현황 조회
+    String getOutsourceStatus(@Param("contractCode") String contractCode,
+                              @Param("processOutsourceKey") String processOutsourceKey);
 }

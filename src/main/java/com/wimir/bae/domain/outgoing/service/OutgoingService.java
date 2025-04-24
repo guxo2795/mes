@@ -4,8 +4,10 @@ import com.wimir.bae.domain.contract.dto.ContractInfoDTO;
 import com.wimir.bae.domain.contract.dto.ContractShipmentItemInfoDTO;
 import com.wimir.bae.domain.contract.mapper.ContractItemMapper;
 import com.wimir.bae.domain.contract.mapper.ContractMapper;
+import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentInfoDTO;
 import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentRegDTO;
 import com.wimir.bae.domain.outgoing.mapper.OutgoingMapper;
+import com.wimir.bae.domain.outsource.mapper.OutsourceMapper;
 import com.wimir.bae.domain.plan.dto.PlanInfoDTO;
 import com.wimir.bae.domain.plan.dto.PlanTotalSearchDTO;
 import com.wimir.bae.domain.plan.mapper.PlanMapper;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +31,7 @@ public class OutgoingService {
     private final ContractMapper contractMapper;
     private final PlanMapper planMapper;
     private final OutgoingMapper outgoingMapper;
+    private final OutsourceMapper outsourceMapper;
 
     public void createOutgoing(UserLoginDTO userLoginDTO, OutgoingShipmentRegDTO outgoingShipmentRegDTO) {
 
@@ -98,5 +102,20 @@ public class OutgoingService {
 
         }
 
+    }
+
+    @Transactional(readOnly = true)
+    public List<OutgoingShipmentInfoDTO> getShipmentList() {
+
+        // 출고/출하 목록
+        List<OutgoingShipmentInfoDTO> outgoingShipmentInfoDTOList = outgoingMapper.getOutgoingShipmentList();
+        
+        List<OutgoingShipmentInfoDTO> outgoingShipmentInfoList = new ArrayList<>();
+        for(OutgoingShipmentInfoDTO outgoingShipmentInfoDTO : outgoingShipmentInfoDTOList) {
+            String outsourceStatus = outsourceMapper.getOutsourceStatus(outgoingShipmentInfoDTO.getContractCode(), "14");
+            outgoingShipmentInfoDTO.setOutsourceStatus(outsourceStatus);
+            outgoingShipmentInfoList.add(outgoingShipmentInfoDTO);
+        }
+        return outgoingShipmentInfoList;
     }
 }

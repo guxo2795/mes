@@ -200,4 +200,29 @@
         WHERE is_deleted = 0
           AND outsource_key = #{outsourceKey}
     </update>
+
+    <!-- 해당 수주의 외주 출하현황 조회 -->
+    <select id="getOutsourceStatus" resultType="java.lang.String">
+        SELECT
+            CASE
+                WHEN COUNT(*) = SUM(CASE WHEN orout.outsource_state IS NULL THEN 1 ELSE 0 END) THEN '모든 외주품목 출하 등록 전'
+                WHEN COUNT(*) = SUM(CASE WHEN orout.outsource_state = 'P' THEN 1 ELSE 0 END) THEN '모든 외주품목 출하 확인'
+                WHEN COUNT(*) = SUM(CASE WHEN orout.outsource_state = 'C' THEN 1 ELSE 0 END) THEN '모든 외주품목 입고 완료'
+                WHEN SUM(CASE WHEN orout.outsource_state IS NULL THEN 1 ELSE 0 END) > 0 THEN '모든 외주품목 출하 등록 전'
+                WHEN COUNT(*) = SUM(CASE WHEN orout.outsource_state IN ('P', 'C') THEN 1 ELSE 0 END)
+                    AND SUM(CASE WHEN orout.outsource_state = 'P' THEN 1 ELSE 0 END) > 0 THEN '모든 외주품목 입고 등록 전'
+                ELSE '외주 품목 없음'
+                END AS outsourceStatus
+        FROM tbl_order_contract con
+                 LEFT JOIN tbl_order_contract_materials cmat ON cmat.contract_code = con.contract_code
+                 LEFT JOIN tbl_product_bom bom ON bom.root_key = cmat.product_key
+                 LEFT JOIN tbl_product pro ON pro.product_key = bom.material_key
+                 LEFT JOIN tbl_order_outsource orout ON orout.contract_code = con.contract_code
+        WHERE con.is_deleted = 0
+          AND cmat.is_deleted = 0
+          AND pro.is_deleted = 0
+          AND bom.is_deleted = 0
+          AND con.contract_code = #{contractCode}
+          AND pro.process_type_key = #{processOutsourceKey}
+    </select>
 </mapper>
