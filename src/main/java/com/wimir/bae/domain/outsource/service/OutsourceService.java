@@ -2,8 +2,11 @@ package com.wimir.bae.domain.outsource.service;
 
 import com.wimir.bae.domain.contract.dto.ContractInfoDTO;
 import com.wimir.bae.domain.contract.mapper.ContractMapper;
+import com.wimir.bae.domain.inventory.dto.InventoryCorrectionDTO;
+import com.wimir.bae.domain.inventory.service.InventoryProductService;
 import com.wimir.bae.domain.outsource.dto.*;
 import com.wimir.bae.domain.outsource.mapper.OutsourceMapper;
+import com.wimir.bae.domain.planTotal.mapper.PlanTotalMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -23,6 +27,9 @@ public class OutsourceService {
 
     private final OutsourceMapper outsourceMapper;
     private final ContractMapper contractMapper;
+    private final PlanTotalMapper planTotalMapper;
+
+    private final InventoryProductService inventoryProductService;
 
     public void createOutsource(UserLoginDTO userLoginDTO, OutsourceRegDTO outsourceRegDTO) {
 
@@ -144,5 +151,40 @@ public class OutsourceService {
             outsourceIncomingList.add(outsourceIncomingListDTO);
         }
         return outsourceIncomingList;
+    }
+
+    public void setOutsourceInbound(UserLoginDTO userLoginDTO, String outsourceKey) {
+
+        // 외주 정보 조회
+        OutsourceSearchInfoDTO outsourceSearchInfoDTO = outsourceMapper.searchOutsourceInfo(outsourceKey);
+        if(outsourceSearchInfoDTO == null){
+            throw new CustomRuntimeException("존재하지 않는 외주입니다.");
+        }
+        // 수주 정보 조회
+        ContractInfoDTO contractInfo = contractMapper.getContractAndItemInfo(outsourceSearchInfoDTO.getContractCode());
+        
+        // 입하 등록
+        outsourceMapper.setOutsourceInbound(outsourceKey);
+    }
+
+    public void setOutsourceIncoming(UserLoginDTO userLoginDTO, OutsourceIncomingCompleteRegDTO outsourceIncomingCompleteRegDTO) {
+
+        OutsourceSearchInfoDTO outsourceSearchInfoDTO = outsourceMapper.searchOutsourceInfo(outsourceIncomingCompleteRegDTO.getOutsourceKey());
+        if(outsourceSearchInfoDTO == null){
+            throw new CustomRuntimeException("존재하지 않는 외주입니다.");
+        }
+        ContractInfoDTO contractInfo = contractMapper.getContractAndItemInfo(outsourceSearchInfoDTO.getContractCode());
+
+        planTotalMapper.insertIncomingProduct(outsourceSearchInfoDTO.getProductKey(), outsourceIncomingCompleteRegDTO.getWarehouseKey(),
+                outsourceSearchInfoDTO.getContractCode(), Double.parseDouble(outsourceSearchInfoDTO.getQuantity()), "C1", "외주 입고 등록");
+
+        inventoryProductService.increaseProductInventory(userLoginDTO,
+                InventoryCorrectionDTO.builder()
+                        .productKey(outsourceSearchInfoDTO.getProductKey())
+                        .warehouseKey(outsourceIncomingCompleteRegDTO.getWarehouseKey())
+                        .quantity(outsourceSearchInfoDTO.getQuantity())
+                        .build());
+        outsourceIncomingCompleteRegDTO.setUserCode(userLoginDTO.getUserCode());
+        outsourceMapper.setOutsourceIncoming(outsourceIncomingCompleteRegDTO);
     }
 }

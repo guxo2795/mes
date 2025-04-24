@@ -1,9 +1,6 @@
 package com.wimir.bae.domain.outsource.controller;
 
-import com.wimir.bae.domain.outsource.dto.OutsourceContractListDTO;
-import com.wimir.bae.domain.outsource.dto.OutsourceIncomingListDTO;
-import com.wimir.bae.domain.outsource.dto.OutsourceRegDTO;
-import com.wimir.bae.domain.outsource.dto.OutsourceUpdateDTO;
+import com.wimir.bae.domain.outsource.dto.*;
 import com.wimir.bae.domain.outsource.service.OutsourceService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.dto.ListWrapperDTO;
@@ -15,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -112,6 +110,41 @@ public class OutsourceController {
 
         return ResponseEntity.ok().body(response);
 
+    }
+
+    // 외주 입하 완료
+    @PostMapping("/inbound/complete")
+    public ResponseEntity<ResponseDTO<?>> completeOutsourceInbound(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid OutsourceInboundCompleteRegDTO outsourceInboundCompleteRegDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        outsourceService.setOutsourceInbound(userLoginDTO, outsourceInboundCompleteRegDTO.getOutsourceKey());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @PostMapping("/incoming/complete")
+    public ResponseEntity<ResponseDTO<?>> completeOutsourceInbound(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid OutsourceIncomingCompleteRegDTO outsourceIncomingCompleteRegDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        outsourceService.setOutsourceIncoming(userLoginDTO, outsourceIncomingCompleteRegDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
 }

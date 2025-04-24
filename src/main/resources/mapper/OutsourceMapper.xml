@@ -182,4 +182,22 @@
           AND pro.is_deleted = 0
         ORDER BY orout.reg_date_time DESC
     </select>
+
+    <!-- 입하 등록 -->
+    <update id="setOutsourceInbound">
+        UPDATE tbl_order_outsource
+        SET inbound_date_time = NOW()
+        WHERE is_deleted = 0
+          AND outsource_key = #{outsourceKey}
+    </update>
+
+    <!-- 입고 등록 -->
+    <update id="setOutsourceIncoming">
+        UPDATE tbl_order_outsource
+        SET incoming_date_time = NOW(),
+            incoming_user_key = #{userCode},
+            outsource_state = 'C'
+        WHERE is_deleted = 0
+          AND outsource_key = #{outsourceKey}
+    </update>
 </mapper>

@@ -31,6 +31,12 @@ public interface OutsourceMapper {
 
     // 외주 등록된 유효한 수주 리스트
     List<OutsourceIncomingStateDTO> getOutsourceAllState();
-
+    // 외주 등록된 모든 목록 조회
     List<OutsourceIncomingDTO> getOutsourceCreateAllList();
+
+    // 외주 입하 등록
+    void setOutsourceInbound(String outsourceKey);
+
+    // 외주 입고 등록
+    void setOutsourceIncoming(OutsourceIncomingCompleteRegDTO outsourceIncomingCompleteRegDTO);
 }
