@@ -130,4 +130,40 @@
           AND outgoing_key = #{outgoingKey}
     </update>
 
+    <!-- 출하 완료 목록 조회 -->
+    <select id="getOutgoingShipmentEndList" resultType="com.wimir.bae.domain.outgoing.dto.OutgoingShipmentEndInfoDTO">
+        SELECT
+            CASE
+                WHEN outgoing_type_flag = 'M3' THEN '출하'
+                WHEN outgoing_type_flag = 'M4' THEN '출고'
+                ELSE '기타'
+            END AS outgoing_type,
+            outgo.outgoing_key,
+            outgo.product_key,
+            pro.product_name,
+            ware.warehouse_name,
+            con.contract_code AS materialKey,
+            con.contract_name AS material_name,
+            com.company_name,
+            con.delivery_date,
+            outgo.outgoing_date_time,
+            outgo.quantity,
+            outgo.note,
+            pro.product_code,
+            outgo.warehouse_Key,
+            us.user_name,
+            pro.standard_price,
+            (pro.standard_price * outgo.quantity) AS total_price
+        FROM tbl_outgoing outgo
+            LEFT JOIN tbl_product pro ON pro.product_key = outgo.product_key
+            LEFT JOIN tbl_warehouse ware ON outgo.warehouse_key = ware.warehouse_key
+            LEFT JOIN tbl_order_contract_materials cmat ON cmat.contract_material_key = outgo.material_key
+            LEFT JOIN tbl_order_contract con ON con.contract_code = cmat.contract_code
+            LEFT JOIN tbl_company com ON com.company_key = con.company_key
+            LEFT JOIN tbl_user AS us ON us.user_code = outgo.outgoing_user_key
+                        AND us.is_deleted = 0
+        WHERE outgo.outgoing_type_flag IN ('M3', 'M4')
+            AND outgo.is_completed = '1'
+    </select>
+
 </mapper>

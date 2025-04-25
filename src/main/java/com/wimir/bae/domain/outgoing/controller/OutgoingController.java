@@ -1,9 +1,6 @@
 package com.wimir.bae.domain.outgoing.controller;
 
-import com.wimir.bae.domain.outgoing.dto.OutgoingCompleteRegDTO;
-import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentInfoDTO;
-import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentRegDTO;
-import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentUpdateDTO;
+import com.wimir.bae.domain.outgoing.dto.*;
 import com.wimir.bae.domain.outgoing.service.OutgoingService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.dto.ListWrapperDTO;
@@ -59,6 +56,7 @@ public class OutgoingController {
         return ResponseEntity.ok().body(response);
     }
 
+    // 출하 수정
     @PostMapping("/update")
     public ResponseEntity<ResponseDTO<?>> updateOutgoing (
             @RequestHeader("Authorization") String accessToken,
@@ -76,6 +74,7 @@ public class OutgoingController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    // 출하 삭제
     @PostMapping("/delete")
     public ResponseEntity<ResponseDTO<?>> deleteOutgoing (
             @RequestHeader("Authorization") String accessToken,
@@ -109,5 +108,22 @@ public class OutgoingController {
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 출하 현황
+    @GetMapping("/list/end")
+    public ResponseEntity<ResponseDTO<List<OutgoingShipmentEndInfoDTO>>> getOutgoingEndList(
+            @RequestHeader("Authorization") String accessToken) {
+
+        jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<OutgoingShipmentEndInfoDTO> list = outgoingService.getShipmentEndList();
+
+        ResponseDTO<List<OutgoingShipmentEndInfoDTO>> response =
+                ResponseDTO.<List<OutgoingShipmentEndInfoDTO>>builder()
+                        .result(1)
+                        .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
     }
 }

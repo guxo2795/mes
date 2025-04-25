@@ -216,4 +216,10 @@ public class OutgoingService {
             inventoryProductMapper.setProductInventoryCorrection(inventoryCorrectionDTO);
         }
     }
+
+    @Transactional(readOnly = true)
+    public List<OutgoingShipmentEndInfoDTO> getShipmentEndList() {
+        return Optional.ofNullable(outgoingMapper.getOutgoingShipmentEndList())
+                .orElse(Collections.emptyList());
+    }
 }

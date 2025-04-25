@@ -1,9 +1,6 @@
 package com.wimir.bae.domain.outgoing.mapper;
 
-import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentInfoDTO;
-import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentRegDTO;
-import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentUpdateDTO;
-import com.wimir.bae.domain.outgoing.dto.outgoingInfoDTO;
+import com.wimir.bae.domain.outgoing.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -40,4 +37,7 @@ public interface OutgoingMapper {
     void outgoingComplete(@Param("outgoingKey") String outgoingKey,
                           @Param("correctionDateTime") String correctionDateTime,
                           @Param("userCode") String userCode);
+
+    // 출하 현황
+    List<OutgoingShipmentEndInfoDTO> getOutgoingShipmentEndList();
 }
