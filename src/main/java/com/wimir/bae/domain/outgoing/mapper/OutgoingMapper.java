@@ -40,4 +40,7 @@ public interface OutgoingMapper {
 
     // 출하 현황
     List<OutgoingShipmentEndInfoDTO> getOutgoingShipmentEndList();
+
+    // 출고 등록(재고 이동)
+    void createOutgoing(OutgoingDecreaseRegDTO outgoingDecreaseRegDTO);
 }

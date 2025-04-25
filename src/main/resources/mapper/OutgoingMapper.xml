@@ -166,4 +166,13 @@
             AND outgo.is_completed = '1'
     </select>
 
+    <insert id="createOutgoing">
+        INSERT INTO tbl_outgoing (
+        product_key, warehouse_key, outgoing_type_flag, quantity, note, correction_date_time
+        )
+        VALUES (
+        #{productKey}, #{warehouseKey}, #{outgoingTypeFlag}, #{quantity}, #{note}, #{correctionDateTime}
+        )
+    </insert>
+
 </mapper>
