@@ -60,4 +60,14 @@ public class InventoryProductService {
         inventoryCorrectionDTO.setQuantity(String.valueOf(regQuantity + oldProductQuantity));
         inventoryProductMapper.setProductInventoryCorrection(inventoryCorrectionDTO);
     }
+
+    public void decreaseProductInventory(UserLoginDTO userLoginDTO, InventoryCorrectionDTO inventoryCorrectionDTO) {
+
+        double oldProductQuantity = inventoryProductMapper.getProductInventory(
+                inventoryCorrectionDTO.getProductKey(),
+                inventoryCorrectionDTO.getWarehouseKey());
+
+        inventoryCorrectionDTO.setQuantity(String.valueOf(oldProductQuantity - Double.parseDouble(inventoryCorrectionDTO.getQuantity())));
+        inventoryProductMapper.setProductInventoryCorrection(inventoryCorrectionDTO);
+    }
 }

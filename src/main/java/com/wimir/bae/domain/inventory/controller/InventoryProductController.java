@@ -36,4 +36,22 @@ public class InventoryProductController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    @PostMapping("/decrease")
+    public ResponseEntity<ResponseDTO<?>> decreaseProductInventory(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid InventoryCorrectionDTO inventoryCorrectionDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        inventoryProductService.decreaseProductInventory(userLoginDTO, inventoryCorrectionDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+
 }
