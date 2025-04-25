@@ -32,4 +32,20 @@
                  LEFT JOIN tbl_product pro ON pro.product_key = detail.product_key
         WHERE state.is_deleted = 0;
     </select>
+
+    <!-- 불량 현황 존재 유무 -->
+    <select id="isFaultStateExist" resultType="boolean">
+        SELECT IF(COUNT(*) > 0, true, false) AS result
+        FROM tbl_fault_state
+        WHERE is_deleted = 0
+          AND fault_state_key = #{faultStateKey}
+    </select>
+
+    <!-- 불량 현황 수정 -->
+    <update id="updateFaultState">
+        UPDATE tbl_fault_state
+        SET fault_date = #{faultDate},
+            fault_count = #{faultCount}
+        WHERE fault_state_key = #{faultStateKey}
+    </update>
 </mapper>
