@@ -1,5 +1,6 @@
 package com.wimir.bae.domain.outgoing.controller;
 
+import com.wimir.bae.domain.outgoing.dto.OutgoingCompleteRegDTO;
 import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentInfoDTO;
 import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentRegDTO;
 import com.wimir.bae.domain.outgoing.dto.OutgoingShipmentUpdateDTO;
@@ -90,6 +91,23 @@ public class OutgoingController {
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
+    }
 
+    // 출하 확인
+    @PostMapping("/complete")
+    public ResponseEntity<ResponseDTO<?>> completeOutgoing (
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<OutgoingCompleteRegDTO> outgoingKeyList) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        outgoingService.outgoingComplete(userLoginDTO, outgoingKeyList.getList());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 }

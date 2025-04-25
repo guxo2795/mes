@@ -7,6 +7,7 @@ import com.wimir.bae.domain.outgoing.dto.outgoingInfoDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Mapper
@@ -30,4 +31,13 @@ public interface OutgoingMapper {
 
     // 출하 삭제
     void deleteOutgoing(String outgoingKey);
+
+    // 외주 종결 여부
+    boolean isOutsourceComplete(@Param("contractCode") String contractCode,
+                                @Param("processOutsourcedKey") String processOutsourcedKey);
+
+    // 출하 완료
+    void outgoingComplete(@Param("outgoingKey") String outgoingKey,
+                          @Param("correctionDateTime") String correctionDateTime,
+                          @Param("userCode") String userCode);
 }

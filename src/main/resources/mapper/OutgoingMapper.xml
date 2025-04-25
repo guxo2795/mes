@@ -97,4 +97,37 @@
           AND outgoing_key = #{outgoingKey}
     </update>
 
+    <!-- 출하 확인 전 외주 종결 여부 확인 -->
+    <select id="isOutsourceComplete" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(*) > 0, false, true) AS result
+        FROM tbl_order_contract orcon
+                 LEFT JOIN tbl_order_contract_materials cmat ON cmat.contract_code = orcon.contract_code
+                 LEFT JOIN tbl_product_bom bom ON cmat.product_key = bom.finished_key
+                 LEFT JOIN tbl_product pro ON pro.product_key = bom.material_key
+                 LEFT JOIN tbl_company com ON com.company_key = pro.company_key
+                 LEFT JOIN tbl_common_code_sub sub ON pro.process_type_key = sub.sub_common_key
+                 LEFT JOIN tbl_order_outsource orout ON cmat.contract_code = orout.contract_code
+            AND orout.product_key = bom.material_key
+            AND orout.is_deleted = 0
+        WHERE cmat.contract_code = #{contractCode}
+          AND sub.sub_common_key = #{processOutsourcedKey}
+          AND cmat.is_deleted = 0
+          AND bom.is_deleted = 0
+          AND orcon.is_deleted = 0
+          AND (orout.outsource_state IN ('P', 'O') OR orout.outsource_state IS NULL)
+    </select>
+
+    <!-- 출하 완료 -->
+    <update id="outgoingComplete">
+        UPDATE tbl_outgoing
+        SET is_completed = 1,
+            correction_date_time = #{correctionDateTime},
+            note = '출하 확인(재고 감소)',
+            outgoing_user_key = #{userCode}
+        WHERE
+            is_completed = 0
+          AND is_deleted = 0
+          AND outgoing_key = #{outgoingKey}
+    </update>
+
 </mapper>

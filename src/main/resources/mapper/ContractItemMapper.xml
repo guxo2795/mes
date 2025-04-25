@@ -25,4 +25,16 @@
           AND cmat.contract_code = #{contractKey}
         ORDER BY cmat.contract_material_key DESC
     </select>
+
+    <!-- 수주 정보 by 수주품목키 -->
+    <select id="getContractCompleteInfo" resultType="com.wimir.bae.domain.contract.dto.ContractInfoDTO">
+        SELECT
+            con.contract_code, con.is_completed, con.contract_name,
+            pro.product_code, pro.product_name, sub.sub_common_name AS unitName
+        FROM tbl_order_contract con
+            LEFT JOIN tbl_order_contract_materials cmat ON con.contract_code = cmat.contract_code
+            LEFT JOIN tbl_product pro ON pro.product_key = cmat.product_key
+            LEFT JOIN tbl_common_code_sub sub ON sub.sub_common_key = pro.unit_key
+        WHERE cmat.contract_material_key = #{materialKey}
+    </select>
 </mapper>
