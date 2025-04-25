@@ -35,4 +35,26 @@
             product_key = #{productKey}
           AND warehouse_key = #{warehouseKey}
     </update>
+
+    <!-- 자재, 완제품 재고 현황 -->
+    <select id="getProductInventoryStatus" resultType="com.wimir.bae.domain.inventory.dto.InventoryProductInfoDBDTO">
+        SELECT
+            pro.product_key, pro.product_code, pro.product_name,
+            ware.warehouse_key, ware.warehouse_name,
+            sub.sub_common_name AS unit_name,
+            CASE
+                WHEN pro.asset_type_flag = 'M' THEN SUM(inven.quantity) OVER(PARTITION BY inven.product_key)
+                WHEN pro.asset_type_flag = 'F' THEN ROUND(SUM(inven.quantity) OVER(PARTITION BY inven.product_key))
+            END AS total_quantity,
+            CASE
+                WHEN pro.asset_type_flag = 'M' THEN inven.quantity
+                WHEN pro.asset_type_flag = 'F' THEN ROUND(inven.quantity)
+            END AS quantity
+        FROM tbl_inventory inven
+            LEFT JOIN tbl_product pro ON inven.product_key = pro.product_key
+            LEFT JOIN tbl_warehouse ware ON inven.warehouse_key = ware.warehouse_key
+            LEFT JOIN tbl_common_code_sub sub ON pro.unit_key = sub.sub_common_key
+        WHERE pro.is_deleted = 0
+          AND ware.is_deleted = 0
+    </select>
 </mapper>
