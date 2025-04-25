@@ -1,7 +1,10 @@
 package com.wimir.bae.domain.quality.mapper;
 
+import com.wimir.bae.domain.quality.dto.FaultStateDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface FaultStateMapper {
@@ -12,4 +15,7 @@ public interface FaultStateMapper {
                           @Param("keyCode") String keyCode,
                           @Param("faultDate") String faultDate,
                           @Param("faultCount") String faultCount);
+
+    // 불량 현황 조회
+    List<FaultStateDTO> getFaultStateList();
 }

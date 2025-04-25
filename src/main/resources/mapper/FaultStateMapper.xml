@@ -13,4 +13,23 @@
             ( #{processType}, #{processName}, #{keyCode}, #{faultDate}, #{faultCount})
     </insert>
 
+    <!-- 불량 현황 조회 -->
+    <select id="getFaultStateList" resultType="com.wimir.bae.domain.quality.dto.FaultStateDTO">
+        SELECT
+            state.fault_state_Key,
+            state.process_name,
+            state.process_type,
+            state.key_code,
+            state.fault_date,
+            ROUND(state.fault_count, 3) as fault_count,
+            state.reg_date_time,
+            pro.product_code,
+            pro.product_key,
+            pro.product_name
+        FROM tbl_fault_state state
+                 INNER JOIN tbl_production_detail detail ON detail.detail_key = state.key_code
+                        AND state.process_type ='P'
+                 LEFT JOIN tbl_product pro ON pro.product_key = detail.product_key
+        WHERE state.is_deleted = 0;
+    </select>
 </mapper>
