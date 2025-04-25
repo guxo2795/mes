@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wimir.bae.domain.quality.mapper.FaultEventMapper">
+
+    <resultMap id="faultEventMap" type="com.wimir.bae.domain.quality.dto.FaultEventInfoDTO">
+        <id property="faultStateKey" column="fault_state_key"/>
+        <result property="faultDate" column="fault_date"/>
+        <result property="productCode" column="product_code"/>
+        <result property="productKey" column="product_key"/>
+        <result property="productName" column="product_name"/>
+        <result property="processName" column="process_name"/>
+        <result property="faultCount" column="fault_count"/>
+        <collection property="eventList" ofType="com.wimir.bae.domain.quality.dto.FaultEventElementDTO" javaType="java.util.List">
+            <id property="faultEventKey" column="fault_event_key"/>
+            <result property="faultCode" column="fault_code"/>
+            <result property="faultName" column="fault_name"/>
+        </collection>
+    </resultMap>
+
+    <!-- 불량 내역 조회 -->
+    <select id="getFaultEventList" resultMap="faultEventMap">
+        SELECT
+            event.fault_event_key,
+            event.fault_state_key,
+            pro.product_key,
+            pro.product_code,
+            pro.product_name,
+            state.process_name,
+            event.fault_code,
+            sub.sub_common_name AS fault_name,
+            state.fault_count,
+            state.fault_date
+        FROM tbl_fault_state state
+                 INNER JOIN tbl_fault_event event ON state.process_type = 'P'
+                            AND state.fault_state_key = event.fault_state_key
+                 INNER JOIN tbl_production_detail detail ON state.process_type = 'P'
+                            AND detail.detail_key = state.key_code
+                 LEFT JOIN tbl_product pro ON pro.product_key = detail.product_key
+                 LEFT JOIN tbl_common_code_sub sub ON sub.sub_common_key = event.fault_code;
+    </select>
+</mapper>

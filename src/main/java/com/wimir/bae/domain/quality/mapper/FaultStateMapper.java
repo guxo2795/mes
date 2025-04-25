@@ -5,7 +5,6 @@ import com.wimir.bae.domain.quality.dto.FaultStateModDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Mapper
