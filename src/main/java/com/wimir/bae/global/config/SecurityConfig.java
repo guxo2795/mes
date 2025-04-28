@@ -24,7 +24,8 @@ public class SecurityConfig {
                 .formLogin().disable() // 로그인 폼 안 쓸 경우 비활성화
                 .httpBasic().disable() // 기본 인증 비활성화 (JWT 등 사용할 경우)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/jwt/login")).permitAll()
+                        .anyRequest().authenticated()
 
                 )
                 .sessionManagement(session -> session

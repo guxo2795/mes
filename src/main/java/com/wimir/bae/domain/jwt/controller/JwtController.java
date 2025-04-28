@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class JwtController {
 
     private final JwtService jwtService;
 
+    // 로그인
     @PostMapping("login")
     public ResponseEntity<ResponseDTO<String>> login(
             @RequestBody @Valid JwtLoginDTO jwtLoginDTO,
@@ -50,6 +54,28 @@ public class JwtController {
                         .data(accessToken)
                         .result(1)
                         .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 액세스 토큰 재발급
+    @PostMapping("/silent")
+    public ResponseEntity<ResponseDTO<String>> silent(HttpServletRequest request) {
+
+        Cookie[] cookies = request.getCookies();
+
+        String refreshToken = Stream.of(cookies)
+                .filter(cookie -> "Bae".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse("");
+        
+        String accessToken = jwtService.silent(refreshToken);
+
+        ResponseDTO<String> responseDTO = ResponseDTO.<String>builder()
+                .data(accessToken)
+                .result(1)
+                .build();
 
         return ResponseEntity.ok().body(responseDTO);
     }

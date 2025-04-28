@@ -56,7 +56,7 @@ public class JwtService {
 
         // 로그인 성공시 액세스 토큰이 아닌 리프레시 토큰을 발급
         String refreshToken = createRefreshToken(userCode);
-        // 만료 날짜 얻기 => getRefreshToeknExpiration(refreshToken)으로 바꾸는게 맞나?
+        // 만료 날짜 얻기 => getRefreshTokenExpiration(refreshToken)으로 바꾸는게 맞나?
         Date extiredDate = getAccessTokenExpiration(refreshToken);
         // 날짜 포맷
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -155,12 +155,12 @@ public class JwtService {
                     .getBody()
                     .getExpiration();
         } catch (Exception e) {
-            throw new IllegalArgumentException(errorMessage);
+            throw new CustomTokenException(errorMessage);
         }
     }
 
     public Date getAccessTokenExpiration(String token) {
-        return getTokenExpirationDate(token, "세션이 만료되었습니다. 계속하러면 다시 로그인 하세요.");
+        return getTokenExpirationDate(token, "세션이 만료되었습니다. 계속하려면 다시 로그인 하세요.");
     }
 
     public Date getRefreshTokenExpiration(String token) {
