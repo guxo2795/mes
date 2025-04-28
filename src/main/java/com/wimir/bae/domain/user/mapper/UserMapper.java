@@ -55,5 +55,8 @@ public interface UserMapper {
 
     // 유저 삭제
     void deleteUser(String userKey);
+
+    // 로그아웃
+    void logout(String userCode);
 }
 

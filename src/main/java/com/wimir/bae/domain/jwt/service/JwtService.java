@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.jwt.service;
 
 import com.wimir.bae.domain.jwt.dto.JwtLoginDTO;
+import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.domain.user.dto.UserLoginInfoDTO;
 import com.wimir.bae.domain.user.mapper.UserMapper;
 import com.wimir.bae.global.exception.CustomTokenException;
@@ -172,4 +173,9 @@ public class JwtService {
         return passwordEncoder.matches(password, currentPassword);
     }
 
+    // 로그아웃
+    public void logout(UserLoginDTO userInfo) {
+        String userCode = userInfo.getUserCode();
+        userMapper.logout(userCode);
+    }
 }

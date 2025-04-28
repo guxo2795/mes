@@ -121,4 +121,11 @@
           AND user_key = #{userKey}
     </delete>
 
+    <!-- 로그아웃 -->
+    <update id="logout">
+        UPDATE tbl_user
+        SET token_date = NULL
+        WHERE user_code = #{userCode}
+    </update>
+
 </mapper>

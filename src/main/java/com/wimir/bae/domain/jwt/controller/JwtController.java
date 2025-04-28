@@ -3,8 +3,11 @@ package com.wimir.bae.domain.jwt.controller;
 
 import com.wimir.bae.domain.jwt.dto.JwtLoginDTO;
 import com.wimir.bae.domain.jwt.service.JwtService;
+import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
+import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +27,7 @@ import java.util.stream.Stream;
 public class JwtController {
 
     private final JwtService jwtService;
+    private final JwtGlobalService jwtGlobalService;
 
     // 로그인
     @PostMapping("login")
@@ -76,6 +80,39 @@ public class JwtController {
                 .data(accessToken)
                 .result(1)
                 .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<ResponseDTO<String>> logout(HttpServletRequest request,
+                                                      HttpServletResponse response) {
+
+        Cookie[] cookies = request.getCookies();
+
+        String refreshToken = Stream.of(cookies)
+                .filter(cookie -> "Bae".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse("");
+
+        UserLoginDTO userInfo = jwtGlobalService.getTokenInfo(refreshToken, "U");
+        jwtService.logout(userInfo);
+
+        ResponseCookie responseCookie =
+                ResponseCookie.from("Bae", "")
+                        .maxAge(0)
+                        .path("/")
+                        .httpOnly(true)
+                        .build();
+        response.addHeader("Set-Cookie", responseCookie.toString());
+
+        ResponseDTO<String> responseDTO =
+                ResponseDTO.<String>builder()
+                        .data("로그아웃 되었습니다")
+                        .result(1)
+                        .build();
 
         return ResponseEntity.ok().body(responseDTO);
     }
