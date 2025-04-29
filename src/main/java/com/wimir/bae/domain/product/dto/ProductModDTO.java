@@ -18,8 +18,8 @@ public class ProductModDTO {
     @NotBlank
     private String productKey;
 
-    @NotBlank
-    private String companyKey;
+//    @NotBlank
+//    private String companyKey;
 
     @NotBlank
     private String productTypeKey;

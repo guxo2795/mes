@@ -25,7 +25,7 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductMapper productMapper;
-    private final CompanyMapper companyMapper;
+//    private final CompanyMapper companyMapper;
 
     private final InventoryProductService inventoryProductService;
 
@@ -35,19 +35,19 @@ public class ProductService {
         // 품번 중복 확인
         validateProductCode(regDTO.getProductCode());
 
-        // 업체 조달, 납부 확인
-        CompanyInfoDTO companyInfo = companyMapper.getCompanyInfo(regDTO.getCompanyKey());
-        if (companyInfo == null) {
-            throw new CustomRuntimeException("존재하지 않는 거래처입니다. 존재하는 거래처를 선택 후 재시도 해주세요.");
-        }
-        String companyTypeFlag = companyInfo.getCompanyTypeFlag();
-        String newAssetTypeFlag = regDTO.getAssetTypeFlag();
-
-        if (companyTypeFlag.equals("O") && !newAssetTypeFlag.equals("M")) {
-            throw new CustomRuntimeException("조달 업체에는 자재만 등록할 수 있습니다.");
-        } else if (companyTypeFlag.equals("S") && !newAssetTypeFlag.equals("F")) {
-            throw new CustomRuntimeException("납품 업체에는 완제품만 등록할 수 있습니다.");
-        }
+//        // 업체 조달, 납부 확인
+//        CompanyInfoDTO companyInfo = companyMapper.getCompanyInfo(regDTO.getCompanyKey());
+//        if (companyInfo == null) {
+//            throw new CustomRuntimeException("존재하지 않는 거래처입니다. 존재하는 거래처를 선택 후 재시도 해주세요.");
+//        }
+//        String companyTypeFlag = companyInfo.getCompanyTypeFlag();
+//        String newAssetTypeFlag = regDTO.getAssetTypeFlag();
+//
+//        if (companyTypeFlag.equals("O") && !newAssetTypeFlag.equals("M")) {
+//            throw new CustomRuntimeException("조달 업체에는 자재만 등록할 수 있습니다.");
+//        } else if (companyTypeFlag.equals("S") && !newAssetTypeFlag.equals("F")) {
+//            throw new CustomRuntimeException("납품 업체에는 완제품만 등록할 수 있습니다.");
+//        }
         
         // 품목 생성
         productMapper.createProduct(regDTO);

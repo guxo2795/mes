@@ -17,8 +17,8 @@ public class ProductRegDTO {
 
 //    private String productImageKey;
 
-    @NotBlank
-    private String companyKey;
+//    @NotBlank
+//    private String companyKey;
 
     @NotBlank
     private String productTypeKey;

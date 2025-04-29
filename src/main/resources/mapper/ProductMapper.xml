@@ -17,11 +17,11 @@
     <!-- 품목 등록 -->
     <insert id="createProduct" useGeneratedKeys="true" keyProperty="productKey">
             INSERT INTO tbl_product (
-                company_key, product_type_key, unit_key, process_type_key, drawing_key,
+                product_type_key, unit_key, process_type_key, drawing_key,
                 product_code, product_name, standard_price, asset_type_flag, safety_quantity
             )
             VALUES (
-                    #{companyKey}, #{productTypeKey}, #{unitKey}, #{processTypeKey}, #{drawingKey},
+                    #{productTypeKey}, #{unitKey}, #{processTypeKey}, #{drawingKey},
                     #{productCode}, #{productName}, #{standardPrice}, #{assetTypeFlag}, #{safetyQuantity}
                    )
     </insert>
@@ -30,7 +30,6 @@
     <select id="getProductList" resultType="com.wimir.bae.domain.product.dto.ProductInfoDTO">
         SELECT
             product_key AS productKey,
-            company_key AS companyKey,
             product_type_key AS productTypeKey,
             unit_key AS unitKey,
             process_type_key AS processTypeKey,
@@ -68,7 +67,6 @@
     <update id="updateProduct" >
         UPDATE tbl_product
         SET
-            company_key = #{companyKey},
             product_type_key = #{productTypeKey},
             unit_key = #{unitKey},
             process_type_key = #{processTypeKey},
