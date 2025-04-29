@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wimir.bae.domain.productCompany.mapper.ProductCompanyMapper">
+
+    <select id="isProductCompanyExist" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(*) > 0, true, false) AS result
+        FROM tbl_product_company
+        WHERE is_deleted = 0
+          AND product_key = #{productKey}
+          AND company_key = #{companyKey}
+    </select>
+
+    <insert id="createProductCompany">
+        INSERT INTO tbl_product_company (
+             product_key, company_key
+        )
+        VALUES (
+            #{productKey}, #{companyKey}
+        )
+    </insert>
+
+</mapper>
