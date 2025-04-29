@@ -8,9 +8,11 @@ import com.wimir.bae.domain.user.mapper.UserMapper;
 import com.wimir.bae.global.exception.CustomAccessDenyException;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import com.wimir.bae.global.image.service.ImageService;
+import com.wimir.bae.global.notification.NotificationGlobalService;
 import com.wimir.bae.global.utils.CryptUtil;
 import com.wimir.bae.global.utils.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +31,13 @@ public class UserService {
     private final UserMapper userMapper;
 
     private final ImageService imageService;
+    private final NotificationGlobalService notificationGlobalService;
 
     private final PasswordEncoder passwordEncoder;
     private final CryptUtil cryptUtil;
+
+    @Value("${bae.alert.user}")
+    private String userAlertKey;
 
     // 유저 등록
     public void createUser(UserLoginDTO userLoginDTO, UserRegDTO regDTO, MultipartFile imageFile, MultipartFile signatureFile) {
@@ -59,6 +65,10 @@ public class UserService {
         }
 
         userMapper.createUser(regDTO);
+        notificationGlobalService.createInfoNotification(
+                "insert", userAlertKey,
+                regDTO.getUserName(), userLoginDTO.getUserCode()
+        );
     }
 
     // 유저 목록 조회

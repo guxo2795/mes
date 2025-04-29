@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wimir.bae.domain.notification.mapper.NotificationMapper">
+
+    <!-- 메시지 생성 -->
+    <insert id="createNotification">
+        INSERT INTO tbl_history (
+            user_key, sub_common_key, alert_content, alert_level_flag, auth_range_flag
+        )
+        VALUES (
+            #{userKey}, #{actionTypeKey}, #{alertContent}, #{alertLevelFlag}, #{authRangeFlag}
+        )
+    </insert>
+
+</mapper>
