@@ -22,4 +22,18 @@
         )
     </insert>
 
+    <select id="getProductCompanyList" resultType="com.wimir.bae.domain.productCompany.dto.ProductCompanyFlatDTO">
+        SELECT
+            p.product_code AS productCode,
+            p.product_name AS productName,
+            p.asset_type_flag AS assetTypeFlag,
+            c.company_name AS companyName,
+            c.company_type_flag AS companyTypeFlag
+        FROM tbl_product_company pc
+            LEFT JOIN tbl_product p ON pc.product_key = p.product_key
+            Left JOIN tbl_company c ON pc.company_key = c.company_key
+        WHERE pc.is_deleted = 0
+        ORDER BY p.product_key ASC, c.company_key ASC
+    </select>
+
 </mapper>

@@ -1,10 +1,13 @@
 package com.wimir.bae.domain.productCompany.mapper;
 
+import com.wimir.bae.domain.productCompany.dto.ProductCompanyFlatDTO;
+import com.wimir.bae.domain.productCompany.dto.ProductCompanyInfoDTO;
 import com.wimir.bae.domain.productCompany.dto.ProductCompanyRegDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Mapper
 public interface ProductCompanyMapper {
@@ -13,4 +16,6 @@ public interface ProductCompanyMapper {
                                   @Param("companyKey") String companyKey);
 
     void createProductCompany(ProductCompanyRegDTO regDTO);
+
+    List<ProductCompanyFlatDTO> getProductCompanyList();
 }

@@ -4,6 +4,9 @@ import com.wimir.bae.domain.company.dto.CompanyInfoDTO;
 import com.wimir.bae.domain.company.mapper.CompanyMapper;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.domain.product.mapper.ProductMapper;
+import com.wimir.bae.domain.productCompany.dto.ProductCompanyFlatDTO;
+import com.wimir.bae.domain.productCompany.dto.ProductCompanyInfoDTO;
+import com.wimir.bae.domain.productCompany.dto.ProductCompanyInfoDetailDTO;
 import com.wimir.bae.domain.productCompany.dto.ProductCompanyRegDTO;
 import com.wimir.bae.domain.productCompany.mapper.ProductCompanyMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -11,6 +14,9 @@ import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,5 +57,32 @@ public class ProductCompanyService {
 
         // 매핑 생성
         productCompanyMapper.createProductCompany(regDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductCompanyInfoDTO> getProductCompanyList() {
+
+        List<ProductCompanyFlatDTO> flatList =  Optional.ofNullable(productCompanyMapper.getProductCompanyList())
+                .orElse(Collections.emptyList());
+
+        Map<String, List<ProductCompanyInfoDetailDTO>> companyMap = flatList.stream()
+                .collect(Collectors.groupingBy(ProductCompanyFlatDTO::getProductCode,
+                        Collectors.mapping(dto -> {
+                            ProductCompanyInfoDetailDTO companyDTO = new ProductCompanyInfoDetailDTO();
+                            companyDTO.setCompanyName(dto.getCompanyName());
+                            companyDTO.setCompanyTypeFlag(dto.getCompanyTypeFlag());
+                            return companyDTO;
+                        }, Collectors.toList())));
+
+        return flatList.stream()
+                .map(flatDTO -> {
+                    ProductCompanyInfoDTO resultDTO = new ProductCompanyInfoDTO();
+                    resultDTO.setProductCode(flatDTO.getProductCode());
+                    resultDTO.setProductName(flatDTO.getProductName());
+                    resultDTO.setAssetTypeFlag(flatDTO.getAssetTypeFlag());
+                    resultDTO.setCompanyList(companyMap.get(flatDTO.getProductCode()));
+                    return resultDTO;
+                })
+                .toList();
     }
 }
