@@ -11,6 +11,7 @@ import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -26,9 +27,12 @@ public class UserController {
     @PostMapping("create")
     public ResponseEntity<ResponseDTO<?>> createUser(
             @RequestHeader("Authorization") String accessToken,
-            @RequestBody @Valid UserRegDTO regDTO) {
+            @RequestPart(value = "json") @Valid UserRegDTO regDTO,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestPart(value = "signatureFile", required = false) MultipartFile signatureFile) {
+
         UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
-        userService.createUser(userLoginDTO, regDTO);
+        userService.createUser(userLoginDTO, regDTO, imageFile, signatureFile);
 
         ResponseDTO<?> responseDTO =
                 ResponseDTO.builder()

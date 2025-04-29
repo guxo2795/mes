@@ -5,17 +5,17 @@ import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.domain.user.dto.UserModDTO;
 import com.wimir.bae.domain.user.dto.UserRegDTO;
 import com.wimir.bae.domain.user.mapper.UserMapper;
-import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.exception.CustomAccessDenyException;
 import com.wimir.bae.global.exception.CustomRuntimeException;
+import com.wimir.bae.global.image.service.ImageService;
 import com.wimir.bae.global.utils.CryptUtil;
 import com.wimir.bae.global.utils.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -27,11 +27,14 @@ import java.util.Optional;
 public class UserService {
 
     private final UserMapper userMapper;
+
+    private final ImageService imageService;
+
     private final PasswordEncoder passwordEncoder;
     private final CryptUtil cryptUtil;
 
     // 유저 등록
-    public void createUser(UserLoginDTO userLoginDTO, UserRegDTO regDTO) {
+    public void createUser(UserLoginDTO userLoginDTO, UserRegDTO regDTO, MultipartFile imageFile, MultipartFile signatureFile) {
 
         // 유저 아이디 중복 확인
         validateDuplicateUserCode(regDTO.getUserCode());
@@ -46,6 +49,14 @@ public class UserService {
 
         regDTO.setPassword(encodedPassword);
         regDTO.setPhoneNumber(phoneNumber);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            regDTO.setUserImageKey(imageService.saveImage(imageFile));
+        }
+
+        if(signatureFile != null && !signatureFile.isEmpty()){
+            regDTO.setUserSignatureKey(imageService.saveImage(signatureFile));
+        }
 
         userMapper.createUser(regDTO);
     }

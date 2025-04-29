@@ -37,4 +37,8 @@ public class UserRegDTO {
     private String permissionTypeFlag;
 
     private String phoneNumber;
+
+    private String userImageKey;
+
+    private String userSignatureKey;
 }

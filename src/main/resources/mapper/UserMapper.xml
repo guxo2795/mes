@@ -26,11 +26,23 @@
         INSERT INTO tbl_user (
             user_code, password, user_name, department_key, position_key,
             permission_type_flag, phone_number
+            <if test="userImageKey != null and userImageKey != ''">
+                ,user_image_key
+            </if>
+            <if test="userSignatureKey != null and userSignatureKey != ''">
+                ,user_signature_key
+            </if>
         )
         VALUES (
-                #{userCode}, #{password}, #{userName}, #{departmentKey}, #{positionKey},
-                #{permissionTypeFlag}, #{phoneNumber}
-               )
+            #{userCode}, #{password}, #{userName}, #{departmentKey}, #{positionKey},
+            #{permissionTypeFlag}, #{phoneNumber}
+            <if test="userImageKey != null and userImageKey != ''">
+                , #{userImageKey}
+            </if>
+            <if test="userSignatureKey != null and userSignatureKey != ''">
+                , #{userSignatureKey}
+            </if>
+        )
     </insert>
 
     <!-- userCode로 userKey 조회 -->
