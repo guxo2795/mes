@@ -4,10 +4,7 @@ import com.wimir.bae.domain.company.dto.CompanyInfoDTO;
 import com.wimir.bae.domain.company.mapper.CompanyMapper;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.domain.product.mapper.ProductMapper;
-import com.wimir.bae.domain.productCompany.dto.ProductCompanyFlatDTO;
-import com.wimir.bae.domain.productCompany.dto.ProductCompanyInfoDTO;
-import com.wimir.bae.domain.productCompany.dto.ProductCompanyInfoDetailDTO;
-import com.wimir.bae.domain.productCompany.dto.ProductCompanyRegDTO;
+import com.wimir.bae.domain.productCompany.dto.*;
 import com.wimir.bae.domain.productCompany.mapper.ProductCompanyMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
@@ -15,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,5 +84,40 @@ public class ProductCompanyService {
                     return resultDTO;
                 })
                 .toList();
+    }
+
+    public void updateProductCompany(UserLoginDTO userLoginDTO, ProductCompanyModDTO modDTO) {
+
+        ProductCompanyFlatDTO productCompanyInfo = productCompanyMapper.getProductCompanyInfo(modDTO.getProductCompanyKey());
+        if (productCompanyInfo == null) {
+            throw new CustomRuntimeException("존재하지 않는 품목-업체 매핑입니다.");
+        }
+
+        CompanyInfoDTO companyInfo = companyMapper.getCompanyInfo(modDTO.getCompanyKey());
+        ProductInfoDTO productInfo = productMapper.getProductInfo(modDTO.getProductKey());
+        if(productInfo == null) {
+            throw new CustomRuntimeException("존재하지 않는 품목입니다.");
+        }
+        if(companyInfo == null) {
+            throw new CustomRuntimeException("존재하지 않는 업체입니다.");
+        }
+
+        if(!(productCompanyInfo.getProductKey().equals(productInfo.getProductKey()) &&
+        productCompanyInfo.getCompanyKey().equals(companyInfo.getCompanyKey()))) {
+            if(productCompanyMapper.isProductCompanyExist(productInfo.getProductKey(), companyInfo.getCompanyKey())){
+                throw new CustomRuntimeException(
+                        String.format("이미 등록된 품목-업체 매핑입니다. (품목: %s, 업체: %s)", productInfo.getProductCode(), companyInfo.getCompanyName()));
+            }
+        }
+
+        String companyTypeFlag = companyInfo.getCompanyTypeFlag();
+        String productAssetTypeFlag = productInfo.getAssetTypeFlag();
+        if(companyTypeFlag.equals("O") && !productAssetTypeFlag.equals("M")){
+            throw new CustomRuntimeException("조달 업체에는 자재만 등록할 수 있습니다.");
+        } else if(companyTypeFlag.equals("S") && !productAssetTypeFlag.equals("F")){
+            throw new CustomRuntimeException("납품 업체에는 완제품만 등록할 수 있습니다.");
+        }
+
+        productCompanyMapper.updateProductCompany(modDTO);
     }
 }

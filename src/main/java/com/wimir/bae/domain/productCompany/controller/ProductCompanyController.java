@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.productCompany.controller;
 
 import com.wimir.bae.domain.productCompany.dto.ProductCompanyInfoDTO;
+import com.wimir.bae.domain.productCompany.dto.ProductCompanyModDTO;
 import com.wimir.bae.domain.productCompany.dto.ProductCompanyRegDTO;
 import com.wimir.bae.domain.productCompany.service.ProductCompanyService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -49,6 +50,23 @@ public class ProductCompanyController {
                 ResponseDTO.<List<ProductCompanyInfoDTO>>builder()
                         .result(1)
                         .data(list)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<ResponseDTO<?>> updateProductCompany(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ProductCompanyModDTO modDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        productCompanyService.updateProductCompany(userLoginDTO, modDTO);
+
+        ResponseDTO<?> response =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다")
                         .build();
 
         return ResponseEntity.ok().body(response);

@@ -8,6 +8,8 @@ import java.util.List;
 @Data
 public class ProductCompanyInfoDTO {
 
+    private String productKey;
+
     private String productCode;
 
     private String productName;

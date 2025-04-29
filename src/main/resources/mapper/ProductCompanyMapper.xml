@@ -24,9 +24,11 @@
 
     <select id="getProductCompanyList" resultType="com.wimir.bae.domain.productCompany.dto.ProductCompanyFlatDTO">
         SELECT
+            p.product_key AS productKey,
             p.product_code AS productCode,
             p.product_name AS productName,
             p.asset_type_flag AS assetTypeFlag,
+            c.company_key AS companyKey,
             c.company_name AS companyName,
             c.company_type_flag AS companyTypeFlag
         FROM tbl_product_company pc
@@ -35,5 +37,23 @@
         WHERE pc.is_deleted = 0
         ORDER BY p.product_key ASC, c.company_key ASC
     </select>
+
+    <select id="getProductCompanyInfo" resultType="com.wimir.bae.domain.productCompany.dto.ProductCompanyFlatDTO">
+        SELECT
+            product_key AS productKey,
+            company_key AS companyKey
+        FROM tbl_product_company
+        WHERE is_deleted = 0
+          AND product_company_key = #{productCompanyKey}
+    </select>
+
+    <update id="updateProductCompany">
+        UPDATE tbl_product_company
+        SET
+            product_key = #{productKey},
+            company_key = #{companyKey}
+        WHERE is_deleted = 0
+          AND product_company_key = #{productCompanyKey}
+    </update>
 
 </mapper>
