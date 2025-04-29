@@ -38,6 +38,16 @@
         ORDER BY p.product_key ASC, c.company_key ASC
     </select>
 
+    <select id="getProductCompanyInfoList" resultType="com.wimir.bae.domain.productCompany.dto.ProductCompanyFlatDTO">
+        SELECT *
+        FROM tbl_product_company
+        WHERE is_deleted = 0
+        AND product_company_key IN
+        <foreach item="productCompanyKey" collection="productCompanyKeyList" open="(" separator="," close=")">
+            #{productCompanyKey}
+        </foreach>
+    </select>
+
     <select id="getProductCompanyInfo" resultType="com.wimir.bae.domain.productCompany.dto.ProductCompanyFlatDTO">
         SELECT
             product_key AS productKey,
@@ -55,5 +65,15 @@
         WHERE is_deleted = 0
           AND product_company_key = #{productCompanyKey}
     </update>
+
+    <delete id="deleteProductCompanyList">
+        UPDATE tbl_product_company
+        SET is_deleted = 1
+        WHERE is_deleted = 0
+        AND product_company_key IN
+        <foreach item="productCompanyKey" collection="productCompanyKeyList" open="(" separator="," close=")">
+            #{productCompanyKey}
+        </foreach>
+    </delete>
 
 </mapper>

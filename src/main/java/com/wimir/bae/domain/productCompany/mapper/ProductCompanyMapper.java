@@ -20,7 +20,11 @@ public interface ProductCompanyMapper {
 
     List<ProductCompanyFlatDTO> getProductCompanyList();
 
+    List<ProductCompanyFlatDTO> getProductCompanyInfoList(List<String> productCompanyKeyList);
+
     ProductCompanyFlatDTO getProductCompanyInfo(String productCompanyKey);
 
     void updateProductCompany(ProductCompanyModDTO modDTO);
+
+    void deleteProductCompanyList(List<String> productCompanyKeyList);
 }

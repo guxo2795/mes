@@ -5,6 +5,7 @@ import com.wimir.bae.domain.productCompany.dto.ProductCompanyModDTO;
 import com.wimir.bae.domain.productCompany.dto.ProductCompanyRegDTO;
 import com.wimir.bae.domain.productCompany.service.ProductCompanyService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
+import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import lombok.RequiredArgsConstructor;
@@ -70,5 +71,22 @@ public class ProductCompanyController {
                         .build();
 
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("delete")
+    public ResponseEntity<ResponseDTO<?>> deleteProductCompany(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid ListWrapperDTO<String> productCompanyKeyList) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        productCompanyService.deleteProductCompany(userLoginDTO, productCompanyKeyList.getList());
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 }

@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -119,5 +121,14 @@ public class ProductCompanyService {
         }
 
         productCompanyMapper.updateProductCompany(modDTO);
+    }
+
+    public void deleteProductCompany(UserLoginDTO userLoginDTO, List<String> productCompanyKeyList) {
+        List<ProductCompanyFlatDTO> productCompanyInfoDTOList = productCompanyMapper.getProductCompanyInfoList(productCompanyKeyList);
+        if(productCompanyInfoDTOList.size() != productCompanyKeyList.size()) {
+            throw new CustomRuntimeException("존재하지 않는 품목-업체 매핑이 포함되어 있습니다.");
+        }
+
+        productCompanyMapper.deleteProductCompanyList(productCompanyKeyList);
     }
 }
