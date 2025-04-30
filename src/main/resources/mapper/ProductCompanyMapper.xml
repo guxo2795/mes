@@ -50,11 +50,13 @@
 
     <select id="getProductCompanyInfo" resultType="com.wimir.bae.domain.productCompany.dto.ProductCompanyFlatDTO">
         SELECT
-            product_key AS productKey,
-            company_key AS companyKey
-        FROM tbl_product_company
-        WHERE is_deleted = 0
-          AND product_company_key = #{productCompanyKey}
+            pc.product_key AS productKey,
+            pc.company_key AS companyKey,
+            p.asset_type_flag AS assetTypeFlag
+        FROM tbl_product_company pc
+        LEFT JOIN tbl_product p ON pc.product_key = p.product_key
+        WHERE pc.is_deleted = 0
+          AND pc.product_company_key = #{productCompanyKey}
     </select>
 
     <update id="updateProductCompany">
@@ -75,5 +77,38 @@
             #{productCompanyKey}
         </foreach>
     </delete>
+
+    <!-- 품목-업체 삭제 시, 진행 중인 발주가 있는 지 확인 -->
+    <select id="getProductCompanyKeysInOrder" resultType="string">
+        SELECT DISTINCT pc.product_company_key
+        FROM tbl_product_company pc
+            JOIN tbl_order_materials om ON pc.product_key = om.product_key
+            JOIN tbl_order o ON om.order_key = o.order_key
+        WHERE pc.product_company_key IN
+        <foreach item="key" collection="productCompanyKeyList" open="(" separator="," close=")">
+            #{key}
+        </foreach>
+        AND pc.is_deleted = 0
+        AND om.is_deleted = 0
+        AND o.is_completed = 0
+        AND o.is_deleted = 0
+        AND o.company_key = pc.company_key
+    </select>
+
+    <!-- 품목 수정, 삭제 시 진행 중인 수주가 있는 지 확인 -->
+    <select id="getProductCompanyKeysInOrderContract" resultType="string">
+        SELECT DISTINCT pc.product_company_key
+        FROM tbl_product_company pc
+            JOIN tbl_order_contract_materials ocm ON pc.product_key = ocm.product_key
+            JOIN tbl_order_contract oc ON oc.contract_code = ocm.contract_code
+        WHERE pc.product_company_key IN
+        <foreach item="key" collection="productCompanyKeyList" open="(" separator="," close=")">
+            #{key}
+        </foreach>
+          AND pc.is_deleted = 0
+          AND ocm.is_deleted = 0
+          AND oc.is_completed IN (0, 2)
+          AND oc.is_deleted = 0
+    </select>
 
 </mapper>

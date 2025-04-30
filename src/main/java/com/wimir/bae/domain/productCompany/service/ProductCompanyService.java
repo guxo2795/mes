@@ -85,9 +85,11 @@ public class ProductCompanyService {
                     resultDTO.setCompanyList(companyMap.get(flatDTO.getProductCode()));
                     return resultDTO;
                 })
+                .distinct()
                 .toList();
     }
 
+    // update 기능은 딱히 필요없어보임
     public void updateProductCompany(UserLoginDTO userLoginDTO, ProductCompanyModDTO modDTO) {
 
         ProductCompanyFlatDTO productCompanyInfo = productCompanyMapper.getProductCompanyInfo(modDTO.getProductCompanyKey());
@@ -103,6 +105,13 @@ public class ProductCompanyService {
         if(companyInfo == null) {
             throw new CustomRuntimeException("존재하지 않는 업체입니다.");
         }
+//
+//        // 업체가 변경될 경우, 기존 품목의 진행중인 수주, 발주 확인
+//        String oldCompanyKey = productCompanyInfo.getCompanyKey();
+//        String newCompanyKey = modDTO.getCompanyKey();
+//        if(!oldCompanyKey.equals(newCompanyKey)){
+//            checkActiveOrderAndContract(productCompanyInfo.getProductKey());
+//        }
 
         if(!(productCompanyInfo.getProductKey().equals(productInfo.getProductKey()) &&
         productCompanyInfo.getCompanyKey().equals(companyInfo.getCompanyKey()))) {
@@ -128,7 +137,14 @@ public class ProductCompanyService {
         if(productCompanyInfoDTOList.size() != productCompanyKeyList.size()) {
             throw new CustomRuntimeException("존재하지 않는 품목-업체 매핑이 포함되어 있습니다.");
         }
-
+        List<String> inOrderKeys = productCompanyMapper.getProductCompanyKeysInOrder(productCompanyKeyList);
+        if(!inOrderKeys.isEmpty()){
+            throw new CustomRuntimeException("발주 중인 품목-업체 매핑이 있어 삭제할 수 없습니다: " + String.join(", ",inOrderKeys));
+        }
+        List<String> inOrderContractKeys = productCompanyMapper.getProductCompanyKeysInOrderContract(productCompanyKeyList);
+        if(!inOrderContractKeys.isEmpty()){
+            throw new CustomRuntimeException("수주 중인 품목-업체 매핑이 있어 삭제할 수 없습니다: " + String.join(", ",inOrderContractKeys));
+        }
         productCompanyMapper.deleteProductCompanyList(productCompanyKeyList);
     }
 }

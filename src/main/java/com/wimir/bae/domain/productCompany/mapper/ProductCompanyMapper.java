@@ -27,4 +27,8 @@ public interface ProductCompanyMapper {
     void updateProductCompany(ProductCompanyModDTO modDTO);
 
     void deleteProductCompanyList(List<String> productCompanyKeyList);
+
+    List<String> getProductCompanyKeysInOrder(@Param("productCompanyKeyList") List<String> productCompanyKeyList);
+
+    List<String> getProductCompanyKeysInOrderContract(@Param("productCompanyKeyList") List<String> productCompanyKeyList);
 }
