@@ -105,7 +105,6 @@
         SELECT
             c.company_key,
             c.company_name,
-
             p.product_key,
             p.product_code,
             p.product_name,
@@ -117,8 +116,10 @@
             p.safety_quantity,
             p.unit_key
         FROM tbl_company c
-        LEFT JOIN tbl_product p ON c.company_key = p.company_key
+        LEFT JOIN tbl_product_company pc ON c.company_key = pc.company_key
+        LEFT JOIN tbl_product p ON pc.product_key = p.product_key
         WHERE c.is_deleted = 0
+          AND pc.is_deleted = 0
           AND p.is_deleted = 0
         ORDER BY c.company_key ASC
     </select>
