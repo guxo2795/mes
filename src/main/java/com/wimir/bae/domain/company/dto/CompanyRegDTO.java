@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 public class CompanyRegDTO {
 
     @NotBlank
-    @Pattern(regexp = "^[OS]$")
+    @Pattern(regexp = "^[OSI]$")
     private String companyTypeFlag;
 
     @NotBlank

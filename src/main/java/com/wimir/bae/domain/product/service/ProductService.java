@@ -9,9 +9,12 @@ import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.domain.product.dto.ProductModDTO;
 import com.wimir.bae.domain.product.dto.ProductRegDTO;
 import com.wimir.bae.domain.product.mapper.ProductMapper;
+import com.wimir.bae.domain.productCompany.dto.ProductCompanyRegDTO;
+import com.wimir.bae.domain.productCompany.service.ProductCompanyService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,12 @@ public class ProductService {
 //    private final CompanyMapper companyMapper;
 
     private final InventoryProductService inventoryProductService;
+    private final ProductCompanyService productCompanyService;
+
+    @Value("${bae.company.wimir}")
+    private String WIMIR;
+    @Value("${bae.process.inHouse}")
+    private String inHouse;
 
     // 품목 생성
     public void createProduct(UserLoginDTO userLoginDTO, ProductRegDTO regDTO) {
@@ -51,6 +60,14 @@ public class ProductService {
         
         // 품목 생성
         productMapper.createProduct(regDTO);
+        
+        // 사내생산일 경우 업체 자동으로 WIMIR 매핑
+        if(inHouse.equals(regDTO.getProcessTypeKey())) {
+            ProductCompanyRegDTO productCompanyRegDTO = new ProductCompanyRegDTO();
+            productCompanyRegDTO.setProductKey(regDTO.getProductKey());
+            productCompanyRegDTO.setCompanyKey(WIMIR);
+            productCompanyService.createProductCompany(userLoginDTO, productCompanyRegDTO);
+        }
 
         // 품목 등록 시 초기 재고 설정
         inventoryProductService.setInitialInventoryByProduct(regDTO.getProductKey());
