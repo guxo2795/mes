@@ -26,7 +26,8 @@ public interface ContractMapper {
     ContractInfoDTO getContractForPlan(String contractCode);
 
     // 수주 실행 시 품목 자재들 등록에 필요한 내용 불러오기
-    List<ContractMaterialInfoDTO> listContractMaterial(String contractCode, String processTypeKey);
+    List<ContractMaterialInfoDTO> listContractMaterial(@Param("contractCode")String contractCode,
+                                                       @Param("processTypeKey") String processTypeKey);
 
     // 수주 수정
     void updateContract(ContractModDTO modDTO);
@@ -35,7 +36,9 @@ public interface ContractMapper {
     void createContractMaterials(ContractRegDTO contractRegDTO);
 
     // 수주 품목 수정
-    void updateContractMaterial(String contractCode, String productKey, String quantity);
+    void updateContractMaterial(@Param("contractCode") String contractCode,
+                                @Param("productKey") String productKey,
+                                @Param("quantity") String quantity);
 
     // 수주 삭제
     void deletedContract(String contractCode);

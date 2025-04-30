@@ -7,14 +7,17 @@ import com.wimir.bae.domain.plan.mapper.PlanMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -25,11 +28,29 @@ public class ContractService {
     private final CompanyMapper companyMapper;
     private final PlanMapper planMapper;
 
+    @Value("${bae.process.inHouse}")
+    private String inHouse;
+
     public void createContract(UserLoginDTO userLoginDTO, ContractRegDTO contractRegDTO) {
 
         String companyTypeFlag = companyMapper.getCompanyTypeFlag(contractRegDTO.getCompanyKey());
         if(!"S".equals(companyTypeFlag)){
             throw new CustomRuntimeException("납품 업체만 등록이 가능합니다.");
+        }
+
+        LocalDate contractDate = LocalDate.parse(contractRegDTO.getContractDate());
+        LocalDate deliveryDate = LocalDate.parse(contractRegDTO.getDeliveryDate());
+        if(deliveryDate.isBefore(contractDate)){
+            throw new CustomRuntimeException("납기일은 수주일보다 빠를 수 없습니다.");
+        }
+
+        // 중복등록 방지는 필요한가?
+        // 한 업체에 한 품목에 대해서 여러번 수주를 할 수도 있지 않나?
+
+        // 수주 수량 유효성 검증
+        Pattern positivePattern = Pattern.compile("^[1-9]\\d*$");
+        if(!positivePattern.matcher(contractRegDTO.getQuantity()).matches()){
+            throw new CustomRuntimeException("수량은 0보다 큰 정수여야 합니다.");
         }
 
         contractMapper.createContract(contractRegDTO);
@@ -46,12 +67,23 @@ public class ContractService {
 
         ContractInfoDTO infoDTO = contractMapper.getContractInfo(modDTO.getContractCode());
         if (!"0".equals(infoDTO.getIsCompleted())) {
-            throw new CustomRuntimeException("이미 실행거나 종결된 수주는 수정 할 수 없습니다.");
+            throw new CustomRuntimeException("이미 실행되었거나 종결된 수주는 수정 할 수 없습니다.");
         }
 
         String companyTypeFlag = companyMapper.getCompanyTypeFlag(modDTO.getCompanyKey());
         if (!"S".equals(companyTypeFlag)) {
             throw new CustomRuntimeException("납품 업체만 등록할 수 있습니다.");
+        }
+
+        LocalDate contractDate = LocalDate.parse(modDTO.getContractDate());
+        LocalDate deliveryDate = LocalDate.parse(modDTO.getDeliveryDate());
+        if(deliveryDate.isBefore(contractDate)){
+            throw new CustomRuntimeException("납기일은 수주일보다 빠를 수 없습니다.");
+        }
+
+        Pattern positivePattern = Pattern.compile("^[1-9]\\d*$");
+        if(!positivePattern.matcher(modDTO.getQuantity()).matches()){
+            throw new CustomRuntimeException("수량은 0보다 큰 정수여야 합니다.");
         }
 
         contractMapper.updateContract(modDTO);
@@ -75,7 +107,7 @@ public class ContractService {
     // 수주 전 자재를 가져오는 메서드
     @Transactional(readOnly = true)
     public List<ContractMaterialInfoDTO> listContractMaterial(ContractMaterialSearchDTO searchDTO) {
-        return Optional.ofNullable(contractMapper.listContractMaterial(searchDTO.getContractCode(), "13"))
+        return Optional.ofNullable(contractMapper.listContractMaterial(searchDTO.getContractCode(), inHouse))
                 .orElse(Collections.emptyList());
     }
 
@@ -95,7 +127,7 @@ public class ContractService {
 
             // 사내 생산 자재
             // 수주 실행 시 품목 자재들 등록에 필요한 내용 불러오기
-            List<ContractMaterialInfoDTO> materialList = contractMapper.listContractMaterial(contractCode, "13");
+            List<ContractMaterialInfoDTO> materialList = contractMapper.listContractMaterial(contractCode, inHouse);
 
             // 자재에 대한 재고 차감 및 기록 업데이트
             for(ContractMaterialInfoDTO material : materialList) {
