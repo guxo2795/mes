@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List API Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input, select { margin: 5px 0; width: 300px; padding: 8px; }
+        button { margin-top: 10px; padding: 10px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        pre { background-color: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+<h2>User List API Test</h2>
+<label>Access Token:</label><br>
+<input type="text" id="accessToken" placeholder="Enter your access token"><br>
+<label>Page:</label><br>
+<input type="text" id="page" placeholder="Enter page number"><br>
+<label>Record:</label><br>
+<input type="text" id="record" placeholder="Enter record count"><br>
+<label>Sort:</label><br>
+<input type="text" id="sort" placeholder="e.g. -userName,userCode"><br>
+<label>User Name:</label><br>
+<input type="text" id="userName" placeholder="Search by user name"><br>
+<label>User Code:</label><br>
+<input type="text" id="userCode" placeholder="Search by user code"><br>
+<label>Department Key:</label><br>
+<input type="text" id="departmentKey" placeholder="Search by department key"><br>
+<label>Position Key:</label><br>
+<input type="text" id="positionKey" placeholder="Search by position key"><br>
+<label>Permission Type Flag (U, A):</label><br>
+<input type="text" id="permissionTypeFlag" placeholder="Enter U or A"><br>
+<button onclick="fetchUserList()">Fetch User List</button>
+<h3>Response:</h3>
+<pre id="response"></pre>
+<script>
+    function fetchUserList() {
+        const accessToken = document.getElementById('accessToken').value;
+        const params = {
+            page: document.getElementById('page').value,
+            record: document.getElementById('record').value,
+            sort: document.getElementById('sort').value,
+            userName: document.getElementById('userName').value,
+            userCode: document.getElementById('userCode').value,
+            departmentKey: document.getElementById('departmentKey').value,
+            positionKey: document.getElementById('positionKey').value,
+            permissionTypeFlag: document.getElementById('permissionTypeFlag').value
+        };
+
+        axios.get('http://localhost:13000/user/list', {
+            headers: { 'Authorization': accessToken },
+            params
+        }).then(response => {
+            document.getElementById('response').textContent = JSON.stringify(response.data, null, 2);
+        }).catch(error => {
+            document.getElementById('response').textContent = JSON.stringify(error.response.data, null, 2);
+        });
+    }
+</script>
+</body>
+</html>

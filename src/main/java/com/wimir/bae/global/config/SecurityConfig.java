@@ -20,6 +20,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                .cors()
+                .and()
                 .csrf().disable() // Postman 요청 위해 비활성화
                 .formLogin().disable() // 로그인 폼 안 쓸 경우 비활성화
                 .httpBasic().disable() // 기본 인증 비활성화 (JWT 등 사용할 경우)
