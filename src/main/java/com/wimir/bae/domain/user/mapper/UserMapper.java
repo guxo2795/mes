@@ -55,5 +55,7 @@ public interface UserMapper {
 
     // 로그아웃
     void logout(String userCode);
+
+    int getUserCount(UserSearchDTO searchDTO);
 }
 

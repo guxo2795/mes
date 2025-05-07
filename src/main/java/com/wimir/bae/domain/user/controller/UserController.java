@@ -2,6 +2,7 @@ package com.wimir.bae.domain.user.controller;
 
 import com.wimir.bae.domain.user.dto.*;
 import com.wimir.bae.domain.user.service.UserService;
+import com.wimir.bae.global.dto.CountDTO;
 import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
@@ -54,6 +55,23 @@ public class UserController {
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @GetMapping("count")
+    public ResponseEntity<ResponseDTO<CountDTO>> getUserCount(
+            @RequestHeader("Authorization") String accessToken,
+            @ModelAttribute @Valid UserSearchDTO searchDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        CountDTO count = userService.getUserCount(userLoginDTO, searchDTO);
+
+        ResponseDTO<CountDTO> response =
+                ResponseDTO.<CountDTO>builder()
+                        .result(1)
+                        .data(count)
+                        .build();
+
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("update")

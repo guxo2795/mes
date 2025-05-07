@@ -2,6 +2,7 @@ package com.wimir.bae.domain.user.service;
 
 import com.wimir.bae.domain.user.dto.*;
 import com.wimir.bae.domain.user.mapper.UserMapper;
+import com.wimir.bae.global.dto.CountDTO;
 import com.wimir.bae.global.exception.CustomAccessDenyException;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import com.wimir.bae.global.image.service.ImageService;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -154,5 +156,12 @@ public class UserService {
         if(userMapper.isUserExistByCode(userCode)) {
             throw new CustomRuntimeException("이미 존재하는 아이디입니다.");
         }
+    }
+
+    public CountDTO getUserCount(UserLoginDTO userLoginDTO, UserSearchDTO searchDTO) {
+
+        searchDTO.setPermission(userLoginDTO.getUserClass());
+
+        return new CountDTO(userMapper.getUserCount(searchDTO));
     }
 }

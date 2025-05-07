@@ -185,4 +185,48 @@
         WHERE user_code = #{userCode}
     </update>
 
+    <!--  사원 안원 수  -->
+    <select id="getUserCount" resultType="java.lang.Integer">
+        SELECT COUNT(user.user_key)
+        FROM tbl_user user
+            LEFT JOIN tbl_common_code_sub sub
+                ON user.department_key = sub.sub_common_key
+            LEFT JOIN tbl_common_code_sub sub2
+                ON user.position_key = sub2.sub_common_key
+            LEFT JOIN tbl_images im
+                ON user.user_image_key = im.image_key
+                AND im.is_deleted = 0
+            LEFT JOIN tbl_images sim
+                on user.user_signature_key = sim.image_key
+                AND sim.is_deleted = 0
+        WHERE
+            user.is_deleted = 0
+            AND user.permission_type_flag != 'R'
+            <if test="userName != null and userName != ''">
+                AND user.user_name LIKE CONCAT('%',#{userName},'%')
+            </if>
+            <if test="userCode != null and userCode != ''">
+                AND user.user_code LIKE CONCAT('%',#{userCode},'%')
+            </if>
+            <if test="departmentKey != null and departmentKey != ''">
+                AND user.department_key = #{departmentKey}
+            </if>
+            <if test="positionKey != null and positionKey != ''">
+                AND user.position_key = #{positionKey}
+            </if>
+            <if test="permissionTypeFlag != null and permissionTypeFlag != ''">
+                AND user.permission_type_flag = #{permissionTypeFlag}
+            </if>
+            <choose>
+                <when test="permission == 'U'.toString()">
+                    AND user.permission_type_flag = 'U'
+                </when>
+                <when test="permission == 'A'.toString()">
+                    AND user.permission_type_flag IN ('U', 'A')
+                </when>
+                <when test="permission == 'R'.toString()">
+                    AND user.permission_type_flag IN ('U', 'A', 'R')
+                </when>
+            </choose>
+    </select>
 </mapper>
