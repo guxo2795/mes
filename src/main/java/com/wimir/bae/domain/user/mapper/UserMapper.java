@@ -1,9 +1,6 @@
 package com.wimir.bae.domain.user.mapper;
 
-import com.wimir.bae.domain.user.dto.UserInfoDTO;
-import com.wimir.bae.domain.user.dto.UserLoginInfoDTO;
-import com.wimir.bae.domain.user.dto.UserModDTO;
-import com.wimir.bae.domain.user.dto.UserRegDTO;
+import com.wimir.bae.domain.user.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -48,7 +45,7 @@ public interface UserMapper {
     List<String> getUserClasses(List<String> list);
 
     // 유저 목록 조회
-    List<UserInfoDTO> getUserList();
+    List<UserInfoDTO> getUserList(UserSearchDTO searchDTO);
 
     // 유저 수정
     void updateUser(UserModDTO modDTO);

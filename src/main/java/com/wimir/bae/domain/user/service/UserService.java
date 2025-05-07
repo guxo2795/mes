@@ -1,15 +1,14 @@
 package com.wimir.bae.domain.user.service;
 
-import com.wimir.bae.domain.user.dto.UserInfoDTO;
-import com.wimir.bae.domain.user.dto.UserLoginDTO;
-import com.wimir.bae.domain.user.dto.UserModDTO;
-import com.wimir.bae.domain.user.dto.UserRegDTO;
+import com.wimir.bae.domain.user.dto.*;
 import com.wimir.bae.domain.user.mapper.UserMapper;
 import com.wimir.bae.global.exception.CustomAccessDenyException;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import com.wimir.bae.global.image.service.ImageService;
 import com.wimir.bae.global.notification.NotificationGlobalService;
 import com.wimir.bae.global.utils.CryptUtil;
+import com.wimir.bae.global.utils.PagingUtil;
+import com.wimir.bae.global.utils.SortUtil;
 import com.wimir.bae.global.utils.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,10 +72,18 @@ public class UserService {
 
     // 유저 목록 조회
     @Transactional(readOnly = true)
-    public List<UserInfoDTO> getUserList(UserLoginDTO userLoginDTO) {
-        
+    public List<UserInfoDTO> getUserList(UserLoginDTO userLoginDTO, UserSearchDTO searchDTO) {
+
+        searchDTO.setPermission(userLoginDTO.getUserClass());
+        searchDTO.setOffset(
+                PagingUtil.getPagingOffset(
+                        searchDTO.getPage(),
+                        searchDTO.getRecord()));
+
+        searchDTO.setSort(SortUtil.getDBSortStr(searchDTO.getSort()));
+
         // getUserList()가 null 이면 예외처리를 하지않고 비어있는 리스트를 반환
-        List<UserInfoDTO> list = Optional.ofNullable(userMapper.getUserList())
+        List<UserInfoDTO> list = Optional.ofNullable(userMapper.getUserList(searchDTO))
                                          .orElse(Collections.emptyList());
 
         // 전화번호 복호화
