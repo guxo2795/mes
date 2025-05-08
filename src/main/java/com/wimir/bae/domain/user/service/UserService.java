@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -144,6 +143,23 @@ public class UserService {
             // 유저 삭제
             userMapper.deleteUser(userKey);
         }
+    }
+    
+    // 비밀번호 변경
+    public void updatePassword(UserLoginDTO userLoginDTO, UserUpdatePasswordDTO userUpdatePasswordDTO) {
+
+        String userCode = userUpdatePasswordDTO.getUserCode();
+        String password = userUpdatePasswordDTO.getPassword();
+
+        if(userMapper.getUserKeyByUserCode(userCode).isEmpty()) {
+            throw new CustomRuntimeException("존재하지 않는 아이디입니다.");
+        }
+
+        ValidationUtil.isvalidPassword(password);
+        String encodedPassword = passwordEncoder.encode(password);
+        userUpdatePasswordDTO.setPassword(encodedPassword);
+
+        userMapper.updatePassword(userUpdatePasswordDTO);
     }
 
     private void validateUserKeyExists(String userKey) {

@@ -56,6 +56,10 @@ public interface UserMapper {
     // 로그아웃
     void logout(String userCode);
 
+    // 사원 수
     int getUserCount(UserSearchDTO searchDTO);
+
+    // 비밀번호 변경
+    void updatePassword(UserUpdatePasswordDTO userUpdatePasswordDTO);
 }
 

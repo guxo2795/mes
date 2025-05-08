@@ -91,7 +91,7 @@
     <select id="getUserClasses" parameterType="list" resultType="string">
         SELECT permission_type_flag
         FROM tbl_user
-        WHERE id_deleted = 0
+        WHERE is_deleted = 0
         AND user_key IN
         <foreach item="userKey" collection="list" open="(" separator="," close=")">
             #{userKey}
@@ -229,4 +229,11 @@
                 </when>
             </choose>
     </select>
+
+    <update id="updatePassword">
+        UPDATE tbl_user
+        SET password = #{password}
+        WHERE is_deleted = 0
+          and user_code = #{userCode}
+    </update>
 </mapper>

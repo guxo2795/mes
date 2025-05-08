@@ -106,4 +106,20 @@ public class UserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    @PostMapping("password/update")
+    public ResponseEntity<ResponseDTO<?>> updatePassword(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid UserUpdatePasswordDTO userUpdatePasswordDTO) {
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        userService.updatePassword(userLoginDTO, userUpdatePasswordDTO);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리 되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
 }
