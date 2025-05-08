@@ -4,9 +4,11 @@ import com.wimir.bae.domain.common.main.mapper.CommonMainMapper;
 import com.wimir.bae.domain.common.sub.dto.CommonSubInfoDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubModDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubRegDTO;
+import com.wimir.bae.domain.common.sub.dto.CommonSubSearchDTO;
 import com.wimir.bae.domain.common.sub.mapper.CommonSubMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
+import com.wimir.bae.global.utils.PagingUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,9 +40,13 @@ public class CommonSubService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommonSubInfoDTO> getCommonMainList() {
+    public List<CommonSubInfoDTO> getCommonMainList(CommonSubSearchDTO searchDTO) {
+        searchDTO.setOffset(
+                PagingUtil.getPagingOffset(
+                        searchDTO.getPage(),
+                        searchDTO.getRecord()));
 
-        return Optional.ofNullable(commonSubMapper.getCommonSubList())
+        return Optional.ofNullable(commonSubMapper.getCommonSubList(searchDTO))
                 .orElse(Collections.emptyList());
     }
 

@@ -3,6 +3,7 @@ package com.wimir.bae.domain.common.sub.mapper;
 import com.wimir.bae.domain.common.sub.dto.CommonSubInfoDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubModDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubRegDTO;
+import com.wimir.bae.domain.common.sub.dto.CommonSubSearchDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,7 +22,7 @@ public interface CommonSubMapper {
     void createCommonSub(CommonSubRegDTO regDTO);
 
     // 하위 공통 코드 목록 조회
-    List<CommonSubInfoDTO> getCommonSubList();
+    List<CommonSubInfoDTO> getCommonSubList(CommonSubSearchDTO searchDTO);
     List<CommonSubInfoDTO> getCommonSubInfoList(List<String> subCommonKeyList);
 
     boolean canUpdateCommonSub(@Param("subCommonKey") String subCommonKey);

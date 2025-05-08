@@ -1,10 +1,10 @@
 package com.wimir.bae.domain.common.sub.controller;
 
-import com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubInfoDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubModDTO;
-import com.wimir.bae.domain.common.sub.service.CommonSubService;
 import com.wimir.bae.domain.common.sub.dto.CommonSubRegDTO;
+import com.wimir.bae.domain.common.sub.dto.CommonSubSearchDTO;
+import com.wimir.bae.domain.common.sub.service.CommonSubService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
@@ -45,9 +45,10 @@ public class CommonSubController {
     // 하위 공통 코드 목록
     @GetMapping("list")
     public ResponseEntity<ResponseDTO<List<CommonSubInfoDTO>>> getCommonSubList(
-            @RequestHeader("Authorization") String accessToken) {
+            @RequestHeader("Authorization") String accessToken,
+            @ModelAttribute @Valid CommonSubSearchDTO searchDTO) {
         jwtGlobalService.getTokenInfo(accessToken, "A");
-        List<CommonSubInfoDTO> list = commonSubService.getCommonMainList();
+        List<CommonSubInfoDTO> list = commonSubService.getCommonMainList(searchDTO);
 
         ResponseDTO<List<CommonSubInfoDTO>> responseDTO =
                 ResponseDTO.<List<CommonSubInfoDTO>>builder()

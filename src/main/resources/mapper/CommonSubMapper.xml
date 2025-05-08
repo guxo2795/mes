@@ -26,9 +26,19 @@
 
     <!-- 하위 공통 코드 목록 조회 -->
     <select id="getCommonSubList" resultType="com.wimir.bae.domain.common.sub.dto.CommonSubInfoDTO">
-        SELECT *
+        SELECT
+            sub_common_key,
+            sub_common_name,
+            note
         FROM tbl_common_code_sub
         WHERE is_deleted = 0
+            <if test="subCommonName != null and subCommonName != ''">
+                AND sub_common_name LIKE CONCAT('%',#{subCommonName},'%')
+            </if>
+        ORDER BY sub_common_key
+        <if test="offset != null and offset != ''">
+            LIMIT ${record} OFFSET ${offset}
+        </if>
     </select>
 
     <select id="getCommonSubInfoList" resultType="com.wimir.bae.domain.common.sub.dto.CommonSubInfoDTO">
