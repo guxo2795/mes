@@ -15,25 +15,26 @@ import javax.validation.constraints.Size;
 @Builder
 public class UserRegDTO {
 
-    @NotBlank
-    @Size(max = 25)
-    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z0-9]+$")
+    @NotBlank(message = "{user.userCode.NotBlank}")
+    @Size(max = 25, message = "{user.userCode.Size}")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z0-9]+$", message = "{user.userCode.Pattern}")
     private String userCode;
 
-    @NotBlank
+    @NotBlank(message = "{user.password.NotBlank}")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "{user.userName.NotBlank}")
+    @Size(max = 50, message = "{user.userName.Size}")
     private String userName;
 
-    @NotBlank
+    @NotBlank(message = "{user.departmentKey.NotBlank}")
     private String departmentKey;
 
-    @NotBlank
+    @NotBlank(message = "{user.positionKey.NotBlank}")
     private String positionKey;
 
-    @NotBlank
-    @Pattern(regexp = "^[UA]$")
+    @NotBlank(message = "{user.permissionTypeFlag.NotBlank}")
+    @Pattern(regexp = "^[UA]$", message = "{user.permissionTypeFlag.Pattern}")
     private String permissionTypeFlag;
 
     private String phoneNumber;
