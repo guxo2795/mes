@@ -7,6 +7,8 @@ import com.wimir.bae.domain.common.main.service.CommonMainService;
 import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "01. 기준정보관리 > 02. 공통코드 > 01. 상위공통코드")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("common/main")

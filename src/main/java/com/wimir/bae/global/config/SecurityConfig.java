@@ -27,6 +27,8 @@ public class SecurityConfig {
                 .httpBasic().disable() // 기본 인증 비활성화 (JWT 등 사용할 경우)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(new AntPathRequestMatcher("/jwt/login")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
                         .anyRequest().authenticated()
 
                 )
