@@ -15,9 +15,9 @@ public class CommonSubModDTO {
 
     private String subCommonKey;
 
-    @Size(max = 50)
+    @Size(max = 50, message = "{common.subCommonName.Size}")
     private String subCommonName;
 
-    @Size(max = 100)
+    @Size(max = 100, message = "{common.note.Size}")
     private String note;
 }
