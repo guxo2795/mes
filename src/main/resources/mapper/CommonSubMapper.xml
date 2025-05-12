@@ -29,7 +29,8 @@
         SELECT
             sub_common_key,
             sub_common_name,
-            note
+            note,
+            is_immutable
         FROM tbl_common_code_sub
         WHERE is_deleted = 0
             <if test="subCommonName != null and subCommonName != ''">

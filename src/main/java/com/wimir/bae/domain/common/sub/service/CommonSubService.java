@@ -40,7 +40,7 @@ public class CommonSubService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommonSubInfoDTO> getCommonMainList(CommonSubSearchDTO searchDTO) {
+    public List<CommonSubInfoDTO> getCommonSubList(CommonSubSearchDTO searchDTO) {
         searchDTO.setOffset(
                 PagingUtil.getPagingOffset(
                         searchDTO.getPage(),

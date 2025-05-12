@@ -72,7 +72,7 @@ public class ExcelService {
 
             for (String key : headerList) {
                 LinkedHashMap<?, ?> map2 = CommonUtil.dtoConverter(obj);
-                Object cellValue = map2.get(key); // eng_column
+                Object cellValue = map2.get(key);
                 Object convertedValue = excelCellConverter(excelList, key, cellValue);
 
                 SXSSFCell cell = row.createCell(cellNum++);

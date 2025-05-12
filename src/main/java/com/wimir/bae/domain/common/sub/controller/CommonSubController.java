@@ -1,5 +1,7 @@
 package com.wimir.bae.domain.common.sub.controller;
 
+import com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO;
+import com.wimir.bae.domain.common.main.dto.CommonMainSearchDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubInfoDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubModDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubRegDTO;
@@ -8,13 +10,19 @@ import com.wimir.bae.domain.common.sub.service.CommonSubService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
+import com.wimir.bae.global.excel.service.ExcelService;
+import com.wimir.bae.global.exception.CustomRuntimeException;
 import com.wimir.bae.global.jwt.JwtGlobalService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 @Tag(name = "01. 기준정보관리 > 02. 공통코드 > 02. 하위공통코드")
@@ -25,6 +33,7 @@ public class CommonSubController {
 
     private final JwtGlobalService jwtGlobalService;
     private final CommonSubService commonSubService;
+    private final ExcelService excelService;
 
 
     // 하위 공통 코드 등록
@@ -50,7 +59,7 @@ public class CommonSubController {
             @RequestHeader("Authorization") String accessToken,
             @ModelAttribute @Valid CommonSubSearchDTO searchDTO) {
         jwtGlobalService.getTokenInfo(accessToken, "A");
-        List<CommonSubInfoDTO> list = commonSubService.getCommonMainList(searchDTO);
+        List<CommonSubInfoDTO> list = commonSubService.getCommonSubList(searchDTO);
 
         ResponseDTO<List<CommonSubInfoDTO>> responseDTO =
                 ResponseDTO.<List<CommonSubInfoDTO>>builder()
@@ -93,6 +102,31 @@ public class CommonSubController {
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @PostMapping("list/excel")
+    public ResponseEntity<?> downloadCommonSubExcel(
+            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken,
+            @ModelAttribute @Valid CommonSubSearchDTO searchDTO) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        List<CommonSubInfoDTO> list = commonSubService.getCommonSubList(searchDTO);
+
+        try (
+                SXSSFWorkbook workbook = excelService.createExcel(userLoginDTO, list);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ) {
+            workbook.write(outputStream);
+            byte[] contents = outputStream.toByteArray();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=CommonSubList.xlsx");
+            headers.add(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+            return ResponseEntity.ok().headers(headers).body(contents);
+        } catch (Exception e) {
+            throw new CustomRuntimeException("엑셀 양식 다운로드에 실패했습니다.");
+        }
     }
 
 }
