@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Excel Download Test</title>
+  <script>
+    async function downloadExcel() {
+      const accessToken = document.getElementById("accessToken").value;
+      const page = document.getElementById("page").value;
+      const record = document.getElementById("record").value;
+
+      const formData = new FormData();
+      formData.append("page", page);
+      formData.append("record", record);
+
+      try {
+        const response = await fetch("user/list/excel", {
+          method: "POST",
+          headers: {
+            "Authorization": accessToken
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "UserList.xlsx";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        } else {
+          alert("Excel download failed.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred while downloading the Excel file.");
+      }
+    }
+  </script>
+</head>
+<body>
+<h1>Excel Download Test</h1>
+<label>Authorization Token:</label><br>
+<input type="text" id="accessToken" placeholder="Enter Access Token" required><br><br>
+
+<label>Page:</label><br>
+<input type="number" id="page" placeholder="Enter Page Number" required><br><br>
+
+<label>Record:</label><br>
+<input type="number" id="record" placeholder="Enter Record Count" required><br><br>
+
+<button onclick="downloadExcel()">Download Excel</button>
+</body>
+</html>

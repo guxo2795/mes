@@ -42,6 +42,10 @@ dependencies {
     // swagger
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
 
+    // excel
+    implementation group: 'org.apache.poi', name: 'poi', version: '5.3.0'
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.3.0'
+
     // 단방향 암호화
     implementation 'org.springframework.boot:spring-boot-starter-security'
     // 암호화`복호화
@@ -51,6 +55,8 @@ dependencies {
     runtimeOnly group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.3.0'
     implementation group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '2.3.1'
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.1.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

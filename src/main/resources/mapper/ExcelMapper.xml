@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wimir.bae.global.excel.mapper.ExcelMapper">
+
+    <select id="getExcelList" resultType="com.wimir.bae.global.excel.dto.ExcelInfoDTO">
+        SELECT *
+        FROM tbl_excel
+    </select>
+
+    <!-- 엑셀 출력값 변경 -->
+    <select id="getConversionValue" resultType="java.lang.String">
+        SELECT output_value
+        FROM tbl_excel_conversion
+        WHERE
+            eng_column = #{engColumn}
+          AND input_value = #{value}
+    </select>
+
+</mapper>

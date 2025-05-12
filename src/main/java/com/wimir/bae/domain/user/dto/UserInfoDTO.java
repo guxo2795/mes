@@ -21,11 +21,11 @@ public class UserInfoDTO {
 
     private String departmentKey;
 
-//    private String departmentName;
+    private String departmentName;
 
     private String positionKey;
 
-//    private String positionName;
+    private String positionName;
 
     private String phoneNumber;
 
