@@ -3,6 +3,7 @@ package com.wimir.bae.domain.common.main.controller;
 import com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO;
 import com.wimir.bae.domain.common.main.dto.CommonMainModDTO;
 import com.wimir.bae.domain.common.main.dto.CommonMainRegDTO;
+import com.wimir.bae.domain.common.main.dto.CommonMainSearchDTO;
 import com.wimir.bae.domain.common.main.service.CommonMainService;
 import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
@@ -44,9 +45,11 @@ public class CommonMainController {
 
     @GetMapping("list")
     public ResponseEntity<ResponseDTO<List<CommonMainInfoDTO>>> getCommonMainList(
-            @RequestHeader("Authorization") String accessToken) {
+            @RequestHeader("Authorization") String accessToken,
+            @ModelAttribute @Valid CommonMainSearchDTO searchDTO) {
+
         jwtGlobalService.getTokenInfo(accessToken, "A");
-        List<CommonMainInfoDTO> list = commonMainService.getCommonMainList();
+        List<CommonMainInfoDTO> list = commonMainService.getCommonMainList(searchDTO);
 
         ResponseDTO<List<CommonMainInfoDTO>> responseDTO =
                 ResponseDTO.<List<CommonMainInfoDTO>>builder()

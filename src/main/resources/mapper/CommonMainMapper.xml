@@ -28,6 +28,20 @@
         SELECT main_common_key, main_common_name, is_immutable
         FROM tbl_common_code_main
         WHERE is_deleted = 0
+        <if test="mainCommonName != null and mainCommonName != ''">
+            AND main_common_name LIKE CONCAT('%',#{mainCommonName},'%')
+        </if>
+        <choose>
+            <when test="sort == null or sort == ''">
+                ORDER BY reg_date_time ASC
+            </when>
+            <otherwise>
+                ${sort}
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset != ''">
+            LIMIT ${record} OFFSET ${offset}
+        </if>
     </select>
 
     <!-- 상위 공통 코드 조회 -->

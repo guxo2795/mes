@@ -2,9 +2,12 @@ package com.wimir.bae.domain.common.main.service;
 
 import com.wimir.bae.domain.common.main.dto.CommonMainInfoDTO;
 import com.wimir.bae.domain.common.main.dto.CommonMainModDTO;
+import com.wimir.bae.domain.common.main.dto.CommonMainSearchDTO;
 import com.wimir.bae.domain.common.main.mapper.CommonMainMapper;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
+import com.wimir.bae.global.utils.PagingUtil;
+import com.wimir.bae.global.utils.SortUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +32,17 @@ public class CommonMainService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommonMainInfoDTO> getCommonMainList() {
+    public List<CommonMainInfoDTO> getCommonMainList(CommonMainSearchDTO searchDTO) {
 
-        return Optional.ofNullable(commonMainMapper.getCommonMainList())
+        searchDTO.setOffset(
+                PagingUtil.getPagingOffset(
+                        searchDTO.getPage(),
+                        searchDTO.getRecord()
+                )
+        );
+        searchDTO.setSort(SortUtil.getDBSortStr(searchDTO.getSort()));
+
+        return Optional.ofNullable(commonMainMapper.getCommonMainList(searchDTO))
                 .orElse(Collections.emptyList());
     }
 
