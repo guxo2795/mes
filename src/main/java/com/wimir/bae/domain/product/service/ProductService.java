@@ -8,11 +8,14 @@ import com.wimir.bae.domain.inventory.service.InventoryProductService;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.domain.product.dto.ProductModDTO;
 import com.wimir.bae.domain.product.dto.ProductRegDTO;
+import com.wimir.bae.domain.product.dto.ProductSearchDTO;
 import com.wimir.bae.domain.product.mapper.ProductMapper;
 import com.wimir.bae.domain.productCompany.dto.ProductCompanyRegDTO;
 import com.wimir.bae.domain.productCompany.service.ProductCompanyService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
+import com.wimir.bae.global.utils.PagingUtil;
+import com.wimir.bae.global.utils.SortUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -75,8 +78,18 @@ public class ProductService {
 
     // 품목 목록 조회
     @Transactional(readOnly = true)
-    public List<ProductInfoDTO> getProductList() {
-        return Optional.ofNullable(productMapper.getProductList())
+    public List<ProductInfoDTO> getProductList(ProductSearchDTO searchDTO) {
+
+        searchDTO.setOffset(
+                PagingUtil.getPagingOffset(
+                        searchDTO.getPage(),
+                        searchDTO.getRecord()
+                )
+        );
+
+        searchDTO.setSort(SortUtil.getDBSortStr(searchDTO.getSort()));
+
+        return Optional.ofNullable(productMapper.getProductList(searchDTO))
                 .orElse(Collections.emptyList());
     }
 

@@ -25,29 +25,29 @@ public class ProductInfoDTO {
 
     private String productTypeKey;
 
-//    private String productTypeName;
+    private String productTypeName;
 
     private String processTypeKey;
 
-//    private String processTypeName;
+    private String processTypeName;
 
     private String standardPrice;
 
     private String drawingKey;
 
-//    private String drawingName;
+    private String drawingName;
 
     private String safetyQuantity;
 
     private String unitKey;
 
-//    private String unitName;
+    private String unitName;
 
-    private String companyKey;
+//    private String companyKey;
 
 //    private String companyName;
 
 //    private String companyType;
 
-//    private String totalQuantity;
+    private String totalQuantity;
 }

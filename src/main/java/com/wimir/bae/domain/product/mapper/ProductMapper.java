@@ -3,6 +3,7 @@ package com.wimir.bae.domain.product.mapper;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.domain.product.dto.ProductModDTO;
 import com.wimir.bae.domain.product.dto.ProductRegDTO;
+import com.wimir.bae.domain.product.dto.ProductSearchDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface ProductMapper {
     void createProduct(ProductRegDTO regDTO);
 
     // 품목 목록 조회
-    List<ProductInfoDTO> getProductList();
+    List<ProductInfoDTO> getProductList(ProductSearchDTO searchDTO);
     List<ProductInfoDTO> getProductInfoList(List<String> productKeyList);
 
     // 품목 정보

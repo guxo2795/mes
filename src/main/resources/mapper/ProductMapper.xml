@@ -29,18 +29,59 @@
     <!-- 품목 목록 조회 -->
     <select id="getProductList" resultType="com.wimir.bae.domain.product.dto.ProductInfoDTO">
         SELECT
-            product_key AS productKey,
-            product_type_key AS productTypeKey,
-            unit_key AS unitKey,
-            process_type_key AS processTypeKey,
-            drawing_key AS drawingKey,
-            product_code AS productCode,
-            product_name AS productName,
-            standard_price AS standardPrice,
-            asset_type_flag AS assetTypeFlag,
-            safety_quantity AS safetyQuantity
-        FROM tbl_product
-        WHERE is_deleted = 0
+            pro.product_key,
+            pro.product_type_key, sub.sub_common_name AS product_type_name,
+            pro.unit_key, sub2.sub_common_name AS unit_name,
+            pro.process_type_key, sub3.sub_common_name AS process_type_name,
+            pro.drawing_key, sub4.sub_common_name AS drawing_name,
+            pro.product_code,
+            pro.product_name,
+            pro.standard_price,
+            pro.asset_type_flag,
+            CASE
+                WHEN pro.asset_type_flag = 'M' THEN CAST(pro.safety_quantity AS CHAR)
+                WHEN pro.asset_type_flag = 'F' THEN CAST(ROUND(pro.safety_quantity) AS CHAR)
+            END AS safety_quantity,
+            (
+                SELECT SUM(inven.quantity)
+                FROM tbl_inventory inven
+                WHERE inven.product_key = pro.product_key
+            ) AS total_quantity
+        FROM tbl_product pro
+            LEFT JOIN tbl_common_code_sub sub ON pro.product_type_key = sub.sub_common_key
+            LEFT JOIN tbl_common_code_sub sub2 ON pro.unit_key = sub2.sub_common_key
+            LEFT JOIN tbl_common_code_sub sub3 ON pro.process_type_key = sub3.sub_common_key
+            LEFT JOIN tbl_common_code_sub sub4 ON pro.drawing_key = sub4.sub_common_key
+        WHERE pro.is_deleted = 0
+        <if test="productCode != null and productCode != ''">
+            AND pro.product_code LIKE CONCAT('%',#{productCode},'%')
+        </if>
+        <if test="productName != null and productName != ''">
+            AND pro.product_name LIKE CONCAT('%',#{productName},'%')
+        </if>
+        <if test="productTypeKey != null and productTypeKey != ''">
+            AND pro.product_type_key = #{productTypeKey}
+        </if>
+        <if test="processTypeKey != null and processTypeKey != ''">
+            AND pro.process_type_key = #{processTypeKey}
+        </if>
+        <if test="assetTypeFlag != null and assetTypeFlag != ''">
+            AND pro.asset_type_flag = #{assetTypeFlag}
+        </if>
+        <if test="companyTypeFlag != null and companyTypeFlag != ''">
+            AND com.company_type_flag = #{companyTypeFlag}
+        </if>
+        <choose>
+            <when test="sort == null or sort == ''">
+                ORDER BY pro.product_key DESC
+            </when>
+            <otherwise>
+                ${sort}
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset != ''">
+            LIMIT ${record} OFFSET ${offset}
+        </if>
     </select>
 
     <!-- 여러 개의 productKey로 상품 정보 가져오기 -->

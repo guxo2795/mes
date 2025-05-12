@@ -7,6 +7,7 @@ import com.wimir.bae.domain.inventory.mapper.InventoryProductMapper;
 import com.wimir.bae.domain.outgoing.dto.OutgoingDecreaseRegDTO;
 import com.wimir.bae.domain.outgoing.mapper.OutgoingMapper;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
+import com.wimir.bae.domain.product.dto.ProductSearchDTO;
 import com.wimir.bae.domain.product.mapper.ProductMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.domain.warehouse.dto.WarehouseInfoDTO;
@@ -54,7 +55,7 @@ public class InventoryProductService {
     public void setInitialInventoryByWarehouse(String warehouseKey) {
 
         // 모든 제품 리스트 조회
-        List<ProductInfoDTO> productList = productMapper.getProductList();
+        List<ProductInfoDTO> productList = productMapper.getProductList(new ProductSearchDTO());
 
         for(ProductInfoDTO productDTO: productList) {
             inventoryProductMapper.setInitialInventory(productDTO.getProductKey(), warehouseKey);
