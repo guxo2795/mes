@@ -1,9 +1,6 @@
 package com.wimir.bae.domain.company.mapper;
 
-import com.wimir.bae.domain.company.dto.CompanyInfoDTO;
-import com.wimir.bae.domain.company.dto.CompanyModDTO;
-import com.wimir.bae.domain.company.dto.CompanyProductsInfoDTO;
-import com.wimir.bae.domain.company.dto.CompanyRegDTO;
+import com.wimir.bae.domain.company.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import javax.validation.constraints.NotBlank;
@@ -19,7 +16,7 @@ public interface CompanyMapper {
     void createCompany(CompanyRegDTO regDTO);
 
     // 업체 목록 조회
-    List<CompanyInfoDTO> getCompanyList();
+    List<CompanyInfoDTO> getCompanyList(CompanySearchDTO searchDTO);
     List<CompanyInfoDTO> getCompanyInfoList(List<String> companyKeyList);
     // 업체 정보
     CompanyInfoDTO getCompanyInfo(String companyKey);

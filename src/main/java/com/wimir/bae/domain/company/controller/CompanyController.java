@@ -1,9 +1,6 @@
 package com.wimir.bae.domain.company.controller;
 
-import com.wimir.bae.domain.company.dto.CompanyInfoDTO;
-import com.wimir.bae.domain.company.dto.CompanyModDTO;
-import com.wimir.bae.domain.company.dto.CompanyProductsInfoDTO;
-import com.wimir.bae.domain.company.dto.CompanyRegDTO;
+import com.wimir.bae.domain.company.dto.*;
 import com.wimir.bae.domain.company.service.CompanyService;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
@@ -46,10 +43,11 @@ public class CompanyController {
     // 업체 목록
     @GetMapping("list")
     public ResponseEntity<ResponseDTO<List<CompanyInfoDTO>>> getCompanyList(
-            @RequestHeader("Authorization") String accessToken) {
+            @RequestHeader("Authorization") String accessToken,
+            @ModelAttribute @Valid CompanySearchDTO searchDTO) {
 
         jwtGlobalService.getTokenInfo(accessToken,"A");
-        List<CompanyInfoDTO> list = companyService.getCompanyList();
+        List<CompanyInfoDTO> list = companyService.getCompanyList(searchDTO);
 
         ResponseDTO<List<CompanyInfoDTO>> response =
                 ResponseDTO.<List<CompanyInfoDTO>> builder()

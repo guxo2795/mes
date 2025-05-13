@@ -1,13 +1,12 @@
 package com.wimir.bae.domain.company.service;
 
-import com.wimir.bae.domain.company.dto.CompanyInfoDTO;
-import com.wimir.bae.domain.company.dto.CompanyModDTO;
-import com.wimir.bae.domain.company.dto.CompanyProductsInfoDTO;
-import com.wimir.bae.domain.company.dto.CompanyRegDTO;
+import com.wimir.bae.domain.company.dto.*;
 import com.wimir.bae.domain.company.mapper.CompanyMapper;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
+import com.wimir.bae.global.utils.PagingUtil;
+import com.wimir.bae.global.utils.SortUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +31,16 @@ public class CompanyService {
     }
 
     @Transactional(readOnly = true)
-    public List<CompanyInfoDTO> getCompanyList() {
-        return Optional.ofNullable(companyMapper.getCompanyList())
+    public List<CompanyInfoDTO> getCompanyList(CompanySearchDTO searchDTO) {
+
+        searchDTO.setOffset(
+                PagingUtil.getPagingOffset(
+                        searchDTO.getPage(),
+                        searchDTO.getRecord()));
+
+        searchDTO.setSort(SortUtil.getDBSortStr(searchDTO.getSort()));
+
+        return Optional.ofNullable(companyMapper.getCompanyList(searchDTO))
                 .orElse(Collections.emptyList());
     }
 

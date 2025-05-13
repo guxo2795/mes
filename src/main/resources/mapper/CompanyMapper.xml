@@ -36,6 +36,35 @@
         note
     FROM tbl_company
     WHERE is_deleted = 0
+        <if test="companyName != null and companyName != ''">
+            AND company_name LIKE concat('%',#{companyName},'%')
+        </if>
+        <if test="companyRegNumber != null and companyRegNumber != ''">
+            AND company_reg_number LIKE concat('%',#{companyRegNumber},'%')
+        </if>
+        <if test="ceoName != null and ceoName != ''">
+            AND ceo_name LIKE concat('%',#{ceoName},'%')
+        </if>
+        <if test="address != null and address != ''">
+            AND address LIKE concat('%',#{address},'%')
+        </if>
+        <if test="note != null and note != ''">
+            AND note LIKE concat('%',#{note},'%')
+        </if>
+        <if test="companyTypeFlag != null and companyTypeFlag != ''">
+            AND company_type_flag = #{companyTypeFlag}
+        </if>
+        <choose>
+            <when test="sort == null or sort == ''">
+                ORDER BY company_key DESC
+            </when>
+            <otherwise>
+                ${sort}
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset != ''">
+            LIMIT ${record} OFFSET ${offset}
+        </if>
     </select>
 
     <select id="getCompanyInfoList" resultType="com.wimir.bae.domain.company.dto.CompanyInfoDTO">
@@ -93,12 +122,17 @@
             <result property="productName" column="product_name"/>
             <result property="assetTypeFlag" column="asset_type_flag"/>
             <result property="productTypeKey" column="product_type_key"/>
+            <result property="productTypeName" column="product_type_name"/>
             <result property="processTypeKey" column="process_type_key"/>
+            <result property="processTypeName" column="process_type_name"/>
             <result property="standardPrice" column="standard_price"/>
             <result property="drawingKey" column="drawing_key"/>
+            <result property="drawingName" column="drawing_name"/>
             <result property="safetyQuantity" column="safety_quantity"/>
+            <result property="totalQuantity" column="total_quantity"/>
             <result property="unitKey" column="unit_key"/>
-            <result property="companyKey" column="company_key"/>
+            <result property="unitName" column="unit_name"/>
+<!--            <result property="companyKey" column="company_key"/>-->
         </collection>
     </resultMap>
     <select id="getCompanyProductsList" resultMap="CompanyProductsResultMap">
@@ -109,15 +143,27 @@
             p.product_code,
             p.product_name,
             p.asset_type_flag,
-            p.product_type_key,
-            p.process_type_key,
+            p.product_type_key, sub.sub_common_name as product_type_name,
+            p.process_type_key, sub2.sub_common_name as process_type_name,
             p.standard_price,
-            p.drawing_key,
-            p.safety_quantity,
-            p.unit_key
+            p.drawing_key, sub3.sub_common_name as drawing_name,
+            CASE
+                WHEN p.asset_type_flag = 'M' THEN CAST(p.safety_quantity AS CHAR)
+                WHEN p.asset_type_flag = 'F' THEN CAST(ROUND(p.safety_quantity) AS CHAR)
+            END AS safety_quantity,
+            (
+                SELECT SUM(inven.quantity)
+                FROM tbl_inventory inven
+                WHERE inven.product_key = p.product_key
+            ) AS total_quantity,
+            p.unit_key, sub4.sub_common_name as unit_name
         FROM tbl_company c
         LEFT JOIN tbl_product_company pc ON c.company_key = pc.company_key
         LEFT JOIN tbl_product p ON pc.product_key = p.product_key
+        LEFT JOIN tbl_common_code_sub sub ON sub.sub_common_key = p.product_type_key
+        LEFT JOIN tbl_common_code_sub sub2 ON sub2.sub_common_key = p.process_type_key
+        LEFT JOIN tbl_common_code_sub sub3 ON sub3.sub_common_key = p.drawing_key
+        LEFT JOIN tbl_common_code_sub sub4 ON sub4.sub_common_key = p.unit_key
         WHERE c.is_deleted = 0
           AND pc.is_deleted = 0
           AND p.is_deleted = 0
