@@ -32,4 +32,20 @@ public class ValidationUtil {
             throw new CustomRuntimeException("유효한 전화번호 형식이 아닙니다. 예: 01012345678");
         }
     }
+
+    // 파일명 유효성 검사
+    public static void isValidFileName(String fileName) {
+
+        if(fileName == null || fileName.isEmpty()) {
+            throw new CustomRuntimeException("파일명이 필요합니다.");
+        }
+        if (fileName.contains("\\") || fileName.contains("/") || fileName.contains(":") ||
+                fileName.contains("*") || fileName.contains("?") || fileName.contains("\"") ||
+                fileName.contains("<") || fileName.contains(">") || fileName.contains("|")) {
+            throw new CustomRuntimeException("이름에 특수 문자 '\\, /, :, *, ?, \", <, >, |'는 지원하지 않습니다.");
+        } // ＃§★ 이런 특수기호들은 어떻게 하지?
+        if(fileName.length() > 200){
+            throw new CustomRuntimeException("파일명은 200자 이내로 가능합니다.");
+        }
+    }
 }

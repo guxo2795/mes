@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Excel Download Test</title>
+  <title>Excel Upload & Download Test</title>
   <script>
     async function downloadExcel() {
       const accessToken = document.getElementById("accessToken").value;
@@ -15,7 +15,7 @@
       formData.append("record", record);
 
       try {
-        const response = await fetch("user/list/excel", {
+        const response = await fetch("/product/list/excel", {
           method: "POST",
           headers: {
             "Authorization": accessToken
@@ -28,22 +28,87 @@
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement("a");
           link.href = url;
-          link.download = "UserList.xlsx";
+          link.download = "ProductList.xlsx";
           document.body.appendChild(link);
           link.click();
           link.remove();
         } else {
-          alert("Excel download failed.");
+          alert("Product Excel download failed.");
         }
       } catch (error) {
         console.error(error);
-        alert("An error occurred while downloading the Excel file.");
+        alert("An error occurred while downloading the Product Excel file.");
+      }
+    }
+
+    async function downloadTemplate() {
+      const accessToken = document.getElementById("accessToken").value;
+
+      try {
+        const response = await fetch("/product/template", {
+          method: "POST",
+          headers: {
+            "Authorization": accessToken
+          }
+        });
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "품목_업로드_양식.xlsx";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        } else {
+          alert("Template download failed.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred while downloading the template.");
+      }
+    }
+
+    async function uploadExcel() {
+      const accessToken = document.getElementById("accessToken").value;
+      const fileInput = document.getElementById("excelFile");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert("Please select an Excel file to upload.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch("/product/upload", {
+          method: "POST",
+          headers: {
+            "Authorization": accessToken
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          alert("Excel file uploaded successfully.");
+        } else {
+          alert("Excel file upload failed.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred while uploading the Excel file.");
+      } finally {
+        fileInput.value = "";
       }
     }
   </script>
 </head>
 <body>
-<h1>Excel Download Test</h1>
+<h1>Excel Upload & Download Test</h1>
+
 <label>Authorization Token:</label><br>
 <input type="text" id="accessToken" placeholder="Enter Access Token" required><br><br>
 
@@ -53,6 +118,12 @@
 <label>Record:</label><br>
 <input type="number" id="record" placeholder="Enter Record Count" required><br><br>
 
-<button onclick="downloadExcel()">Download Excel</button>
+<button onclick="downloadExcel()">Download Product Excel</button><br><br>
+<button onclick="downloadTemplate()">Download Product Template</button><br><br>
+
+<label>Upload Excel File:</label><br>
+<input type="file" id="excelFile" accept=".xlsx,.xls"><br><br>
+<button onclick="uploadExcel()">Upload Excel File</button>
+
 </body>
 </html>

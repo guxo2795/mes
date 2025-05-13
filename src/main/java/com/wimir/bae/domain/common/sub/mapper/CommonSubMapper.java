@@ -36,4 +36,16 @@ public interface CommonSubMapper {
 
     // 하위 공통 코드 삭제
     void deleteCommonSubList(List<String> subCommonKeyList);
+
+    // 분류명 개수 조회
+    Integer getProductTypeCount(String productType);
+
+    // 분류 키 조회
+    String getProductTypeKey(String productType);
+
+    // 단위 개수
+    Integer getUnitCount(String unitName);
+
+    // 단위 키 조회
+    String getUnitKey(String unitName);
 }

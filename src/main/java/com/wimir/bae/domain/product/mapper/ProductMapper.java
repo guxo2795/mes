@@ -5,6 +5,7 @@ import com.wimir.bae.domain.product.dto.ProductModDTO;
 import com.wimir.bae.domain.product.dto.ProductRegDTO;
 import com.wimir.bae.domain.product.dto.ProductSearchDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -33,4 +34,9 @@ public interface ProductMapper {
 
     // 특정 업체의 품목 목록 조회
     List<ProductInfoDTO> getCompanyProductList(String companyKey);
+
+    String getProductProcessKey(@Param("processTypeName") String processTypeName,
+                                @Param("mainCommonKey") String mainCommonKey);
+
+    Integer isProductProcessExist(String processTypeKey);
 }

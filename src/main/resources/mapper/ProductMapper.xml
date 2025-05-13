@@ -153,4 +153,27 @@
           AND company.company_key = #{companyKey}
     </select>
 
+    <!-- 공정 유형 이름 조회 -->
+    <select id="getProductProcessKey" resultType="java.lang.String">
+        SELECT sub.sub_common_key
+        FROM tbl_common_code_sub sub
+                 LEFT JOIN tbl_common_code_main main
+                           ON sub.main_common_key = main.main_common_key
+        WHERE sub_common_name = #{processTypeName}
+          AND main.main_common_key = #{mainCommonKey}
+          AND sub.is_deleted = 0
+          AND main.is_deleted = 0
+    </select>
+
+    <!-- 공정 유형(생산 유형) 존재 확인 -->
+    <select id="isProductProcessExist" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM tbl_product pro
+                 LEFT JOIN tbl_common_code_sub sub
+                           ON pro.process_type_key = sub.sub_common_key
+        WHERE sub.sub_common_key = #{processTypeKey}
+          AND pro.is_deleted = 0
+          AND sub.is_deleted = 0
+    </select>
+
 </mapper>

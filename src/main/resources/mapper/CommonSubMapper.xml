@@ -115,4 +115,48 @@
         </foreach>
     </delete>
 
+    <!-- 분류명 개수 조회 -->
+    <select id="getProductTypeCount" resultType="java.lang.Integer">
+        SELECT
+        <bind name="excelProductTypeKey" value="@com.wimir.bae.global.utils.ConfigurationUtil@getExcelProductTypeKey()"/>
+        COUNT(*)
+        FROM tbl_common_code_sub
+        WHERE is_deleted = 0
+        AND sub_common_name = #{productType}
+        AND main_common_key = #{excelProductTypeKey}
+    </select>
+
+    <!-- 분류 키 조회 -->
+    <select id="getProductTypeKey" resultType="java.lang.String">
+        SELECT
+        <bind name="excelProductTypeKey" value="@com.wimir.bae.global.utils.ConfigurationUtil@getExcelProductTypeKey()"/>
+        sub_common_key
+        FROM tbl_common_code_sub
+        WHERE is_deleted = 0
+        AND sub_common_name = #{productType}
+        AND main_common_key = #{excelProductTypeKey}
+    </select>
+
+    <!-- 단위 개수 -->
+    <select id="getUnitCount" resultType="java.lang.Integer">
+        SELECT
+        <bind name="excelUnitKey" value="@com.wimir.bae.global.utils.ConfigurationUtil@getExcelUnitKey()"/>
+        COUNT(*)
+        FROM tbl_common_code_sub
+        WHERE is_deleted = 0
+        AND sub_common_name = #{unitName}
+        AND main_common_key = #{excelUnitKey}
+    </select>
+
+    <!-- 단위 키 조회 -->
+    <select id="getUnitKey" resultType="java.lang.String">
+        SELECT
+        <bind name="excelUnitKey" value="@com.wimir.bae.global.utils.ConfigurationUtil@getExcelUnitKey()"/>
+        sub_common_key
+        FROM tbl_common_code_sub
+        WHERE is_deleted = 0
+        AND sub_common_name = #{unitName}
+        AND main_common_key = #{excelUnitKey}
+    </select>
+
 </mapper>

@@ -13,12 +13,14 @@ import com.wimir.bae.global.exception.CustomRuntimeException;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.ByteArrayOutputStream;
@@ -162,5 +164,22 @@ public class ProductController {
         } catch (Exception e) {
             throw new CustomRuntimeException("엑셀 양식 다운로드에 실패했습니다.");
         }
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<ResponseDTO<?>> uploadProductTemplate(
+            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken,
+            @RequestPart(value = "file") MultipartFile file) {
+
+        UserLoginDTO userLoginDTO = jwtGlobalService.getTokenInfo(accessToken, "A");
+        productService.uploadProductTemplate(userLoginDTO, file);
+
+        ResponseDTO<?> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("정상 처리되었습니다.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 }
