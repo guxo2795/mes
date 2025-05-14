@@ -1,18 +1,21 @@
 package com.wimir.bae.domain.bom.service;
 
-import com.wimir.bae.domain.bom.dto.BomInfoDTO;
-import com.wimir.bae.domain.bom.dto.BomModDTO;
-import com.wimir.bae.domain.bom.dto.BomRegDTO;
+import com.wimir.bae.domain.bom.dto.*;
 import com.wimir.bae.domain.bom.mapper.BomMapper;
 import com.wimir.bae.domain.product.dto.ProductInfoDTO;
 import com.wimir.bae.domain.product.mapper.ProductMapper;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.exception.CustomRuntimeException;
+import com.wimir.bae.global.notification.NotificationGlobalService;
+import com.wimir.bae.global.utils.PagingUtil;
+import com.wimir.bae.global.utils.SortUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +27,11 @@ public class BomService {
 
     private final BomMapper bomMapper;
     private final ProductMapper productMapper;
+
+    private final NotificationGlobalService notificationGlobalService;
+
+    @Value("${bae.alert.bom}")
+    private String bomKey;
 
     public void createBom(UserLoginDTO userLoginDTO, BomRegDTO regDTO) {
 
@@ -42,11 +50,24 @@ public class BomService {
         }
 
         bomMapper.createBom(regDTO);
+        notificationGlobalService.createInfoNotification(
+                "insert", bomKey,
+                "상위 품목 '" + rootInfo.getProductName() + "'의 하위 품목인 '" + materialInfo.getProductName() + "' ",
+                userLoginDTO.getUserCode()
+        );
     }
 
     @Transactional(readOnly = true)
-    public List<BomInfoDTO> getBomList() {
-        return Optional.ofNullable(bomMapper.getBomList())
+    public List<BomProductsDTO> getBomList(BomSearchDTO searchDTO) {
+
+        searchDTO.setOffset(
+                PagingUtil.getPagingOffset(
+                        searchDTO.getPage(),
+                        searchDTO.getRecord()));
+
+        searchDTO.setSort(SortUtil.getDBSortStr(searchDTO.getSort()));
+
+        return Optional.ofNullable(bomMapper.getBomList(searchDTO))
                 .orElse(Collections.emptyList());
 
     }
@@ -59,7 +80,7 @@ public class BomService {
         }
         
         // 수주 진행 여부 확인
-
+        checkBOMActiveOrderAndContract(modDTO.getBomKey());
 
         bomMapper.updateBom(modDTO);
     }
@@ -86,5 +107,11 @@ public class BomService {
         }
 
         bomMapper.deleteBomList(bomKeyList);
+    }
+
+    private void checkBOMActiveOrderAndContract(String bomKey) {
+        if(bomMapper.isBomContractAndOrder(bomKey)) {
+            throw new CustomRuntimeException("현재 진행중이거나 등록된 수주가 존재합니다.");
+        }
     }
 }

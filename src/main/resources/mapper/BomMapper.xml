@@ -24,21 +24,63 @@
         )
     </insert>
 
+    <resultMap id="BomProductsResultMap" type="com.wimir.bae.domain.bom.dto.BomProductsDTO">
+        <id property="rootKey" column="root_key"/>
+        <result property="finishedKey" column="finished_key"/>
+        <result property="finishedCode" column="finished_code"/>
+        <result property="finishedName" column="finished_name"/>
+
+        <collection property="materials" ofType="com.wimir.bae.domain.bom.dto.BomMaterialDTO">
+            <id property="bomKey" column="bom_key" />
+            <result property="materialKey" column="material_key"/>
+            <result property="materialCode" column="material_code"/>
+            <result property="materialName" column="material_name"/>
+            <result property="quantity" column="quantity"/>
+            <result property="unitName" column="unit_name"/>
+        </collection>
+    </resultMap>
+
     <!-- BOM 목록 -->
-    <select id="getBomList" resultType="com.wimir.bae.domain.bom.dto.BomInfoDTO">
+    <select id="getBomList" resultMap="BomProductsResultMap">
     SELECT
-    bom.bom_key,
-    bom.root_key,
-    pro.product_code,
-    pro.product_name,
-    bom.quantity,
-    unit.sub_common_name AS unit_name,
-    bom.finished_key as finished_key,
-    pro.product_key as material_key
+        bom.root_key,
+        bom.finished_key,
+        fp.product_code AS finished_code,
+        fp.product_name AS finished_name,
+        bom.bom_key,
+        bom.material_key,
+        mp.product_code AS material_code,
+        mp.product_name AS material_name,
+        bom.quantity,
+        sub.sub_common_name AS unit_name
     FROM tbl_product_bom bom
-    LEFT JOIN tbl_product pro ON bom.material_key = pro.product_key
-    LEFT JOIN tbl_common_code_sub unit ON pro.unit_key = unit.sub_common_key
+        LEFT JOIN tbl_product fp ON bom.finished_key = fp.product_key
+        LEFT JOIN tbl_product mp ON bom.material_key = mp.product_key
+        LEFT JOIN tbl_common_code_sub sub ON mp.unit_key = sub.sub_common_key
     WHERE bom.is_deleted = 0
+        AND fp.is_deleted = 0
+        AND mp.is_deleted = 0
+        AND sub.is_deleted = 0
+        <if test="finishedKey != null and finishedKey != ''">
+            AND bom.fisished_key = #{finishedKey}
+        </if>
+        <if test="productCode != null and productCode != ''">
+            AND mp.product_code LIKE CONCAT('%',#{productCode},'%')
+        </if>
+        <if test="productName != null and productName != ''">
+            AND mp.product_name LIKE CONCAT('%',#{productName},'%')
+        </if>
+        <choose>
+            <when test="sort == null or sort == ''">
+                ORDER BY bom.root_key,bom.finished_key,bom.bom_key DESC
+            </when>
+            <otherwise>
+                ${sort}
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset != ''">
+            LIMIT ${record} OFFSET ${offset}
+        </if>
     </select>
 
     <select id="getBomInfoList" resultType="com.wimir.bae.domain.bom.dto.BomInfoDTO">
@@ -99,6 +141,20 @@
         )
         SELECT IF(COUNT(*) > 0, TRUE, FALSE)
         FROM bom_tree
+    </select>
+
+    <select id="isBomContractAndOrder" resultType="boolean">
+        SELECT IF(COUNT(*) > 0, 1, 0)
+        FROM tbl_product_bom bom
+            LEFT JOIN tbl_product pro ON pro.product_key = bom.root_key
+            LEFT JOIN tbl_order_contract_materials conm ON pro.product_key = conm.product_key
+            LEFT JOIN tbl_order_contract con ON con.contract_code = conm.contract_code
+        WHERE bom.is_deleted = 0
+          AND bom.bom_key = #{bomKey}
+          AND pro.is_deleted = 0
+          AND conm.is_deleted = 0
+          AND con.is_deleted = 0
+          AND con.is_completed IN(0,2)
     </select>
 
 </mapper>

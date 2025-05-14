@@ -1,8 +1,6 @@
 package com.wimir.bae.domain.bom.mapper;
 
-import com.wimir.bae.domain.bom.dto.BomInfoDTO;
-import com.wimir.bae.domain.bom.dto.BomModDTO;
-import com.wimir.bae.domain.bom.dto.BomRegDTO;
+import com.wimir.bae.domain.bom.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,7 +18,7 @@ public interface BomMapper {
     void createBom(BomRegDTO regDTO);
 
     // BOM 목록
-    List<BomInfoDTO> getBomList();
+    List<BomProductsDTO> getBomList(BomSearchDTO bomSearchDTO);
     List<BomInfoDTO> getBomInfoList(List<String> bomKeyList);
 
     // BOM 정보
@@ -34,4 +32,6 @@ public interface BomMapper {
 
     // BOM 삭제
     void deleteBomList(List<String> bomKeyList);
+
+    boolean isBomContractAndOrder(String bomKey);
 }

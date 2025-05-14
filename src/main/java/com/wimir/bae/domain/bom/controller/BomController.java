@@ -1,8 +1,9 @@
 package com.wimir.bae.domain.bom.controller;
 
-import com.wimir.bae.domain.bom.dto.BomInfoDTO;
 import com.wimir.bae.domain.bom.dto.BomModDTO;
+import com.wimir.bae.domain.bom.dto.BomProductsDTO;
 import com.wimir.bae.domain.bom.dto.BomRegDTO;
+import com.wimir.bae.domain.bom.dto.BomSearchDTO;
 import com.wimir.bae.domain.bom.service.BomService;
 import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.dto.ListWrapperDTO;
@@ -41,14 +42,15 @@ public class BomController {
     }
 
     @GetMapping("list")
-    public ResponseEntity<ResponseDTO<List<BomInfoDTO>>> getBomList (
-            @RequestHeader("Authorization") String accessToken) {
+    public ResponseEntity<ResponseDTO<List<BomProductsDTO>>> getBomList (
+            @RequestHeader("Authorization") String accessToken,
+            @ModelAttribute @Valid BomSearchDTO searchDTO) {
 
         jwtGlobalService.getTokenInfo(accessToken, "A");
-        List<BomInfoDTO> list = bomService.getBomList();
+        List<BomProductsDTO> list = bomService.getBomList(searchDTO);
 
-        ResponseDTO<List<BomInfoDTO>> response =
-                ResponseDTO.<List<BomInfoDTO>> builder()
+        ResponseDTO<List<BomProductsDTO>> response =
+                ResponseDTO.<List<BomProductsDTO>> builder()
                         .result(1)
                         .data(list)
                         .build();
