@@ -12,6 +12,7 @@ import com.wimir.bae.global.excel.service.ExcelService;
 import com.wimir.bae.global.exception.CustomRuntimeException;
 import com.wimir.bae.global.jwt.JwtGlobalService;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -29,6 +30,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+@Tag(name = "01. 기준정보관리 > 03. 품목 관리")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("product")

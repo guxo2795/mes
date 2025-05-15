@@ -7,6 +7,7 @@ import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.global.dto.ListWrapperDTO;
 import com.wimir.bae.global.dto.ResponseDTO;
 import com.wimir.bae.global.jwt.JwtGlobalService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+@Tag(name = "02. 수주관리")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("contract")
