@@ -5,6 +5,7 @@ import com.wimir.bae.domain.user.dto.UserLoginDTO;
 import com.wimir.bae.domain.user.dto.UserLoginInfoDTO;
 import com.wimir.bae.domain.user.mapper.UserMapper;
 import com.wimir.bae.global.exception.CustomTokenException;
+import com.wimir.bae.global.redis.RefreshTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -27,6 +28,7 @@ public class JwtService {
 
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
 
     @Value("${bae.jwt.key}")
     private String fixedSecretekey;
@@ -57,9 +59,12 @@ public class JwtService {
 
         // 로그인 성공시 액세스 토큰이 아닌 리프레시 토큰을 발급
         String refreshToken = createRefreshToken(userCode);
-        // 만료 날짜 얻기 => getRefreshTokenExpiration(refreshToken)으로 바꾸는게 맞나?
+        
+        // redis에 저장
+        refreshTokenService.saveRefreshToken(userCode, refreshToken);
+        
+        // 만료 날짜 얻기
         Date extiredDate = getAccessTokenExpiration(refreshToken);
-        // 날짜 포맷
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         String expiredDateString = format.format(extiredDate);
 
@@ -80,6 +85,12 @@ public class JwtService {
 
         try {
             String userCode = getUserCodeFromToken(refreshToken);
+
+            String storedRefreshToken = refreshTokenService.getRefreshToken(userCode);
+            if(storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
+                throw new CustomTokenException("유효하지 않은 리프레시 토큰입니다.");
+            }
+
             String userKey = userMapper.getUserKeyByUserCode(userCode);
             Date expiredDate = getRefreshTokenExpiration(refreshToken);
             SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -177,5 +188,6 @@ public class JwtService {
     public void logout(UserLoginDTO userInfo) {
         String userCode = userInfo.getUserCode();
         userMapper.logout(userCode);
+        refreshTokenService.deleteRefreshToken(userCode);
     }
 }
