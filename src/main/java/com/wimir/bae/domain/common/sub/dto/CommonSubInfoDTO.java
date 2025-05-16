@@ -21,4 +21,6 @@ public class CommonSubInfoDTO {
 
     private String mainCommonKey;
 
+    private String midCommonKey;
+
 }

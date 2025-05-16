@@ -14,7 +14,11 @@ import javax.validation.constraints.Size;
 @Builder
 public class CommonSubRegDTO {
 
+    @NotBlank
     private String mainCommonKey;
+
+    @NotBlank
+    private String midCommonKey;
 
     @NotBlank(message = "{common.subCommonName.NotBlank}")
     @Size(max = 50, message = "{common.subCommonName.Size}")

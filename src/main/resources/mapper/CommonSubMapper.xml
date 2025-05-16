@@ -12,15 +12,16 @@
         WHERE is_deleted = 0
           AND UPPER(sub_common_name) = UPPER(#{subCommonName})
           AND main_common_key = #{mainCommonKey}
+          AND mid_common_key = #{midCommonKey}
     </select>
 
     <!-- 하위 공통 코드 등록 -->
     <insert id="createCommonSub">
         INSERT INTO tbl_common_code_sub(
-                main_common_key, sub_common_name, note
+                main_common_key, mid_common_key, sub_common_name, note
         )
         VALUES (
-                #{mainCommonKey}, #{subCommonName}, #{note}
+                #{mainCommonKey}, #{midCommonKey}, #{subCommonName}, #{note}
         )
     </insert>
 
@@ -30,7 +31,9 @@
             sub_common_key,
             sub_common_name,
             note,
-            is_immutable
+            is_immutable,
+            main_common_key,
+            mid_common_key
         FROM tbl_common_code_sub
         WHERE is_deleted = 0
             <if test="subCommonName != null and subCommonName != ''">
@@ -46,7 +49,7 @@
         SELECT *
         FROM tbl_common_code_sub
         WHERE is_deleted = 0
-        AND sub_common_keY IN
+        AND sub_common_key IN
         <foreach item="subCommonKey" collection="subCommonKeyList" open="(" separator="," close=")">
             #{subCommonKey}
         </foreach>
@@ -57,23 +60,21 @@
     <select id="canUpdateCommonSub" resultType="boolean">
         SELECT IF(COUNT(*) > 0 , true, false)
         FROM tbl_common_code_sub sub
-        INNER JOIN tbl_common_code_main main
-        ON sub.main_common_key = main.main_common_key
-        WHERE
-        sub.is_deleted = 0
+            INNER JOIN tbl_common_code_main main ON sub.main_common_key = main.main_common_key
+            INNER JOIN tbl_common_code_mid mid ON sub.mid_common_key = mid.mid_common_key
+        WHERE sub.is_deleted = 0
         AND sub.is_immutable = 0
         AND main.is_immutable = 0
-        <if test="subCommonKey != null and subCommonKey != ''">
-            AND sub.sub_common_key = #{subCommonKey}
-        </if>
+        AND mid.is_immutable = 0
+        AND sub.sub_common_key = #{subCommonKey}
     </select>
 
     <!-- 전부 수정 가능할 때 true -->
     <select id="canUpdateCommonSubList" resultType="boolean">
         SELECT IF(COUNT(*) = 0, true, false)
         FROM tbl_common_code_sub sub
-        INNER JOIN tbl_common_code_main main
-        ON sub.main_common_key = main.main_common_key
+            INNER JOIN tbl_common_code_main main ON sub.main_common_key = main.main_common_key
+            INNER JOIN tbl_common_code_mid mid ON sub.mid_common_key = mid.mid_common_key
         WHERE sub.sub_common_key IN
         <foreach item="subCommonKey" collection="subCommonKeyList" open="(" separator="," close=")">
             #{subCommonKey}
@@ -81,7 +82,10 @@
           AND (
             sub.is_deleted != 0
             OR sub.is_immutable != 0
+            OR main.is_deleted != 0
             OR main.is_immutable != 0
+            OR mid.is_deleted != 0
+            OR mid.is_immutable != 0
           )
     </select>
 

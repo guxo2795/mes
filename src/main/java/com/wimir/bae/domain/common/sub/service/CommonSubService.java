@@ -1,6 +1,7 @@
 package com.wimir.bae.domain.common.sub.service;
 
 import com.wimir.bae.domain.common.main.mapper.CommonMainMapper;
+import com.wimir.bae.domain.common.mid.mapper.CommonMidMapper;
 import com.wimir.bae.domain.common.sub.dto.CommonSubInfoDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubModDTO;
 import com.wimir.bae.domain.common.sub.dto.CommonSubRegDTO;
@@ -23,6 +24,7 @@ public class CommonSubService {
 
     private final CommonMainMapper commonMainMapper;
     private final CommonSubMapper commonSubMapper;
+    private final CommonMidMapper commonMidMapper;
 
     public void createCommonSub(UserLoginDTO userLoginDTO, CommonSubRegDTO regDTO) {
 
@@ -31,8 +33,13 @@ public class CommonSubService {
             throw new CustomRuntimeException("유효하지 않은 상위 공통 코드입니다.");
         }
 
+        // 중위 공통 코드의 is_immutable 확인 및 존재 여부 확인
+        if(!commonMidMapper.canUpdateCommonMid(regDTO.getMidCommonKey())) {
+            throw new CustomRuntimeException("유효하지 않은 중위 공통 코드입니다.");
+        }
+
         // 중복 확인 (대소문자 구분없이)
-        if(commonSubMapper.isUpperLowerCaseDuplicate(regDTO.getMainCommonKey(), regDTO.getSubCommonName())){
+        if(commonSubMapper.isUpperLowerCaseDuplicate(regDTO.getMainCommonKey(), regDTO.getMidCommonKey(), regDTO.getSubCommonName())){
             throw new CustomRuntimeException("이미 존재하는 하위 공통 코드입니다.");
         }
 
@@ -58,14 +65,14 @@ public class CommonSubService {
         // <choose>를 쓴 이유는?.. when 하나만 실행 => 범용성때문에
         // subCommonKey 가 비어있는 지 확인, mainCommonKey 가 비어있는 지 확인
         if(!commonSubMapper.canUpdateCommonSub(modDTO.getSubCommonKey())){
-            throw new CustomRuntimeException("수정할 수 없는 하위 공통 코드 입니다.");
+            throw new CustomRuntimeException("수정할 수 없는 하위 공통 코드입니다.");
         }
 
         // 중복 확인
         CommonSubInfoDTO commonSubInfoDTO = commonSubMapper.getCommonSubInfo(modDTO.getSubCommonKey());
-        if(!commonSubInfoDTO.getSubCommonName().equals(modDTO.getSubCommonName())
-                && commonSubMapper.isUpperLowerCaseDuplicate(modDTO.getSubCommonKey(), commonSubInfoDTO.getSubCommonName())){
-            throw new CustomRuntimeException("이미 존재하는 하위 공톹 코드 입니다.");
+        if(commonSubMapper.isUpperLowerCaseDuplicate(
+                        commonSubInfoDTO.getMainCommonKey(), commonSubInfoDTO.getMidCommonKey(), modDTO.getSubCommonName())){
+            throw new CustomRuntimeException("이미 존재하는 하위 공통 코드입니다.");
         }
 
         commonSubMapper.updateCommonSub(modDTO);

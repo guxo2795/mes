@@ -15,6 +15,7 @@ public interface CommonSubMapper {
     // 하위 공통 코드 중복 검사 (대소문자 구분 없이)
     boolean isUpperLowerCaseDuplicate(
             @Param("mainCommonKey") String mainCommonKey,
+            @Param("midCommonKey") String midCommonKey,
             @Param("subCommonName") String subCommonName
     );
 

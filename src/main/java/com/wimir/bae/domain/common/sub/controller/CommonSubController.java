@@ -25,7 +25,7 @@ import javax.validation.Valid;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-@Tag(name = "01. 기준정보관리 > 02. 공통코드 > 02. 하위공통코드")
+@Tag(name = "01. 기준정보관리 > 02. 공통코드 > 03. 하위공통코드")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("common/sub")
