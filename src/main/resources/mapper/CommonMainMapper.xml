@@ -85,12 +85,9 @@
     <select id="canUpdateCommonMain" resultType="java.lang.Boolean">
         SELECT IF(COUNT(*) > 0 , true, false)
         FROM tbl_common_code_main main
-        WHERE
-        main.is_deleted = 0
-        AND main.is_immutable = 0
-        <if test="mainCommonKey != null and mainCommonKey != ''">
-            AND main.main_common_key = #{mainCommonKey}
-        </if>
+        WHERE main.is_deleted = 0
+          AND main.is_immutable = 0
+          AND main.main_common_key = #{mainCommonKey}
     </select>
 
 </mapper>
